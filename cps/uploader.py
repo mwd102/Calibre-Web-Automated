@@ -14,6 +14,7 @@ from .constants import BookMeta
 from .helper import split_authors
 from .file_helper import get_temp_dir
 from .string_helper import strip_whitespaces
+from .binary_helper import resolve_binary_path, SUPPORTED_UNRAR_BINARIES
 
 log = logger.create()
 
@@ -70,6 +71,7 @@ except ImportError as e:
 
 
 def process(tmp_file_path, original_file_name, original_file_extension, rar_executable, no_cover=False):
+    rar_executable = resolve_binary_path(rar_executable, SUPPORTED_UNRAR_BINARIES)
     meta = default_meta(tmp_file_path, original_file_name, original_file_extension)
     extension_upper = original_file_extension.upper()
     try:

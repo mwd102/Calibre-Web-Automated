@@ -45,6 +45,7 @@ from .usermanagement import user_login_required
 from .cw_babel import get_available_translations, get_available_locale, get_user_locale_language
 from . import debug_info
 from .string_helper import strip_whitespaces
+from .binary_helper import resolve_binary_path, SUPPORTED_KEPUBIFY_BINARIES, SUPPORTED_UNRAR_BINARIES
 
 log = logger.create()
 
@@ -2321,6 +2322,9 @@ def _configuration_update_helper():
         _config_string(to_save, "config_calibre")
         _config_string(to_save, "config_binariesdir")
         _config_string(to_save, "config_kepubifypath")
+        if "config_kepubifypath" in to_save and config.config_kepubifypath:
+            if not resolve_binary_path(config.config_kepubifypath, SUPPORTED_KEPUBIFY_BINARIES):
+                return _configuration_result(_('Please specify a valid Kepubify binary or directory'))
         arch_warning = None
         if "config_binariesdir" in to_save:
             calibre_status = helper.check_calibre(config.config_binariesdir)
@@ -2436,12 +2440,12 @@ def _configuration_update_helper():
 
         # Rarfile Content configuration
         _config_string(to_save, "config_rarfile_location")
-        unrar_warning = None
-        if "config_rarfile_location" in to_save:
+        if "config_rarfile_location" in to_save and config.config_rarfile_location:
+            if not resolve_binary_path(config.config_rarfile_location, SUPPORTED_UNRAR_BINARIES):
+                return _configuration_result(_('Please specify a valid UnRar binary or directory'))
             unrar_status = helper.check_unrar(config.config_rarfile_location)
             if unrar_status:
-                # Store warning but don't prevent saving other settings
-                unrar_warning = unrar_status
+                return _configuration_result(unrar_status)
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))

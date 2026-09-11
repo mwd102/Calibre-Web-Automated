@@ -23,6 +23,7 @@ except ImportError:
     from sqlalchemy.ext.declarative import declarative_base
 
 from . import constants, logger
+from .binary_helper import resolve_binary_path, SUPPORTED_KEPUBIFY_BINARIES, SUPPORTED_UNRAR_BINARIES
 from .subproc_wrapper import process_wait
 from .string_helper import strip_whitespaces
 
@@ -218,14 +219,13 @@ class ConfigSQL(object):
             self.config_binariesdir = autodetect_calibre_binaries()
             self.config_converterpath = autodetect_converter_binary(self.config_binariesdir)
 
-        # Autodetect Kepubify if not configured or empty string
-        if not self.config_kepubifypath:
+        # An empty string is an explicit disable; only NULL means unset.
+        if self.config_kepubifypath is None:
             change = True
             self.config_kepubifypath = autodetect_kepubify_binary()
 
-        # Autodetect UnRar if not configured or empty string
-        # (empty string can occur from failed previous autodetection or manual clearing)
-        if not self.config_rarfile_location:
+        # An empty string is an explicit disable; only NULL means unset.
+        if self.config_rarfile_location is None:
             change = True
             self.config_rarfile_location = autodetect_unrar_binary()
         if change:

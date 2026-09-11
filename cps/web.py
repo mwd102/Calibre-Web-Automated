@@ -51,6 +51,7 @@ from .tasks_status import render_task_status
 from .usermanagement import user_login_required
 from .string_helper import strip_whitespaces
 from .xml_utils import safe_xml_fromstring
+from .binary_helper import resolve_binary_path, SUPPORTED_UNRAR_BINARIES
 
 # CWA Imports
 import sqlite3
@@ -242,7 +243,8 @@ def get_comic_book(book_id, book_format, page):
                 cbr_file = os.path.join(config.config_calibre_dir, book.path, bookformat.name) + "." + book_format
                 if book_format in ("cbr", "rar"):
                     if feature_support['rar'] == True:
-                        rarfile.UNRAR_TOOL = config.config_rarfile_location
+                        rarfile.UNRAR_TOOL = resolve_binary_path(config.config_rarfile_location,
+                                                                 SUPPORTED_UNRAR_BINARIES)
                         try:
                             rf = rarfile.RarFile(cbr_file)
                             names = sort(rf.namelist())
