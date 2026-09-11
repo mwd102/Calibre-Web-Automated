@@ -905,7 +905,8 @@ class CalibreDB:
 
     def get_book_by_uuid(self, book_uuid):
         self.ensure_session()
-        return self.session.query(Books).filter(Books.uuid == book_uuid).first()
+        return self.session.query(Books).filter(Books.uuid == book_uuid). \
+            filter(self.common_filters()).first()
 
     def get_book_format(self, book_id, file_format):
         self.ensure_session()
