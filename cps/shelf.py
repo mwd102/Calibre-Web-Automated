@@ -298,7 +298,7 @@ def show_shelf(shelf_id, sort_param, page):
 def order_shelf(shelf_id):
     shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.id == shelf_id).first()
     if shelf and check_shelf_view_permissions(shelf):
-        if request.method == "POST":
+        if request.method == "POST" and check_shelf_edit_permissions(shelf):
             to_save = request.form.to_dict()
             books_in_shelf = ub.session.query(ub.BookShelf).filter(ub.BookShelf.shelf == shelf_id).order_by(
                 ub.BookShelf.order.asc()).all()
