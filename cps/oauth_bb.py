@@ -188,6 +188,34 @@ def register_oauth_blueprint(cid, show_name):
     oauth_check[cid] = show_name
 
 
+def _oauth_entry_owner_id(oauth_entry):
+    """Return the persisted owner ID for an OAuth identity, if any."""
+    if not oauth_entry:
+        return None
+
+    owner_id = getattr(oauth_entry, 'user_id', None)
+    if owner_id is None and getattr(oauth_entry, 'user', None) is not None:
+        owner_id = oauth_entry.user.id
+    return owner_id
+
+
+def _oauth_entry_owned_by_other_user(oauth_entry, user):
+    """Return whether an OAuth identity belongs to someone other than user."""
+    owner_id = _oauth_entry_owner_id(oauth_entry)
+    return owner_id is not None and owner_id != getattr(user, 'id', None)
+
+
+def _reject_oauth_relink(provider_name, owner_id):
+    """Reject an attempt to use an OAuth identity owned by another account."""
+    flash(_("This %(oauth)s account is already linked to a different user",
+            oauth=provider_name), category="error")
+    current_user_id = getattr(current_user, 'id', None)
+    log.warning("User %s tried to link OAuth account already bound to user %s",
+                current_user_id, owner_id)
+    target = 'web.profile' if current_user and current_user.is_authenticated else 'web.login'
+    return redirect(url_for(target))
+
+
 def register_user_with_oauth(user=None):
     all_oauth = {}
     for oauth_key in oauth_check.keys():
@@ -198,6 +226,7 @@ def register_user_with_oauth(user=None):
     if user is None:
         flash(_("Register with %(provider)s", provider=", ".join(list(all_oauth.values()))), category="success")
     else:
+        oauth_entries = []
         for oauth_key in all_oauth.keys():
             # Find this OAuth token in the database, or create it
             query = ub.session.query(ub.OAuth).filter_by(
@@ -205,12 +234,25 @@ def register_user_with_oauth(user=None):
                 provider_user_id=session[str(oauth_key) + "_oauth_user_id"],
             )
             try:
-                oauth_key = query.one()
-                oauth_key.user_id = user.id
+                oauth_entry = query.one()
             except NoResultFound:
                 # no found, return error
                 return
-            ub.session_commit("User {} with OAuth for provider {} registered".format(user.name, oauth_key))
+
+            # A registration must never take an OAuth identity away from its
+            # existing owner.  Check every identity before changing any of
+            # them so a multi-provider registration cannot partially relink.
+            if _oauth_entry_owned_by_other_user(oauth_entry, user):
+                log.warning("User %s tried to register OAuth account already bound to user %s",
+                            user.id, oauth_entry.user_id)
+                flash(_("Failed to link OAuth account. Please try again."), category="error")
+                return False
+            oauth_entries.append((oauth_key, oauth_entry))
+
+        for oauth_provider, oauth_entry in oauth_entries:
+            oauth_entry.user_id = user.id
+            ub.session_commit("User {} with OAuth for provider {} registered".format(user.name, oauth_provider))
+        return True
 
 
 def fetch_metadata_from_url(metadata_url):
@@ -303,6 +345,11 @@ def register_user_from_generic_oauth(token=None):
         session.get('oauth_linking_provider') == str(generic['id'])
     )
 
+    oauth = ub.session.query(ub.OAuth).filter_by(
+        provider=str(generic['id']),
+        provider_user_id=provider_user_id,
+    ).first()
+
     user = None
     if is_linking:
         if provider_email:
@@ -317,20 +364,45 @@ def register_user_from_generic_oauth(token=None):
                 session.pop('oauth_linking_provider', None)
                 session.modified = True
                 return redirect(url_for('web.profile'))
+        if oauth and _oauth_entry_owned_by_other_user(oauth, current_user):
+            owner_id = _oauth_entry_owner_id(oauth)
+            session.pop('oauth_linking_provider', None)
+            session.modified = True
+            return _reject_oauth_relink(generic.get('provider_name', 'generic'), owner_id)
+        if oauth and _oauth_entry_owner_id(oauth) is not None and not oauth.user:
+            log.error("OAuth identity for provider %s has an owner ID but no linked user", provider_username)
+            session.pop('oauth_linking_provider', None)
+            session.modified = True
+            flash(_("OAuth authentication failed. Please try again or contact administrator."), category="error")
+            return redirect(url_for('web.login'))
         user = current_user
     else:
-        user = (
-            ub.session.query(ub.User)
-            .filter(ub.User.name == provider_username)
-        ).first()
-        if not user and provider_email:
+        if oauth and _oauth_entry_owner_id(oauth) is not None:
+            # An authenticated user must not be silently switched to, or
+            # overwrite, a different local account through a shared OAuth ID.
+            if current_user and current_user.is_authenticated and _oauth_entry_owned_by_other_user(oauth, current_user):
+                owner_id = _oauth_entry_owner_id(oauth)
+                return _reject_oauth_relink(generic.get('provider_name', 'generic'), owner_id)
+            # For an ordinary unauthenticated OAuth login, preserve the
+            # established owner and let bind_oauth_or_register log them in.
+            if not oauth.user:
+                log.error("OAuth identity for provider %s has an owner ID but no linked user", provider_username)
+                flash(_("OAuth authentication failed. Please try again or contact administrator."), category="error")
+                return redirect(url_for('web.login'))
+            user = oauth.user
+        else:
             user = (
                 ub.session.query(ub.User)
-                .filter(ub.User.email == provider_email)
+                .filter(ub.User.name == provider_username)
             ).first()
-            if user:
-                log.info("OAuth login matched existing user by email '%s' (user '%s'), provider username '%s'",
-                         provider_email, user.name, provider_username)
+            if not user and provider_email:
+                user = (
+                    ub.session.query(ub.User)
+                    .filter(ub.User.email == provider_email)
+                ).first()
+                if user:
+                    log.info("OAuth login matched existing user by email '%s' (user '%s'), provider username '%s'",
+                             provider_email, user.name, provider_username)
 
     # Check if user should have admin role based on group membership
     # Handle various group formats: list, string, or None
@@ -413,11 +485,6 @@ def register_user_from_generic_oauth(token=None):
                      provider_username)
         # Note: Changes are not committed yet - will be committed with OAuth entry below
 
-    oauth = ub.session.query(ub.OAuth).filter_by(
-        provider=str(generic['id']),
-        provider_user_id=provider_user_id,
-    ).first()
-
     if not oauth:
         oauth = ub.OAuth(
             provider=str(generic['id']),
@@ -425,6 +492,11 @@ def register_user_from_generic_oauth(token=None):
             token={},
         )
         ub.session.add(oauth)
+    elif (_oauth_entry_owner_id(oauth) is not None and
+          _oauth_entry_owner_id(oauth) != getattr(user, 'id', None)):
+        # Defense in depth: the ownership check above must also hold at the
+        # final assignment point, before any relationship can be changed.
+        return _reject_oauth_relink(generic.get('provider_name', 'generic'), _oauth_entry_owner_id(oauth))
 
     oauth.user = user
     
@@ -539,12 +611,21 @@ def bind_oauth_or_register(provider_id, provider_user_id, redirect_url, provider
         oauth_entry = query.first()
         # already bind with user, just login
         if oauth_entry and oauth_entry.user:
+            # If a user is already logged in and it is a different account,
+            # reject the link instead of silently switching accounts.
+            if (current_user and current_user.is_authenticated and
+                    _oauth_entry_owned_by_other_user(oauth_entry, current_user)):
+                return _reject_oauth_relink(provider_name, oauth_entry.user.id)
             login_user(oauth_entry.user)
             log.debug("You are now logged in as: '%s'", oauth_entry.user.name)
             flash(_("Success! You are now logged in as: %(nickname)s", nickname=oauth_entry.user.name),
                   category="success")
             return redirect(url_for('web.index'))
         elif oauth_entry:
+            # Do not treat a persisted owner with a missing relationship as
+            # an unowned entry that may be rebound.
+            if _oauth_entry_owner_id(oauth_entry) is not None:
+                return _reject_oauth_relink(provider_name, _oauth_entry_owner_id(oauth_entry))
             # bind to current user
             if current_user and current_user.is_authenticated:
                 oauth_entry.user = current_user

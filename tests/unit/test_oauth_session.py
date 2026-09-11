@@ -359,3 +359,148 @@ class TestOAuthLogic:
                     
                     mock_bind.assert_called()
                     mock_abort.assert_called_once_with(mock_response)
+
+
+class _OAuthTestUser:
+    def __init__(self, user_id, name='user', authenticated=True):
+        self.id = user_id
+        self.name = name
+        self.is_authenticated = authenticated
+        self.role = 0
+
+    def role_admin(self):
+        return False
+
+
+class _OAuthTestSession(dict):
+    modified = False
+
+
+class TestOAuthRelinking:
+    """Regression tests for OAuth identity ownership boundaries."""
+
+    def setup_method(self):
+        self.owner = _OAuthTestUser(1, 'owner')
+        self.other_user = _OAuthTestUser(2, 'other')
+        self.oauth_entry = types.SimpleNamespace(
+            user=self.owner,
+            user_id=self.owner.id,
+            provider='provider',
+            provider_user_id='provider-user',
+        )
+        mock_cps_ub.session.reset_mock()
+        mock_cps_ub.session_commit.reset_mock()
+        mock_cps_ub.session.query.return_value.filter_by.return_value.first.return_value = self.oauth_entry
+
+    def test_same_user_can_log_in_with_owned_oauth_identity(self):
+        response = object()
+        with patch.object(oauth_bb, 'current_user', self.owner), \
+                patch.object(oauth_bb, 'login_user') as login_user, \
+                patch.object(oauth_bb, 'redirect', return_value=response), \
+                patch.object(oauth_bb, 'url_for', return_value='web.index'):
+            result = oauth_bb.bind_oauth_or_register('provider', 'provider-user', 'login', 'provider')
+
+        assert result is response
+        login_user.assert_called_once_with(self.owner)
+
+    def test_authenticated_different_user_cannot_use_owned_oauth_identity(self):
+        response = object()
+        with patch.object(oauth_bb, 'current_user', self.other_user), \
+                patch.object(oauth_bb, 'login_user') as login_user, \
+                patch.object(oauth_bb, 'redirect', return_value=response), \
+                patch.object(oauth_bb, 'url_for', return_value='web.profile'), \
+                patch.object(oauth_bb, 'flash'):
+            result = oauth_bb.bind_oauth_or_register('provider', 'provider-user', 'login', 'provider')
+
+        assert result is response
+        login_user.assert_not_called()
+        assert self.oauth_entry.user is self.owner
+        assert self.oauth_entry.user_id == self.owner.id
+
+    def test_generic_oauth_does_not_reassign_owned_identity(self):
+        response = object()
+        provider_response = MagicMock()
+        provider_response.json.return_value = {
+            'sub': 'provider-user',
+            'preferred_username': 'other',
+            'email': 'other@example.com',
+        }
+        generic_session = MagicMock()
+        generic_session.get.return_value = provider_response
+        generic = {
+            'blueprint': MagicMock(),
+            'oauth_client_id': 'client',
+            'oauth_userinfo_url': 'https://issuer.example/userinfo',
+            'id': 'provider',
+            'provider_name': 'generic',
+        }
+        oauth_bb.oauthblueprints = [{}, {}, generic]
+        oauth_bb.session.get.return_value = None
+
+        with patch.object(oauth_bb, 'current_user', self.other_user), \
+                patch.object(oauth_bb, 'GenericOIDCSession', return_value=generic_session), \
+                patch.object(oauth_bb, 'redirect', return_value=response), \
+                patch.object(oauth_bb, 'url_for', return_value='web.profile'), \
+                patch.object(oauth_bb, 'flash'):
+            result = oauth_bb.register_user_from_generic_oauth(token={'access_token': 'token'})
+
+        assert result is response
+        assert self.oauth_entry.user is self.owner
+        assert self.oauth_entry.user_id == self.owner.id
+        mock_cps_ub.session.add.assert_not_called()
+        mock_cps_ub.session_commit.assert_not_called()
+
+    def test_generic_first_login_still_creates_and_binds_user(self):
+        response = object()
+        provider_response = MagicMock()
+        provider_response.json.return_value = {
+            'sub': 'new-provider-user',
+            'preferred_username': 'new-user',
+            'email': 'new@example.com',
+        }
+        generic_session = MagicMock()
+        generic_session.get.return_value = provider_response
+        generic = {
+            'blueprint': MagicMock(),
+            'oauth_client_id': 'client',
+            'oauth_userinfo_url': 'https://issuer.example/userinfo',
+            'id': 'provider',
+            'provider_name': 'generic',
+        }
+        new_oauth_entry = types.SimpleNamespace(user=None, user_id=None, token={})
+        oauth_bb.oauthblueprints = [{}, {}, generic]
+        oauth_bb.session.get.return_value = None
+        mock_cps_ub.session.query.return_value.filter_by.return_value.first.return_value = None
+        mock_cps_ub.session.query.return_value.first.return_value = None
+        mock_cps_ub.OAuth.return_value = new_oauth_entry
+        new_user = _OAuthTestUser(3, 'new-user', authenticated=False)
+        mock_cps_ub.User.return_value = new_user
+
+        with patch.object(oauth_bb, 'current_user', _OAuthTestUser(4, authenticated=False)), \
+                patch.object(oauth_bb, 'GenericOIDCSession', return_value=generic_session), \
+                patch.object(oauth_bb, 'bind_oauth_or_register', return_value=response), \
+                patch.object(oauth_bb, 'redirect'), \
+                patch.object(oauth_bb, 'flash'):
+            result = oauth_bb.register_user_from_generic_oauth(token={'access_token': 'token'})
+
+        assert result is response
+        assert new_oauth_entry.user is new_user
+        assert new_oauth_entry.token == {'access_token': 'token'}
+        mock_cps_ub.session.add.assert_any_call(new_oauth_entry)
+        mock_cps_ub.session_commit.assert_called()
+
+    def test_registration_does_not_reassign_owned_identity(self):
+        session = _OAuthTestSession({'7_oauth_user_id': 'provider-user'})
+        query = mock_cps_ub.session.query.return_value.filter_by.return_value
+        query.one.return_value = self.oauth_entry
+        new_user = _OAuthTestUser(3, 'new-user', authenticated=False)
+
+        with patch.object(oauth_bb, 'session', session), \
+                patch.object(oauth_bb, 'oauth_check', {7: 'provider'}), \
+                patch.object(oauth_bb, 'flash'):
+            result = oauth_bb.register_user_with_oauth(new_user)
+
+        assert result is False
+        assert self.oauth_entry.user is self.owner
+        assert self.oauth_entry.user_id == self.owner.id
+        mock_cps_ub.session_commit.assert_not_called()
