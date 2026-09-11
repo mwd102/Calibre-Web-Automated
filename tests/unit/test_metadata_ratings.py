@@ -38,7 +38,7 @@ def calibre_session(monkeypatch):
         engine,
         tables=[db.Books.__table__, db.Ratings.__table__, db.books_ratings_link],
     )
-    session = sessionmaker(bind=engine, future=True)()
+    session = sessionmaker(bind=engine, future=True, expire_on_commit=False)()
     calibre_db = db.CalibreDB.__new__(db.CalibreDB)
     calibre_db.session = session
     monkeypatch.setattr(metadata_helper, "CWA_DB", _MetadataSettings)
@@ -59,6 +59,7 @@ def _book(title):
         title,
         False,
         [],
+        [],
     )
 
 
@@ -77,13 +78,13 @@ def test_metadata_rating_reuses_row_without_mutating_shared_rating(calibre_sessi
         first_book, SimpleNamespace(rating=3), calibre_db
     ) is True
 
-    session.expire_all()
-    refreshed_first = session.query(db.Books).filter_by(title="First").one()
-    refreshed_second = session.query(db.Books).filter_by(title="Second").one()
-    assert refreshed_first.ratings[0].rating == 6
-    assert refreshed_first.ratings[0].id == replacement_rating.id
-    assert refreshed_second.ratings[0].rating == 8
+    assert first_book.ratings[0].rating == 6
+    assert first_book.ratings[0].id == replacement_rating.id
+    assert second_book.ratings[0].rating == 8
     assert session.query(db.Ratings).filter_by(rating=8).count() == 1
+    links = session.execute(db.books_ratings_link.select()).all()
+    assert (first_book.id, replacement_rating.id) in links
+    assert (second_book.id, shared_rating.id) in links
 
 
 def test_metadata_rating_creates_row_for_new_value(calibre_session):
@@ -100,9 +101,9 @@ def test_metadata_rating_creates_row_for_new_value(calibre_session):
         first_book, SimpleNamespace(rating=2.5), calibre_db
     ) is True
 
-    session.expire_all()
-    refreshed_first = session.query(db.Books).filter_by(title="First").one()
-    refreshed_second = session.query(db.Books).filter_by(title="Second").one()
-    assert refreshed_first.ratings[0].rating == 5
+    assert first_book.ratings[0].rating == 5
     assert session.query(db.Ratings).filter_by(rating=5).count() == 1
-    assert refreshed_second.ratings[0].rating == 8
+    assert second_book.ratings[0].rating == 8
+    links = session.execute(db.books_ratings_link.select()).all()
+    assert (first_book.id, first_book.ratings[0].id) in links
+    assert (second_book.id, shared_rating.id) in links
