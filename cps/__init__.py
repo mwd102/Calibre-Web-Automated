@@ -12,6 +12,7 @@ import os
 import mimetypes
 
 from flask import Flask, g, session
+from jinja2 import ChoiceLoader, FileSystemLoader
 from .MyLoginManager import MyLoginManager
 from flask_principal import Principal
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -83,6 +84,12 @@ app.config.update(
     REMEMBER_COOKIE_NAME=os.environ.get('COOKIE_PREFIX', "") + "remember_token",
     TEMPLATES_AUTO_RELOAD=os.environ.get('DEVELOP_ON', 'False').lower() == 'true',
 )
+# Keep upstream's theme directory available while the existing flat template
+# loader remains the fallback for every route not yet migrated.
+app.jinja_loader = ChoiceLoader([
+    FileSystemLoader(os.path.join(app.root_path, 'themes')),
+    app.jinja_loader,
+])
 
 # Fix for running behind reverse proxy (e.g. nginx, apache, caddy, ...)
 # Without it, url_for will generate http:// urls even if https:// is used

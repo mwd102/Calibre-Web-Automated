@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 from flask import render_template, g, abort, request, flash, current_app
+from jinja2 import TemplateNotFound
 from flask_babel import gettext as _
 from flask_babel import get_locale
 import polib
@@ -13,7 +14,7 @@ from werkzeug.local import LocalProxy
 from .cw_login import current_user
 from sqlalchemy.sql.expression import or_
 
-from . import config, constants, logger, ub
+from . import config, constants, logger, ub, themes
 from .ub import User
 
 # CWA specific imports
@@ -26,6 +27,28 @@ from cwa_db import CWA_DB
 
 
 log = logger.create()
+
+
+def themed_render(template_name, theme_id=None, **kwargs):
+    """Render a theme template, falling back to CWA's flat template tree.
+
+    The fallback keeps existing routes independent of the incremental theme
+    migration.  ``theme_id`` is explicit for alternate-view routes; otherwise
+    the request's current CWA theme is used.
+    """
+    if theme_id is None:
+        theme_id = getattr(g, "current_theme", 1)
+    theme = themes.get_theme(theme_id)
+    themed_name = themes.template_path(theme["identifier"], template_name)
+    kwargs.setdefault("_theme", theme)
+    try:
+        return render_template(themed_name, **kwargs)
+    except TemplateNotFound:
+        return render_template(template_name, **kwargs)
+
+
+# Name used by upstream's renderer; keep both names during the transition.
+render_theme_template = themed_render
 
 
 def _duplicate_setup_notice_dismissed():

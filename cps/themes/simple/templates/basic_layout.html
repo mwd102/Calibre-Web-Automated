@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="{{ current_user.locale }}">
+<head>
+  <title>{{ instance }} | {{ title }}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=5,user-scalable=no">
+  <link href="{{ url_for('static', filename='css/basic.css') }}" rel="stylesheet" media="screen">
+</head>
+<body>
+  {% if current_user.is_authenticated or g.allow_anonymous %}
+  <nav>
+    <a href="{{ url_for('basic.index') }}"><h1>{{ _('Home') }}</h1></a>
+    <form class="search" role="search" action="{{ url_for('basic.index') }}" method="GET">
+      <input type="text" id="query" name="query" placeholder="{{ _('Search Library') }}" value="{{ searchterm }}">
+      <button type="submit" id="query_submit">{{ _('Search') }}</button>
+    </form>
+    {% if not current_user.is_anonymous %}
+      <a href="{{ url_for('web.logout') }}">{{ _('Logout') }}</a>
+    {% endif %}
+  </nav>
+  <div class="theme"><a href="{{ url_for('web.index') }}">{{ _('Normal Theme') }}</a></div>
+  {% endif %}
+  <main class="body">
+    {% block body %}{% endblock %}
+  </main>
+</body>
+</html>
