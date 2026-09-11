@@ -9,6 +9,7 @@ import zipfile
 from lxml import etree
 
 from . import isoLanguages
+from .xml_utils import safe_xml_fromstring
 
 default_ns = {
     'n': 'urn:oasis:names:tc:opendocument:xmlns:container',
@@ -64,12 +65,12 @@ def get_content_opf(file_path, ns=None):
     # Some EPUBs include a BOM or stray whitespace before the XML declaration,
     # which causes lxml to error with: "XML declaration allowed only at the start".
     txt = _strip_xml_leading_noise(txt)
-    tree = etree.fromstring(txt)
+    tree = safe_xml_fromstring(txt)
     cf_name = tree.xpath('n:rootfiles/n:rootfile/@full-path', namespaces=ns)[0]
     cf = epubZip.read(cf_name)
     cf = _strip_xml_leading_noise(cf)
 
-    return etree.fromstring(cf), cf_name
+    return safe_xml_fromstring(cf), cf_name
 
 
 def create_new_metadata_backup(book,  custom_columns, export_language, translated_cover_name, lang_type=3):
@@ -172,5 +173,4 @@ def replace_metadata(tree, package):
                           xml_declaration=True,
                           encoding='utf-8',
                           pretty_print=True).decode('utf-8')
-
 

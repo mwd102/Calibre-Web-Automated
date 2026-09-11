@@ -19,6 +19,7 @@ from lxml import etree
 
 from cps import logger, constants
 from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
+from cps.xml_utils import safe_xml_fromstring
 
 from cps import isoLanguages
 from flask_babel import get_locale
@@ -161,7 +162,7 @@ class DNB(Metadata):
             response = requests.get(query_url, headers=headers, timeout=timeout)
             response.raise_for_status()
 
-            xml_data = etree.XML(response.content)
+            xml_data = safe_xml_fromstring(response.content)
             num_records = xml_data.xpath("./zs:numberOfRecords",
                                        namespaces={"zs": "http://www.loc.gov/zing/srw/"})[0].text.strip()
             log.info(f'DNB found {num_records} records')

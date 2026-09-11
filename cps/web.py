@@ -12,7 +12,6 @@ import copy
 import importlib
 import re
 import zipfile
-import xml.etree.ElementTree as ET
 
 from flask import Blueprint, jsonify
 from flask import request, redirect, send_from_directory, send_file, make_response, flash, abort, url_for, Response, g
@@ -51,6 +50,7 @@ from .services.worker import WorkerThread
 from .tasks_status import render_task_status
 from .usermanagement import user_login_required
 from .string_helper import strip_whitespaces
+from .xml_utils import safe_xml_fromstring
 
 # CWA Imports
 import sqlite3
@@ -1809,7 +1809,7 @@ def get_robots():
 
 def _is_valid_container_xml(container_bytes):
     try:
-        ET.fromstring(container_bytes)
+        safe_xml_fromstring(container_bytes)
         return True
     except Exception:
         return False
