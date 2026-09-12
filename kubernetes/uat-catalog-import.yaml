@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: books-cwa-dev-catalog-import-20260912
+  name: books-cwa-dev-catalog-import-20260912-retry1
   labels:
     hyperion.mwd.lol/owner: manual
 spec:
@@ -28,7 +28,7 @@ spec:
           command: [python, -c]
           args:
             - |
-              import os, sqlite3, time
+              import os, shutil, sqlite3, time
 
               source = "/snapshot/metadata.db"
               target = "/calibre-library/metadata.db"
@@ -38,8 +38,6 @@ spec:
               assert os.path.isfile(source), "production snapshot is missing"
               assert time.time() - os.path.getmtime(source) < 600, "production snapshot is stale"
               assert os.path.isfile(target), "UAT catalog is missing"
-              assert not os.path.exists(backup), "UAT backup already exists; refusing to repeat import"
-              assert not os.path.exists(temporary), "unfinished import exists"
               wal = target + "-wal"
               assert not os.path.exists(wal) or os.path.getsize(wal) == 0, "UAT SQLite WAL is active"
 
@@ -51,8 +49,28 @@ spec:
                           count = destination_db.execute("SELECT count(*) FROM books").fetchone()[0]
                   return count
 
-              original_count = copy_database(target, backup)
-              imported_count = copy_database(source, temporary)
+              if os.path.exists(backup):
+                  with sqlite3.connect(f"file:{backup}?mode=ro", uri=True) as backup_db:
+                      assert backup_db.execute("PRAGMA quick_check").fetchone()[0] == "ok"
+                      original_count = backup_db.execute("SELECT count(*) FROM books").fetchone()[0]
+                  with sqlite3.connect(f"file:{target}?mode=ro", uri=True) as current_db:
+                      assert current_db.execute("SELECT count(*) FROM books").fetchone()[0] == original_count
+              else:
+                  original_count = copy_database(target, backup)
+
+              for attempt in range(3):
+                  try:
+                      if os.path.exists(temporary):
+                          os.unlink(temporary)
+                      shutil.copyfile(source, temporary)
+                      with sqlite3.connect(f"file:{temporary}?mode=ro", uri=True) as imported_db:
+                          assert imported_db.execute("PRAGMA quick_check").fetchone()[0] == "ok"
+                          imported_count = imported_db.execute("SELECT count(*) FROM books").fetchone()[0]
+                      break
+                  except (OSError, sqlite3.DatabaseError):
+                      if attempt == 2:
+                          raise
+                      time.sleep(2)
               assert imported_count > 0, "source catalog is empty"
               os.chmod(temporary, 0o664)
               os.replace(temporary, target)

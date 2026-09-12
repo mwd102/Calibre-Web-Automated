@@ -59,15 +59,17 @@ Stop UAT before the import, then check it has no running pods:
 kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books scale deployment/books-cwa-dev --replicas=0
 kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books rollout status deployment/books-cwa-dev
 kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books apply -f kubernetes/uat-catalog-import.yaml
-kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books wait --for=condition=complete job/books-cwa-dev-catalog-import-20260912 --timeout=180s
-kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books logs job/books-cwa-dev-catalog-import-20260912
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books wait --for=condition=complete job/books-cwa-dev-catalog-import-20260912-retry1 --timeout=180s
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books logs job/books-cwa-dev-catalog-import-20260912-retry1
 kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books scale deployment/books-cwa-dev --replicas=1
 kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books rollout status deployment/books-cwa-dev
 ```
 
-The Job refuses a stale/missing source, an active UAT SQLite sidecar, or a
-repeat import. It retains the prior UAT catalog as
+The Job refuses a stale/missing source or an active UAT SQLite WAL. It retains the prior UAT catalog as
 `metadata.db.uat-before-real-catalog-20260912` on the UAT library claim.
+The first Job attempt failed on a JuiceFS SQLite backup read before replacing
+the UAT catalog. This retry reads the production snapshot as an atomic file,
+checks its SQLite integrity, and reuses the verified UAT backup.
 This is catalog-only: book files and covers are not cloned or mounted, so
 downloads and file-based operations will not work for production entries.
 Do not use destructive library actions while reviewing this catalog. UAT's
