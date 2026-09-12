@@ -23,12 +23,13 @@ For a local browser session, run `devspace dev` with the same flags. It forwards
 port 8083. The fresh application's initial administrator login is documented in
 the repository README; change that password on first login before inviting
 other reviewers. No SMTP credentials or production book data are copied into
-this instance.
+this instance by default. The later catalog-only import below copied production
+book metadata, but not application users, credentials, covers, or book files.
 
-The current private review route is
+The former private review route was
 `https://shell-01.tailcff11.ts.net:18083/`. On shell-01, a persistent user
-service forwards local port 18083 to `svc/books-cwa-dev:8083`, and Tailscale
-Serve publishes that port to the Tailnet. The route has no Cloudflare or public
+service forwarded local port 18083 to `svc/books-cwa-dev:8083`, and Tailscale
+Serve published that port to the Tailnet. It had no Cloudflare or public
 ingress. Check the forwarding service with
 `systemctl --user status cwa-uat-portforward.service` and the Tailnet mapping
 with `tailscale serve status`.
@@ -95,8 +96,16 @@ the user still needs to visually accept the caliBlur icon fix.
 Export anything you want to retain before purging. Do not use it while UAT is
 still in progress.
 
-When UAT is complete, disable the Tailnet mapping with
-`sudo tailscale serve --https=18083 off`, stop the forwarding service with
-`systemctl --user stop cwa-uat-portforward.service`, and then run `devspace
-purge` with the same explicit kubeconfig and namespace. These are separate
-steps so the review route can be removed without deleting UAT data.
+## UAT closeout (2026-09-12)
+
+The owner accepted functional UAT with the limitation that this catalog-only
+copy cannot prove cover, download, or browser-reader paths for production
+books. The Tailnet Serve route was disabled, the port-forward service stopped,
+and `books-cwa-dev` scaled to zero replicas. The UAT config and library PVCs
+remain bound for rollback; `devspace purge` was intentionally not run because
+it would delete those volumes. Production `books` remained 1/1 ready.
+
+The next application task is a UI refresh, not a production data cutover.
+To resume UAT deliberately, scale `books-cwa-dev` to one replica with the
+explicit kubeconfig above and recreate a private review route; do not assume
+the old Tailnet route is still active.
