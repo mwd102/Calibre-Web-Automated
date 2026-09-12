@@ -54,6 +54,27 @@ def test_theme_helper_prefers_existing_theme_template_and_falls_back(tmp_path):
         assert themes.resolve_template("flat.html") == "flat.html"
 
 
+def test_upstream_style_theme_extends_resolve_through_themed_loader(tmp_path):
+    from jinja2 import ChoiceLoader, FileSystemLoader
+
+    standard_templates = tmp_path / "standard" / "templates"
+    standard_templates.mkdir(parents=True)
+    (standard_templates / "layout.html").write_text(
+        "header{% block body %}{% endblock %}", encoding="utf-8"
+    )
+    (standard_templates / "index.html").write_text(
+        '{% extends theme("layout.html") %}{% block body %}themed{% endblock %}',
+        encoding="utf-8",
+    )
+    app = Flask(__name__, template_folder=str(tmp_path))
+    app.jinja_loader = ChoiceLoader([FileSystemLoader(str(tmp_path))])
+    app.jinja_env.globals["theme"] = themes.resolve_template
+
+    with app.test_request_context("/"):
+        g.current_theme = 0
+        assert themed_render("index.html") == "headerthemed"
+
+
 def test_theme_render_falls_back_to_flat_loader(tmp_path):
     (tmp_path / "fallback.html").write_text("flat fallback", encoding="utf-8")
     app = Flask(__name__, template_folder=str(tmp_path))
