@@ -46,6 +46,38 @@ def test_empty_or_missing_configuration_disables_helper(tmp_path):
     assert resolve_binary_path(str(tmp_path / "missing"), SUPPORTED_KEPUBIFY_BINARIES) == ""
 
 
+def test_cleared_helper_settings_are_not_autodetected(monkeypatch, tmp_path):
+    """An explicitly cleared setting must remain disabled after config reload."""
+    from cryptography.fernet import Fernet
+
+    import cps.config_sql as config_sql
+
+    loaded_values = {
+        "config_calibre_dir": str(tmp_path / "library"),
+        "config_binariesdir": str(tmp_path / "calibre"),
+        "config_converterpath": str(tmp_path / "calibre" / "ebook-convert"),
+        "config_kepubifypath": "",
+        "config_rarfile_location": "",
+    }
+
+    def fake_load(self):
+        for field, value in loaded_values.items():
+            setattr(self, field, value)
+
+    def unexpected_autodetect():
+        raise AssertionError("explicitly cleared helper setting was autodetected")
+
+    monkeypatch.setattr(config_sql.ConfigSQL, "load", fake_load)
+    monkeypatch.setattr(config_sql, "autodetect_kepubify_binary", unexpected_autodetect)
+    monkeypatch.setattr(config_sql, "autodetect_unrar_binary", unexpected_autodetect)
+
+    config = config_sql.ConfigSQL()
+    config.init_config(object(), Fernet.generate_key(), None)
+
+    assert config.config_kepubifypath == ""
+    assert config.config_rarfile_location == ""
+
+
 def test_non_executable_allowed_name_is_rejected(tmp_path):
     configured = tmp_path / SUPPORTED_UNRAR_BINARIES[0]
     configured.write_text("#!/bin/sh\n", encoding="utf-8")
