@@ -8,6 +8,7 @@
 import os
 
 from . import logger, isoLanguages, cover
+from .binary_helper import resolve_binary_path, SUPPORTED_UNRAR_BINARIES
 from .constants import BookMeta
 
 try:
@@ -72,7 +73,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
                     break
     elif original_file_extension.upper() == '.CBR' and use_rarfile:
         try:
-            rarfile.UNRAR_TOOL = rar_executable
+            rarfile.UNRAR_TOOL = resolve_binary_path(rar_executable, SUPPORTED_UNRAR_BINARIES)
             cf = rarfile.RarFile(tmp_file_name)
             for name in cf.namelist():
                 ext = os.path.splitext(name)
@@ -100,6 +101,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
 
 def _extract_cover(tmp_file_name, original_file_extension, rar_executable):
     cover_data = extension = None
+    rar_executable = resolve_binary_path(rar_executable, SUPPORTED_UNRAR_BINARIES)
     if use_comic_meta:
         try:
             archive = ComicArchive(tmp_file_name, rar_exe_path=rar_executable)
@@ -120,6 +122,7 @@ def _extract_cover(tmp_file_name, original_file_extension, rar_executable):
 
 
 def get_comic_info(tmp_file_path, original_file_name, original_file_extension, rar_executable, no_cover_processing):
+    rar_executable = resolve_binary_path(rar_executable, SUPPORTED_UNRAR_BINARIES)
     if use_comic_meta:
         try:
             archive = ComicArchive(tmp_file_path, rar_exe_path=rar_executable)

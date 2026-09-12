@@ -1,0 +1,225 @@
+{#
+  caliBlur detail view.
+
+  The upstream caliBlur detail template uses a single book surface with a
+  narrow cover column and a book-meta column.  CWA's Standard detail
+  template contains the complete, extended detail contract, including its
+  modal/XHR hooks, CWA actions, Kobo state, custom fields, and JavaScript.
+  Keep that contract inherited here and scope only the caliBlur presentation
+  changes to this theme.
+#}
+{% extends "standard/templates/detail.html" %}
+
+{% block header %}
+    {{ super() }}
+    <style>
+        /* Upstream caliBlur detail layout: cover beside a scrolling meta area. */
+        .caliblur-detail {
+            --caliblur-detail-muted: hsla(0, 0%, 100%, .45);
+            --caliblur-detail-text: hsla(0, 0%, 100%, .7);
+            --caliblur-detail-surface: rgba(0, 0, 0, .15);
+        }
+
+        .caliblur-detail > .discover {
+            margin: 0 !important;
+            padding: 0 15px;
+        }
+
+        .caliblur-detail > .discover > h2 {
+            color: var(--caliblur-detail-text);
+            font-family: "Open Sans Semibold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.4;
+            margin: 0 0 20px;
+            padding: 0 0 12px;
+            text-transform: uppercase;
+            border-bottom: 2px solid rgba(0, 0, 0, .3);
+        }
+
+        .caliblur-detail .book-detail-page {
+            display: block;
+            margin: 0;
+        }
+
+        .caliblur-detail .book-detail-card {
+            width: 100%;
+            max-width: 1200px;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            padding: 0;
+            gap: 0;
+            backdrop-filter: none;
+        }
+
+        .caliblur-detail .book-detail-main {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+
+        .caliblur-detail .book-detail-cover {
+            flex: 0 0 200px;
+            max-width: 200px;
+            padding: 15px;
+        }
+
+        .caliblur-detail .book-detail-cover img {
+            width: 100%;
+            max-width: 200px;
+            border-radius: 0;
+            box-shadow: 0 0 2px rgba(0, 0, 0, .35);
+            background-color: rgba(0, 0, 0, .45);
+        }
+
+        .caliblur-detail .book-detail-meta {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: block;
+            color: var(--caliblur-detail-text);
+        }
+
+        .caliblur-detail .book-detail-actions {
+            margin-bottom: 15px;
+        }
+
+        .caliblur-detail .book-action-bar {
+            gap: 0;
+        }
+
+        .caliblur-detail .book-action-bar .action-group {
+            gap: 0;
+        }
+
+        .caliblur-detail .book-detail-meta h2#title {
+            color: #eee;
+            font-family: "Open Sans Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 400;
+            line-height: 1.25;
+            margin: 0;
+            max-width: 100%;
+            padding: 15px 0;
+        }
+
+        .caliblur-detail .book-detail-meta .author {
+            color: var(--caliblur-detail-muted);
+            font-family: "Open Sans Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 15px;
+            line-height: 30px;
+            margin: 0;
+            padding-bottom: 10px;
+        }
+
+        .caliblur-detail .book-detail-meta .author-prefix {
+            color: var(--caliblur-detail-muted);
+        }
+
+        .caliblur-detail .book-metadata {
+            display: block;
+            margin-top: 20px;
+        }
+
+        .caliblur-detail .meta-chip {
+            display: block;
+            background: transparent;
+            border: 0;
+            border-top: 2px solid rgba(0, 0, 0, .3);
+            border-radius: 0;
+            gap: 0;
+            margin: 20px 0 0;
+            padding: 15px 0 0;
+            width: 100%;
+        }
+
+        .caliblur-detail .meta-chip > span:first-child {
+            color: var(--caliblur-detail-muted);
+            display: inline-block;
+            font-family: "Open Sans Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            text-transform: uppercase;
+            vertical-align: top;
+            width: 200px;
+        }
+
+        .caliblur-detail .meta-chip .meta-value {
+            color: #fff;
+            display: inline-flex;
+            flex-wrap: wrap;
+            margin-left: 0;
+            opacity: 1;
+        }
+
+        .caliblur-detail .meta-pill {
+            background: var(--caliblur-detail-surface);
+            border: 0;
+            border-radius: 4px;
+            color: var(--caliblur-detail-text);
+            margin: 2px 3px 0 0;
+            padding: 2px 10px;
+        }
+
+        .caliblur-detail .meta-pill:hover {
+            color: #fff;
+        }
+
+        .caliblur-detail .book-detail-description {
+            border-top: 2px solid rgba(0, 0, 0, .3);
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        .caliblur-detail .book-detail-description h3 {
+            color: var(--caliblur-detail-muted);
+            font-size: 14px;
+            font-weight: 400;
+            margin: 0 0 15px;
+            text-transform: uppercase;
+        }
+
+        .caliblur-detail .rating .glyphicon-star.good {
+            color: var(--color-primary);
+        }
+
+        .caliblur-detail .rating .glyphicon-star-empty {
+            color: hsla(0, 0%, 100%, .25);
+        }
+
+        .caliblur-detail .more-stuff {
+            border-top: 0;
+            padding-top: 0;
+        }
+
+        @media (max-width: 767px) {
+            .caliblur-detail > .discover {
+                padding: 0;
+            }
+
+            .caliblur-detail .book-detail-main {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .caliblur-detail .book-detail-cover {
+                flex-basis: auto;
+                max-width: 200px;
+            }
+
+            .caliblur-detail .book-detail-meta {
+                width: 100%;
+            }
+
+            .caliblur-detail .meta-chip > span:first-child {
+                width: 50%;
+                max-width: 200px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="caliblur-detail" data-theme-layout="caliblur">
+        {{ super() }}
+    </div>
+{% endblock %}

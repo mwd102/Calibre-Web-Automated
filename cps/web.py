@@ -12,7 +12,6 @@ import copy
 import importlib
 import re
 import zipfile
-import xml.etree.ElementTree as ET
 
 from flask import Blueprint, jsonify
 from flask import request, redirect, send_from_directory, send_file, make_response, flash, abort, url_for, Response, g
@@ -29,7 +28,7 @@ from sqlalchemy.sql.functions import coalesce
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from . import constants, logger, isoLanguages, services, helper
+from . import constants, logger, isoLanguages, services, helper, themes, db_cleanup
 from . import db, ub, config, app
 from . import calibre_db, kobo_sync_status
 from .search import render_search_results, render_adv_search_results
@@ -51,6 +50,8 @@ from .services.worker import WorkerThread
 from .tasks_status import render_task_status
 from .usermanagement import user_login_required
 from .string_helper import strip_whitespaces
+from .xml_utils import safe_xml_fromstring
+from .binary_helper import resolve_binary_path, SUPPORTED_UNRAR_BINARIES
 
 # CWA Imports
 import sqlite3
@@ -242,7 +243,8 @@ def get_comic_book(book_id, book_format, page):
                 cbr_file = os.path.join(config.config_calibre_dir, book.path, bookformat.name) + "." + book_format
                 if book_format in ("cbr", "rar"):
                     if feature_support['rar'] == True:
-                        rarfile.UNRAR_TOOL = config.config_rarfile_location
+                        rarfile.UNRAR_TOOL = resolve_binary_path(config.config_rarfile_location,
+                                                                 SUPPORTED_UNRAR_BINARIES)
                         try:
                             rf = rarfile.RarFile(cbr_file)
                             names = sort(rf.namelist())
@@ -1344,12 +1346,7 @@ def delete_magic_shelf(shelf_id):
     
     try:
         shelf_name = shelf.name
-        # Delete cache entries first
-        ub.session.query(ub.MagicShelfCache).filter_by(shelf_id=shelf_id).delete()
-        # Delete any hide records for this shelf
-        ub.session.query(ub.HiddenMagicShelfTemplate).filter_by(shelf_id=shelf_id).delete()
-        # Delete the shelf
-        ub.session.delete(shelf)
+        db_cleanup.delete_magic_shelf_rows(ub.session, shelf_id)
         ub.session_commit()
         log.info(f"User {current_user.id} deleted magic shelf {shelf_id} ('{shelf_name}')")
         return jsonify({"success": True})
@@ -1809,7 +1806,7 @@ def get_robots():
 
 def _is_valid_container_xml(container_bytes):
     try:
-        ET.fromstring(container_bytes)
+        safe_xml_fromstring(container_bytes)
         return True
     except Exception:
         return False
@@ -1889,7 +1886,9 @@ def _repair_epub_container_if_needed(book_id, original_path):
 @viewer_required
 def serve_book(book_id, book_format, anyname):
     book_format = book_format.split(".")[0]
-    book = calibre_db.get_book(book_id)
+    book = calibre_db.get_filtered_book(book_id)
+    if not book:
+        return "File not in Database"
     data = calibre_db.get_book_format(book_id, book_format.upper())
     if not data:
         return "File not in Database"
@@ -2093,9 +2092,9 @@ def register_post():
         content.role = config.config_default_role
         content.locale = config.config_default_locale
         content.sidebar_view = config.config_default_show
-        # Default to configured theme for new self-registered users (fallback to caliBlur=1)
+        # Default to the configured theme for new self-registered users.
         try:
-            content.theme = getattr(config, 'config_theme', 1)
+            content.theme = themes.normalize_theme_id(getattr(config, 'config_theme', None))
         except Exception:
             pass
         try:
@@ -2491,12 +2490,10 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                     ub.session.delete(hidden)
                     log.info(f"User {current_user.id} unhid custom shelf {hidden.shelf_id}")
         
-        # Theme change (force dark)
+        # Theme change; ignore malformed or internal view-theme IDs.
         if 'theme' in to_save:
-            try:
-                current_user.theme = 1
-            except Exception:
-                pass
+            if themes.is_valid_theme(to_save["theme"]):
+                current_user.theme = int(to_save["theme"])
 
         # OPDS root order
         opds_order_raw = to_save.get("opds_root_order", "").strip()

@@ -28,6 +28,7 @@ from lxml import etree
 from . import logger, calibre_db, db, config, ub, csrf
 from .cw_login import current_user, login_required
 from .services import hardcover
+from .xml_utils import safe_xml_fromstring
 
 log = logger.create()
 
@@ -236,7 +237,7 @@ class EpubProgressCalculator:
             with zipfile.ZipFile(file_path, 'r') as epub_zip:
                 # Find OPF
                 container_data = epub_zip.read('META-INF/container.xml')
-                container_tree = etree.fromstring(container_data)
+                container_tree = safe_xml_fromstring(container_data)
                 ns = {
                     'container': 'urn:oasis:names:tc:opendocument:xmlns:container',
                     'opf': 'http://www.idpf.org/2007/opf'
@@ -248,7 +249,7 @@ class EpubProgressCalculator:
                 
                 # Parse OPF
                 opf_data = epub_zip.read(opf_path)
-                opf_tree = etree.fromstring(opf_data)
+                opf_tree = safe_xml_fromstring(opf_data)
                 opf_dir = os.path.dirname(opf_path)
                 
                 # Get manifest
@@ -275,7 +276,7 @@ class EpubProgressCalculator:
                     try:
                         content = epub_zip.read(spine_item).decode('utf-8', errors='ignore')
                         try:
-                            html_tree = etree.fromstring(content.encode('utf-8'))
+                            html_tree = safe_xml_fromstring(content.encode('utf-8'))
                             text_content = ''.join(html_tree.itertext())
                             char_count = len(text_content.strip())
                         except etree.XMLSyntaxError:
@@ -616,4 +617,3 @@ def handle_unknown_reading_service_request(subpath):
     """
     # Proxy to Kobo reading services
     return proxy_to_kobo_reading_services()
-

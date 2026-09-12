@@ -13,7 +13,6 @@
 from typing import Dict, List, Optional, Union
 
 import requests
-from os import getenv
 
 # Import text similarity utilities
 try:
@@ -37,12 +36,26 @@ except ImportError:
 # Try importing from full app; if unavailable (CLI), use light fallbacks
 try:  # pragma: no cover - normal app path
     from cps import logger, config, constants  # type: ignore
+    from cps.secret_helper import get_secret  # type: ignore
     from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata  # type: ignore
     from cps.isoLanguages import get_language_name  # type: ignore
     from ..cw_login import current_user  # type: ignore
 except Exception:  # pragma: no cover - CLI/testing path
+    import importlib.util as _importlib_util
     import logging as _logging
     from dataclasses import dataclass, field
+    from pathlib import Path as _Path
+
+    # Load the stdlib-only resolver without importing the full cps package when
+    # this provider is invoked directly as a CLI script.
+    _secret_spec = _importlib_util.spec_from_file_location(
+        "_cwa_secret_helper", _Path(__file__).resolve().parents[1] / "secret_helper.py"
+    )
+    if _secret_spec is None or _secret_spec.loader is None:
+        raise ImportError("Unable to load the CWA secret helper")
+    _secret_module = _importlib_util.module_from_spec(_secret_spec)
+    _secret_spec.loader.exec_module(_secret_module)
+    get_secret = _secret_module.get_secret
 
     class _FallbackLogger:
         @staticmethod
@@ -157,7 +170,7 @@ class Hardcover(Metadata):
         token = (
             getattr(current_user, "hardcover_token", None)
             or getattr(config, "config_hardcover_token", None)
-            or getenv("HARDCOVER_TOKEN")
+            or get_secret("HARDCOVER_TOKEN")
         )
         if not token:
             log.warning("Hardcover token missing; set a user token or global token to enable results.")
@@ -524,7 +537,7 @@ if __name__ == "__main__":
     parser.add_argument("--cover", dest="generic_cover", default="", help="Generic cover URL fallback")
     args = parser.parse_args()
 
-    token = args.token or getenv("HARDCOVER_TOKEN")
+    token = args.token or get_secret("HARDCOVER_TOKEN")
     if token:
         try:
             setattr(config, "config_hardcover_token", token)

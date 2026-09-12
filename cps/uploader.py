@@ -14,6 +14,7 @@ from .constants import BookMeta
 from .helper import split_authors
 from .file_helper import get_temp_dir
 from .string_helper import strip_whitespaces
+from .binary_helper import resolve_binary_path, SUPPORTED_UNRAR_BINARIES
 
 log = logger.create()
 
@@ -55,6 +56,13 @@ except ImportError as e:
     use_epub_meta = False
 
 try:
+    from . import mobi
+    use_mobi_meta = True
+except ImportError as e:
+    log.debug('Cannot import mobi, extracting mobi metadata will not work: %s', e)
+    use_mobi_meta = False
+
+try:
     from . import fb2
     use_fb2_meta = True
 except ImportError as e:
@@ -70,6 +78,7 @@ except ImportError as e:
 
 
 def process(tmp_file_path, original_file_name, original_file_extension, rar_executable, no_cover=False):
+    rar_executable = resolve_binary_path(rar_executable, SUPPORTED_UNRAR_BINARIES)
     meta = default_meta(tmp_file_path, original_file_name, original_file_extension)
     extension_upper = original_file_extension.upper()
     try:
@@ -77,6 +86,8 @@ def process(tmp_file_path, original_file_name, original_file_extension, rar_exec
             meta = pdf_meta(tmp_file_path, original_file_name, original_file_extension, no_cover)
         elif extension_upper in [".KEPUB", ".EPUB"] and use_epub_meta is True:
             meta = epub.get_epub_info(tmp_file_path, original_file_name, original_file_extension, no_cover)
+        elif extension_upper in [".MOBI", ".AZW", ".AZW3", ".PRC", ".POBI"] and use_mobi_meta is True:
+            meta = mobi.get_mobi_info(tmp_file_path, original_file_name, original_file_extension, no_cover)
         elif ".FB2" == extension_upper and use_fb2_meta is True:
             meta = fb2.get_fb2_info(tmp_file_path, original_file_extension)
         elif extension_upper in ['.CBZ', '.CBT', '.CBR', ".CB7"]:

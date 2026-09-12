@@ -15,6 +15,7 @@ from uuid import uuid4
 from flask import Blueprint, request, url_for, g
 from flask_babel import format_date
 from .cw_login import current_user
+from .clean_html import clean_string as html_clean_string
 
 from . import constants, logger
 
@@ -28,7 +29,10 @@ def url_for_other_page(page):
     args = request.view_args.copy()
     args['page'] = page
     for get, val in request.args.items():
-        args[get] = val
+        # Preserve filters/search terms, but never let the current query-string
+        # page overwrite the page selected by the pagination control.
+        if get != 'page':
+            args[get] = val
     return url_for(request.endpoint, **args)
 
 
@@ -226,3 +230,9 @@ def contains_music(book_formats):
         if format.format.lower() in g.constants.EXTENSIONS_AUDIO:
             result = True
     return result
+
+
+@jinjia.app_template_filter('clean_string')
+def clean_string(unsafe_text):
+    """Sanitize stored comment HTML before rendering it as markup."""
+    return html_clean_string(unsafe_text)

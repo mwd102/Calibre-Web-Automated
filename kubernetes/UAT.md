@@ -1,0 +1,55 @@
+# Hyperion UAT copy
+
+`devspace.yaml` deploys `books-cwa-dev` into the existing `books` namespace.
+It has separate config and library claims, a disposable ingest directory, and
+its own GHCR pull-secret projection. It does not mount the production Books
+claim or publish a public route. DevSpace owns the resources labelled
+`hyperion.mwd.lol/owner: manual`; Argo CD continues to own `books`.
+
+Use the explicit shell-01 Hyperion kubeconfig and namespace:
+
+The immutable amd64 UAT image is built by dispatching the existing
+`Build & Push - Dev - Split Strategy` workflow with `uat_only=true` from the
+selected branch. Pin the resulting image digest in `uat.yaml` before
+deployment. DevSpace deploys the pinned image; a cold build is too large for
+shell-01's local Docker disk.
+
+```sh
+devspace deploy --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books rollout status deployment/books-cwa-dev
+```
+
+For a local browser session, run `devspace dev` with the same flags. It forwards
+port 8083. The fresh application's initial administrator login is documented in
+the repository README; change that password on first login before inviting
+other reviewers. No SMTP credentials or production book data are copied into
+this instance.
+
+The current private review route is
+`https://shell-01.tailcff11.ts.net:18083/`. On shell-01, a persistent user
+service forwards local port 18083 to `svc/books-cwa-dev:8083`, and Tailscale
+Serve publishes that port to the Tailnet. The route has no Cloudflare or public
+ingress. Check the forwarding service with
+`systemctl --user status cwa-uat-portforward.service` and the Tailnet mapping
+with `tailscale serve status`.
+
+The initial review should cover login, selecting Standard and caliBlur themes,
+search and book details in each theme, upload/ingest of a disposable book,
+metadata editing, shelves, and the admin settings. Test Kobo, OAuth, LDAP,
+mail delivery, and external metadata providers only after configuring separate
+UAT credentials or fixtures for those paths.
+
+The initial disposable TXT ingest succeeded and produced an EPUB in the UAT
+library. KOReader checksum generation logged `no such table:
+book_format_checksums` on this fresh install; investigate that separately
+before accepting KOReader sync as tested.
+
+`devspace purge` removes DevSpace-managed resources, including the UAT claims.
+Export anything you want to retain before purging. Do not use it while UAT is
+still in progress.
+
+When UAT is complete, disable the Tailnet mapping with
+`sudo tailscale serve --https=18083 off`, stop the forwarding service with
+`systemctl --user stop cwa-uat-portforward.service`, and then run `devspace
+purge` with the same explicit kubeconfig and namespace. These are separate
+steps so the review route can be removed without deleting UAT data.

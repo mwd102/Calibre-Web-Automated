@@ -24,6 +24,9 @@ import grp
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+from binary_helper import resolve_binary_path, SUPPORTED_KEPUBIFY_BINARIES
+
 ### Global Variables
 convert_library_log_file = "/config/convert-library.log"
 
@@ -42,6 +45,22 @@ logger.addHandler(file_handler)
 # Define user and group
 USER_NAME = "abc"
 GROUP_NAME = "abc"
+
+
+def get_configured_kepubify_binary():
+    """Read and validate the core Kepubify setting for this standalone worker."""
+    app_db_path = os.environ.get("CWA_APP_DB_PATH") or os.environ.get("CALIBRE_DBPATH", "/config")
+    if app_db_path.endswith(".db") and os.path.basename(app_db_path) != "app.db":
+        app_db_path = os.path.join(os.path.dirname(app_db_path), "app.db")
+    elif not app_db_path.endswith(".db"):
+        app_db_path = os.path.join(app_db_path, "app.db")
+    try:
+        with sqlite3.connect(app_db_path, timeout=30) as con:
+            row = con.execute("SELECT config_kepubifypath FROM settings LIMIT 1").fetchone()
+    except (OSError, sqlite3.Error) as exc:
+        print_and_log(f"[convert-library]: WARNING - Could not read Kepubify configuration: {exc}")
+        return ""
+    return resolve_binary_path(row[0] if row else "", SUPPORTED_KEPUBIFY_BINARIES)
 
 # Get UID and GID
 uid = pwd.getpwnam(USER_NAME).pw_uid
@@ -121,6 +140,7 @@ class LibraryConverter:
             print_and_log(f"[convert-library]: Ignoring formats: {', '.join(self.convert_ignored_formats)}")
             
         self.kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
+        self.kepubify_binary = get_configured_kepubify_binary()
 
         self.supported_book_formats = {'acsm', 'azw', 'azw3', 'azw4', 'cbz', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'docx', 'epub', 'fb2', 'fbz', 'html', 'htmlz', 'lit', 'lrf', 'mobi', 'odt', 'pdf', 'prc', 'pdb', 'pml', 'rb', 'rtf', 'snb', 'tcr', 'txt', 'txtz', 'kfx', 'kfx-zip'}
         self.hierarchy_of_success = {'epub', 'lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt', 'kfx', 'kfx-zip'}
@@ -502,9 +522,13 @@ class LibraryConverter:
         if epub_ready:
             epub_filepath = Path(epub_filepath)
             target_filepath = f"{self.tmp_conversion_dir}{epub_filepath.stem}.kepub"
+            if not self.kepubify_binary:
+                print_and_log("[convert-library]: Kepubify is disabled or not configured with an allowed binary name.")
+                return False, ""
             try:
                 with subprocess.Popen(
-                    ['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, epub_filepath],
+                    [self.kepubify_binary, '--inplace', '--calibre', '--output', self.tmp_conversion_dir,
+                     epub_filepath],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     text=True,

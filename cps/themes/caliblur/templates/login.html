@@ -1,0 +1,108 @@
+{#
+  caliBlur login view.
+
+  Keep authentication behavior in the Standard template and scope this
+  override to the caliBlur presentation layer. This preserves the complete
+  login form contract, optional login methods, and existing JavaScript hooks.
+#}
+{% extends "standard/templates/login.html" %}
+
+{% block header %}
+    {{ super() }}
+    <style>
+        .caliblur-login {
+            color: hsla(0, 0%, 100%, .7);
+        }
+
+        .caliblur-login .standard-login-card {
+            background: rgba(0, 0, 0, .35);
+            border: 0;
+            border-radius: 2px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, .35);
+            padding: 30px 35px 4rem;
+        }
+
+        .caliblur-login .standard-login-title {
+            color: #eee;
+            font-family: "Open Sans Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 24px;
+            font-weight: 400;
+            margin: 0 0 25px;
+        }
+
+        .caliblur-login form {
+            background: transparent;
+        }
+
+        .caliblur-login form label {
+            color: hsla(0, 0%, 100%, .7) !important;
+        }
+
+        .caliblur-login form .form-control {
+            background: rgba(0, 0, 0, .2);
+            border: 1px solid rgba(255, 255, 255, .15);
+            border-radius: 2px;
+            color: #eee;
+        }
+
+        .caliblur-login form .form-control:focus {
+            border-color: #cc7b19;
+            box-shadow: 0 0 0 1px #cc7b19;
+        }
+
+        .caliblur-login .checkbox label {
+            color: hsla(0, 0%, 100%, .55) !important;
+        }
+
+        .caliblur-login .btn-default {
+            background: rgba(0, 0, 0, .2);
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 2px;
+            color: hsla(0, 0%, 100%, .8);
+        }
+
+        .caliblur-login .btn-default:hover,
+        .caliblur-login .btn-default:focus {
+            background: rgba(204, 123, 25, .2);
+            border-color: #cc7b19;
+            color: #fff;
+        }
+
+        .caliblur-login #remote_login,
+        .caliblur-login .github,
+        .caliblur-login .google,
+        .caliblur-login .generic {
+            color: hsla(0, 0%, 100%, .7);
+        }
+
+        .caliblur-login #remote_login:hover,
+        .caliblur-login #remote_login:focus,
+        .caliblur-login .github:hover,
+        .caliblur-login .github:focus,
+        .caliblur-login .google:hover,
+        .caliblur-login .google:focus,
+        .caliblur-login .generic:hover,
+        .caliblur-login .generic:focus {
+            color: #cc7b19;
+        }
+
+        .caliblur-login .standard-login-error {
+            background: rgba(169, 68, 66, .8);
+            border: 0;
+            border-radius: 2px;
+            color: #fff;
+        }
+
+        @media (max-width: 767px) {
+            .caliblur-login .standard-login-card {
+                padding: 25px 20px 3rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="caliblur-login" data-theme-layout="caliblur">
+        {{ super() }}
+    </div>
+{% endblock %}

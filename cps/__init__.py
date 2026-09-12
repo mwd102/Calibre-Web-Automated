@@ -12,6 +12,7 @@ import os
 import mimetypes
 
 from flask import Flask, g, session
+from jinja2 import ChoiceLoader, FileSystemLoader
 from .MyLoginManager import MyLoginManager
 from flask_principal import Principal
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -25,7 +26,8 @@ from .dep_check import dependency_check
 from .updater import Updater
 from . import config_sql
 from . import cache_buster
-from . import ub, db, magic_shelf
+from . import ub, db, magic_shelf, themes
+from .secret_helper import get_secret
 
 try:
     from flask_limiter import Limiter
@@ -83,6 +85,16 @@ app.config.update(
     REMEMBER_COOKIE_NAME=os.environ.get('COOKIE_PREFIX', "") + "remember_token",
     TEMPLATES_AUTO_RELOAD=os.environ.get('DEVELOP_ON', 'False').lower() == 'true',
 )
+# Keep upstream's theme directory available while the existing flat template
+# loader remains the fallback for every route not yet migrated.
+app.jinja_loader = ChoiceLoader([
+    FileSystemLoader(os.path.join(app.root_path, 'themes')),
+    app.jinja_loader,
+])
+# Upstream-compatible helper used by migrated theme templates.  It resolves
+# to the active theme only when that themed template exists, preserving the
+# current flat CWA template tree during the staged migration.
+app.jinja_env.globals['theme'] = themes.resolve_template
 
 # Fix for running behind reverse proxy (e.g. nginx, apache, caddy, ...)
 # Without it, url_for will generate http:// urls even if https:// is used
@@ -198,7 +210,7 @@ def create_app():
     log.info('Starting Calibre Web...')
     Principal(app)
     lm.init_app(app)
-    app.secret_key = os.getenv('SECRET_KEY', config_sql.get_flask_session_key(ub.session))
+    app.secret_key = get_secret('SECRET_KEY', config_sql.get_flask_session_key(ub.session))
 
     web_server.init_app(app, config)
     from .cw_babel import babel, get_locale
@@ -387,4 +399,3 @@ def create_app():
     register_startup_tasks()
 
     return app
-

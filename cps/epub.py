@@ -15,6 +15,7 @@ from .helper import split_authors
 from .epub_helper import get_content_opf, default_ns
 from .constants import BookMeta
 from .string_helper import strip_whitespaces
+from .xml_utils import safe_xml_fromstring
 
 log = logger.create()
 
@@ -164,7 +165,7 @@ def parse_epub_cover(ns, tree, epub_zip, cover_path, tmp_file_path):
     for cs in cover_section:
         if cs.endswith('.xhtml') or cs.endswith('.html'):
             markup = epub_zip.read(os.path.join(cover_path, cs))
-            markup_tree = etree.fromstring(markup)
+            markup_tree = safe_xml_fromstring(markup)
             # no matter xhtml or html with no namespace
             img_src = markup_tree.xpath("//*[local-name() = 'img']/@src")
             # Alternative image source

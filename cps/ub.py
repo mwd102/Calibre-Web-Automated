@@ -44,6 +44,7 @@ from sqlalchemy.orm import backref, relationship, sessionmaker, Session, scoped_
 from werkzeug.security import generate_password_hash
 
 from . import constants, logger
+from .db_pragmas import enable_sqlite_foreign_keys
 from .string_helper import strip_whitespaces
 
 log = logger.create()
@@ -908,17 +909,7 @@ def migrate_user_table(engine, _session):
         _session.commit()
     except exc.OperationalError:
         _safe_session_rollback(_session, "user.theme")
-        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'theme' Integer DEFAULT 0")
-
-    # Force migration: All users to caliBlur theme (theme=1) for v5.0.0 frontend development
-    try:
-        users_migrated = _session.query(User).filter(User.theme == 0).update({User.theme: 1})
-        if users_migrated > 0:
-            _session.commit()
-            print(f"[theme-migration] Migrated {users_migrated} user(s) from light theme (0) to caliBlur theme (1). The light/legacy theme has been temporarily disabled from v3.2.0 and won't be re-enabled until the release of a new CWA frontend in v5.0.0.", flush=True)
-    except Exception as e:
-        print(f"[theme-migration] Error migrating users to caliBlur theme: {e}", flush=True)
-        _session.rollback()
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'theme' Integer DEFAULT 1")
 
     # Migration for auto-send feature columns
     try:
@@ -1158,6 +1149,7 @@ def migrate_Database(_session):
                 if shelf.name not in current_template_names:
                     # This is an old/deprecated system shelf - delete it
                     _session.query(MagicShelfCache).filter_by(shelf_id=shelf.id).delete()
+                    _session.query(OpdsMagicShelfExposure).filter_by(shelf_id=shelf.id).delete()
                     _session.query(HiddenMagicShelfTemplate).filter_by(shelf_id=shelf.id).delete()
                     _session.delete(shelf)
                     total_deleted += 1
@@ -1290,6 +1282,7 @@ def init_db_thread():
     global app_DB_path
     engine = create_engine('sqlite:///{0}'.format(app_DB_path), echo=False,
                            connect_args={'timeout': 30})
+    enable_sqlite_foreign_keys(engine)
 
     Session = scoped_session(sessionmaker())
     Session.configure(bind=engine)
@@ -1304,6 +1297,7 @@ def init_db(app_db_path):
     app_DB_path = app_db_path
     engine = create_engine('sqlite:///{0}'.format(app_db_path), echo=False,
                            connect_args={'timeout': 30})
+    enable_sqlite_foreign_keys(engine)
 
     Session = scoped_session(sessionmaker())
     Session.configure(bind=engine)
@@ -1375,6 +1369,7 @@ def password_change(user_credentials=None):
 def get_new_session_instance():
     new_engine = create_engine('sqlite:///{0}'.format(app_DB_path), echo=False,
                                connect_args={'timeout': 30})
+    enable_sqlite_foreign_keys(new_engine)
     new_session = scoped_session(sessionmaker())
     new_session.configure(bind=new_engine)
 

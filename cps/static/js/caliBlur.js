@@ -30,8 +30,10 @@ curHref = window.location.href.split("/");
 prevHref = document.referrer.split("/");
 $(".plexBack a").attr('href', encodeURI(document.referrer));
 
-// Detect new detail layout for conditional behavior
-var isNewDetailLayout = $(".book-detail-card").length > 0;
+// Detect the Standard detail contract inherited by caliBlur.  The card wrapper
+// is presentation-only and is not present in every Standard layout revision;
+// the page/main hooks are the stable integration markers.
+var isNewDetailLayout = $(".book-detail-card, .book-detail-page .book-detail-main").length > 0;
 
 if (history.length === 1 ||
     curHref[0] +

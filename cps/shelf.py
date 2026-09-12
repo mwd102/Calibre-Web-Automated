@@ -14,7 +14,7 @@ from .cw_login import current_user
 from sqlalchemy.exc import InvalidRequestError, OperationalError
 from sqlalchemy.sql.expression import func, true
 
-from . import calibre_db, config, db, logger, ub
+from . import calibre_db, config, db, logger, ub, db_cleanup
 from .render_template import render_title_template
 from .usermanagement import login_required_if_no_ano, user_login_required
 from .services import hardcover
@@ -298,7 +298,7 @@ def show_shelf(shelf_id, sort_param, page):
 def order_shelf(shelf_id):
     shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.id == shelf_id).first()
     if shelf and check_shelf_view_permissions(shelf):
-        if request.method == "POST":
+        if request.method == "POST" and check_shelf_edit_permissions(shelf):
             to_save = request.form.to_dict()
             books_in_shelf = ub.session.query(ub.BookShelf).filter(ub.BookShelf.shelf == shelf_id).order_by(
                 ub.BookShelf.order.asc()).all()
@@ -432,8 +432,7 @@ def delete_shelf_helper(cur_shelf):
     if not cur_shelf or not check_shelf_edit_permissions(cur_shelf):
         return False
     shelf_id = cur_shelf.id
-    ub.session.delete(cur_shelf)
-    ub.session.query(ub.BookShelf).filter(ub.BookShelf.shelf == shelf_id).delete()
+    db_cleanup.delete_shelf_rows(ub.session, shelf_id)
     ub.session.add(ub.ShelfArchive(uuid=cur_shelf.uuid, user_id=cur_shelf.user_id))
     ub.session_commit("successfully deleted Shelf {}".format(cur_shelf.name))
     return True

@@ -5,9 +5,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
-from lxml import etree
-
 from .constants import BookMeta
+from .xml_utils import safe_xml_fromstring
 
 
 def get_fb2_info(tmp_file_path, original_file_extension):
@@ -18,7 +17,7 @@ def get_fb2_info(tmp_file_path, original_file_extension):
     }
 
     fb2_file = open(tmp_file_path, encoding="utf-8")
-    tree = etree.fromstring(fb2_file.read().encode())
+    tree = safe_xml_fromstring(fb2_file.read().encode())
 
     authors = tree.xpath('/fb:FictionBook/fb:description/fb:title-info/fb:author', namespaces=ns)
 

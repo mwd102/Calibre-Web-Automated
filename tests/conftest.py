@@ -437,9 +437,10 @@ def pytest_configure(config):
     )
 
 
+@pytest.hookimpl(tryfirst=True)
 def pytest_collection_modifyitems(config, items):
     """
-    Automatically skip tests based on environment.
+    Classify unit tests before marker selection and skip by environment.
 
     Skip Docker tests if not in Docker environment.
     Skip Calibre tests if Calibre tools not installed.
@@ -457,6 +458,10 @@ def pytest_collection_modifyitems(config, items):
     has_docker = shutil.which('docker') is not None
 
     for item in items:
+        # Directory placement is the contract for the unit suite. Apply this
+        # before pytest's -m filtering so unmarked regression tests run in CI.
+        if item.path.is_relative_to(project_root / "tests" / "unit"):
+            item.add_marker(pytest.mark.unit)
         if "requires_docker" in item.keywords and not in_docker:
             item.add_marker(skip_docker)
         if "requires_calibre" in item.keywords and not has_calibre:
@@ -852,5 +857,4 @@ if USE_DOCKER_VOLUMES:
         return library_folder_dind
 
     print("✅ Docker Volume fixtures loaded successfully\n")
-
 

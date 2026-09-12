@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends theme("layout.html") %}
 {% block body %}
 <div style="background-color: rgba(0, 0, 0, .4);
     border: none;
@@ -42,7 +42,7 @@
     {% endif %}
 
     {% endif %}
-    {% if g.current_theme == 1 %}
+    {% if g.theme.profile_dropdown %}
     {% if g.allow_registration %}
     <a class="btn btn-default" id="register" href="{{url_for('web.register')}}"><span
         class="glyphicon glyphicon-user"></span> {{_('Register')}}</a>

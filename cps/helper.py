@@ -50,6 +50,7 @@ from . import gdriveutils as gd
 from .constants import (STATIC_DIR as _STATIC_DIR, CACHE_TYPE_THUMBNAILS, THUMBNAIL_TYPE_COVER, THUMBNAIL_TYPE_SERIES,
                         SUPPORTED_CALIBRE_BINARIES)
 from .subproc_wrapper import process_wait, process_open
+from .binary_helper import resolve_binary_path, SUPPORTED_UNRAR_BINARIES
 
 # Track books with pending thumbnail generation to prevent duplicate tasks
 _pending_thumbnail_books = set()
@@ -64,6 +65,7 @@ from .tasks.metadata_backup import TaskBackupMetadata
 from .file_helper import get_temp_dir
 from .epub_helper import get_content_opf, create_new_metadata_backup, updateEpub, replace_metadata
 from .embed_helper import do_calibre_export
+from .secret_helper import get_secret
 
 log = logger.create()
 
@@ -1340,12 +1342,12 @@ def check_unrar(unrar_location):
     if not unrar_location:
         return
 
-    if not os.path.exists(unrar_location):
-        return _('UnRar binary file not found')
+    unrar_binary = resolve_binary_path(unrar_location, SUPPORTED_UNRAR_BINARIES)
+    if not unrar_binary:
+        return _('Please specify a valid UnRar binary or directory')
 
     try:
-        unrar_location = [unrar_location]
-        value = process_wait(unrar_location, pattern='UNRAR (.*) freeware')
+        value = process_wait([unrar_binary], pattern='UNRAR (.*) freeware')
         if value:
             version = value.group(1)
             log.debug("UnRar version %s", version)

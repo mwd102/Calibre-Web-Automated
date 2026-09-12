@@ -1,0 +1,149 @@
+{#
+  caliBlur author view.
+
+  Keep the complete author-page contract in the Standard template and scope
+  this override to caliBlur presentation. This preserves author metadata,
+  Goodreads links, book routes, sorting, load-more behavior, and modal hooks.
+#}
+{% extends "standard/templates/author.html" %}
+
+{% block header %}
+    {{ super() }}
+    <style>
+        .caliblur-author {
+            color: hsla(0, 0%, 100%, .7);
+        }
+
+        .caliblur-author .author-bio {
+            background: rgba(0, 0, 0, .15);
+            border-left: 3px solid #cc7b19;
+            margin: 0 15px 30px;
+            min-height: 100px;
+            padding: 20px;
+        }
+
+        .caliblur-author .author-photo {
+            border-radius: 2px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, .35);
+            margin: 0 20px 10px 0;
+            max-height: 180px;
+            max-width: 140px;
+        }
+
+        .caliblur-author .author-bio p {
+            line-height: 1.7;
+            margin: 0 0 12px;
+        }
+
+        .caliblur-author .author-link {
+            color: #cc7b19;
+        }
+
+        .caliblur-author .author-link:hover,
+        .caliblur-author .author-link:focus {
+            color: #e49a3a;
+        }
+
+        .caliblur-author > .discover {
+            margin: 0;
+        }
+
+        .caliblur-author > .discover > h3 {
+            border-bottom: 2px solid rgba(0, 0, 0, .3);
+            color: hsla(0, 0%, 100%, .7);
+            font-family: "Open Sans Semibold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            margin: 0 15px 20px;
+            padding: 0 0 12px;
+            text-transform: uppercase;
+        }
+
+        .caliblur-author .filterheader {
+            margin: 20px 0;
+            padding: 0 10px 0 20px;
+        }
+
+        .caliblur-author .book.session {
+            transition: transform .15s ease-in-out;
+        }
+
+        .caliblur-author .book.session:hover {
+            transform: translateY(-3px);
+        }
+
+        .caliblur-author .book .cover {
+            background: rgba(0, 0, 0, .15);
+            border-radius: 2px;
+            padding: 8px;
+        }
+
+        .caliblur-author .book .cover img {
+            border-radius: 0;
+        }
+
+        .caliblur-author .book-cover-link:focus-visible {
+            outline: 2px solid #cc7b19;
+            outline-offset: 4px;
+        }
+
+        .caliblur-author .meta .title {
+            color: #eee;
+        }
+
+        .caliblur-author .meta .author,
+        .caliblur-author .meta .series {
+            color: hsla(0, 0%, 100%, .45);
+        }
+
+        .caliblur-author .meta a {
+            color: hsla(0, 0%, 100%, .7);
+        }
+
+        .caliblur-author .meta a:hover,
+        .caliblur-author .meta a:focus {
+            color: #cc7b19;
+        }
+
+        .caliblur-author .rating .glyphicon-star.good {
+            color: #cc7b19;
+        }
+
+        .caliblur-author .rating .glyphicon-star-empty {
+            color: hsla(0, 0%, 100%, .3);
+        }
+
+        .caliblur-author .discover:last-child {
+            border-top: 2px solid rgba(0, 0, 0, .3);
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+
+        .caliblur-author .discover:last-child > a > img {
+            max-height: 28px;
+            width: auto;
+        }
+
+        @media (max-width: 767px) {
+            .caliblur-author .author-bio {
+                margin-inline: 10px;
+                padding: 15px;
+            }
+
+            .caliblur-author > .discover > h3 {
+                margin-inline: 10px;
+            }
+
+            .caliblur-author .filterheader {
+                margin: 15px 0;
+                padding: 0 10px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="caliblur-author" data-theme-layout="caliblur">
+        {{ super() }}
+    </div>
+{% endblock %}

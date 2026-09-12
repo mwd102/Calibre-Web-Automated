@@ -32,7 +32,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.exc import IntegrityError, OperationalError, InvalidRequestError
 from sqlalchemy.sql.expression import func, or_, text
 
-from . import constants, logger, helper, services, cli_param
+from . import constants, logger, helper, services, cli_param, themes, db_cleanup
 from . import db, calibre_db, ub, web_server, config, updater_thread, gdriveutils, \
     kobo_sync_status, schedule
 from .helper import check_valid_domain, send_test_mail, reset_password, generate_password_hash, check_email, \
@@ -45,6 +45,7 @@ from .usermanagement import user_login_required
 from .cw_babel import get_available_translations, get_available_locale, get_user_locale_language
 from . import debug_info
 from .string_helper import strip_whitespaces
+from .binary_helper import resolve_binary_path, SUPPORTED_KEPUBIFY_BINARIES, SUPPORTED_UNRAR_BINARIES
 
 log = logger.create()
 
@@ -138,14 +139,20 @@ def before_request():
     g.allow_registration = config.config_public_reg
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
-    # Theme enforcement: light theme fully deprecated, force caliBlur (dark) in runtime
+    # Resolve the selected user theme once per request.  The registry only
+    # exposes configurable themes; internal view themes are selected by their
+    # own blueprint instead of being accepted as a persisted user preference.
     try:
-        g.current_theme = getattr(current_user, 'theme', config.config_theme)
-        if current_user.is_anonymous and not hasattr(current_user, 'theme'):
-            g.current_theme = config.config_theme
+        configured_theme = themes.normalize_theme_id(getattr(config, 'config_theme', None))
+        user_theme = getattr(current_user, 'theme', None)
+        if getattr(current_user, 'is_authenticated', False) and themes.is_valid_theme(user_theme):
+            g.current_theme = int(user_theme)
+        else:
+            g.current_theme = configured_theme
     except Exception:
-        g.current_theme = getattr(config, 'config_theme', 1)
-    g.current_theme = 1
+        g.current_theme = themes.CONFIG_DEFAULT_THEME_ID
+    g.theme = themes.get_theme(g.current_theme)
+    g.available_themes = themes.get_available_themes()
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',
@@ -214,10 +221,9 @@ def trigger_hardcover_auto_fetch():
     
     try:
         # Check if token is available
-        from os import getenv
         token_available = bool(
-            getattr(config, "config_hardcover_token", None) or 
-            getenv("HARDCOVER_TOKEN")
+            getattr(config, "config_hardcover_token", None)
+            or helper.get_secret("HARDCOVER_TOKEN")
         )
         
         if not token_available:
@@ -898,6 +904,10 @@ def update_view_configuration():
         return view_configuration()
     _config_int(to_save, "config_restricted_column")
 
+    if not themes.is_valid_theme(to_save.get("config_theme")):
+        flash(_("Invalid Theme"), category="error")
+        log.debug("Invalid theme setting")
+        return view_configuration()
     _config_int(to_save, "config_theme")
     _config_int(to_save, "config_random_books")
     _config_int(to_save, "config_books_per_page")
@@ -2262,8 +2272,7 @@ def _db_configuration_update_helper():
             ub.session.query(ub.ReadBook).delete()
             ub.session.query(ub.BookShelf).delete()
             ub.session.query(ub.Bookmark).delete()
-            ub.session.query(ub.KoboReadingState).delete()
-            ub.session.query(ub.KoboStatistics).delete()
+            db_cleanup.delete_kobo_reading_states(ub.session)
             ub.session.query(ub.KoboSyncedBooks).delete()
             helper.delete_thumbnail_cache()
             ub.session_commit()
@@ -2321,6 +2330,9 @@ def _configuration_update_helper():
         _config_string(to_save, "config_calibre")
         _config_string(to_save, "config_binariesdir")
         _config_string(to_save, "config_kepubifypath")
+        if "config_kepubifypath" in to_save and config.config_kepubifypath:
+            if not resolve_binary_path(config.config_kepubifypath, SUPPORTED_KEPUBIFY_BINARIES):
+                return _configuration_result(_('Please specify a valid Kepubify binary or directory'))
         arch_warning = None
         if "config_binariesdir" in to_save:
             calibre_status = helper.check_calibre(config.config_binariesdir)
@@ -2436,12 +2448,12 @@ def _configuration_update_helper():
 
         # Rarfile Content configuration
         _config_string(to_save, "config_rarfile_location")
-        unrar_warning = None
-        if "config_rarfile_location" in to_save:
+        if "config_rarfile_location" in to_save and config.config_rarfile_location:
+            if not resolve_binary_path(config.config_rarfile_location, SUPPORTED_UNRAR_BINARIES):
+                return _configuration_result(_('Please specify a valid UnRar binary or directory'))
             unrar_status = helper.check_unrar(config.config_rarfile_location)
             if unrar_status:
-                # Store warning but don't prevent saving other settings
-                unrar_warning = unrar_status
+                return _configuration_result(unrar_status)
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception("Settings Database error: {}".format(e))
@@ -2508,9 +2520,9 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.sidebar_view |= constants.DETAIL_RANDOM
 
     content.role = constants.selected_roles(to_save)
-    # Force dark theme (caliBlur = 1) for new users
+    # New users inherit the configured theme and may change it later.
     try:
-        content.theme = 1
+        content.theme = themes.normalize_theme_id(config.config_theme)
     except Exception:
         pass
     try:
@@ -2567,26 +2579,10 @@ def _delete_user(content):
     if ub.session.query(ub.User).filter(ub.User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
                                         ub.User.id != content.id).count():
         if content.name != "Guest":
-            # Delete all books in shelfs belonging to user, all shelfs of user, downloadstat of user, read status
-            # and user itself
-            ub.session.query(ub.ReadBook).filter(content.id == ub.ReadBook.user_id).delete()
-            ub.session.query(ub.Downloads).filter(content.id == ub.Downloads.user_id).delete()
-            for us in ub.session.query(ub.Shelf).filter(content.id == ub.Shelf.user_id):
-                ub.session.query(ub.BookShelf).filter(us.id == ub.BookShelf.shelf).delete()
-            ub.session.query(ub.Shelf).filter(content.id == ub.Shelf.user_id).delete()
-            ub.session.query(ub.Bookmark).filter(content.id == ub.Bookmark.user_id).delete()
-            ub.session.query(ub.User).filter(ub.User.id == content.id).delete()
-            ub.session.query(ub.ArchivedBook).filter(ub.ArchivedBook.user_id == content.id).delete()
-            ub.session.query(ub.RemoteAuthToken).filter(ub.RemoteAuthToken.user_id == content.id).delete()
-            ub.session.query(ub.User_Sessions).filter(ub.User_Sessions.user_id == content.id).delete()
-            ub.session.query(ub.KoboSyncedBooks).filter(ub.KoboSyncedBooks.user_id == content.id).delete()
-            # delete KoboReadingState and all it's children
-            kobo_entries = ub.session.query(ub.KoboReadingState).filter(ub.KoboReadingState.user_id == content.id).all()
-            for kobo_entry in kobo_entries:
-                ub.session.delete(kobo_entry)
+            user_name = db_cleanup.delete_user(ub.session, content)
             ub.session_commit()
-            log.info("User {} deleted".format(content.name))
-            return _("User '%(nick)s' deleted", nick=content.name)
+            log.info("User {} deleted".format(user_name))
+            return _("User '%(nick)s' deleted", nick=user_name)
         else:
             # log.warning(_("Can't delete Guest User"))
             raise Exception(_("Can't delete Guest User"))
@@ -2603,12 +2599,10 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             log.error(ex)
             flash(str(ex), category="error")
         return redirect(url_for('admin.admin'))
-    # Theme update for admin editing user (force dark)
+    # Theme update for admin editing user.
     if 'theme' in to_save:
-        try:
-            content.theme = 1
-        except Exception:
-            pass
+        if themes.is_valid_theme(to_save["theme"]):
+            content.theme = int(to_save["theme"])
     # Proceed with remaining updates (previously skipped when 'theme' in to_save)
     if not ub.session.query(ub.User).filter(ub.User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
                                             ub.User.id != content.id).count() and 'admin_role' not in to_save:

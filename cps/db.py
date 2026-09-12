@@ -39,10 +39,17 @@ from flask_babel import get_locale
 from flask import flash
 
 from . import logger, ub, isoLanguages
+from .db_pragmas import enable_sqlite_foreign_keys
 from .pagination import Pagination
 from .string_helper import strip_whitespaces
 
 log = logger.create()
+
+
+def _sqlite_string_literal(value):
+    """Escape a value embedded in a SQLite string literal."""
+    return str(value).replace("'", "''")
+
 
 cc_exceptions = ['composite', 'series']
 cc_classes = {}
@@ -732,9 +739,12 @@ class CalibreDB:
                                          isolation_level="SERIALIZABLE",
                                          connect_args={'check_same_thread': False, 'timeout': 30},
                                          poolclass=StaticPool)
+            enable_sqlite_foreign_keys(check_engine)
             with check_engine.begin() as connection:
-                connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
-                connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
+                connection.execute(text("attach database '{}' as calibre;".format(
+                    _sqlite_string_literal(dbpath))))
+                connection.execute(text("attach database '{}' as app_settings;".format(
+                    _sqlite_string_literal(app_db_path))))
                 # Try enabling WAL to improve concurrency unless running on a network share
                 # Controlled by env var NETWORK_SHARE_MODE (default False)
                 try:
@@ -792,9 +802,12 @@ class CalibreDB:
                                            isolation_level="SERIALIZABLE",
                                            connect_args={'check_same_thread': False, 'timeout': 30},
                                            poolclass=StaticPool)
+                enable_sqlite_foreign_keys(cls.engine)
                 with cls.engine.begin() as connection:
-                    connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
-                    connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
+                    connection.execute(text("attach database '{}' as calibre;".format(
+                        _sqlite_string_literal(dbpath))))
+                    connection.execute(text("attach database '{}' as app_settings;".format(
+                        _sqlite_string_literal(app_db_path))))
                     # Try enabling WAL to improve concurrency unless running on a network share
                     # Controlled by env var NETWORK_SHARE_MODE (default False)
                     try:
@@ -902,7 +915,8 @@ class CalibreDB:
 
     def get_book_by_uuid(self, book_uuid):
         self.ensure_session()
-        return self.session.query(Books).filter(Books.uuid == book_uuid).first()
+        return self.session.query(Books).filter(Books.uuid == book_uuid). \
+            filter(self.common_filters()).first()
 
     def get_book_format(self, book_id, file_format):
         self.ensure_session()
@@ -923,6 +937,10 @@ class CalibreDB:
     def get_publisher_by_name(self, name):
         self.ensure_session()
         return self.session.query(Publishers).filter(Publishers.name == name).first()
+
+    def get_rating_by_value(self, value):
+        self.ensure_session()
+        return self.session.query(Ratings).filter(Ratings.rating == value).first()
 
     def set_metadata_dirty(self, book_id):
         self.ensure_session()

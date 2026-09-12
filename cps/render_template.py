@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 from flask import render_template, g, abort, request, flash, current_app
+from jinja2 import TemplateNotFound
 from flask_babel import gettext as _
 from flask_babel import get_locale
 import polib
@@ -13,7 +14,7 @@ from werkzeug.local import LocalProxy
 from .cw_login import current_user
 from sqlalchemy.sql.expression import or_
 
-from . import config, constants, logger, ub
+from . import config, constants, logger, ub, themes
 from .ub import User
 
 # CWA specific imports
@@ -26,6 +27,42 @@ from cwa_db import CWA_DB
 
 
 log = logger.create()
+
+_NO_THEME_RENDER_OVERRIDE = object()
+
+
+def themed_render(template_name, theme_id=None, **kwargs):
+    """Render a theme template, falling back to CWA's flat template tree.
+
+    The fallback keeps existing routes independent of the incremental theme
+    migration.  ``theme_id`` is explicit for alternate-view routes; otherwise
+    the request's current CWA theme is used.
+    """
+    render_override = theme_id is not None
+    previous_theme_id = _NO_THEME_RENDER_OVERRIDE
+    if render_override:
+        previous_theme_id = g.__dict__.get("_theme_render_id", _NO_THEME_RENDER_OVERRIDE)
+        g._theme_render_id = theme_id
+    try:
+        if theme_id is None:
+            theme_id = getattr(g, "current_theme", 1)
+        theme = themes.get_theme(theme_id)
+        themed_name = themes.template_path(theme["identifier"], template_name)
+        kwargs.setdefault("_theme", theme)
+        try:
+            return render_template(themed_name, **kwargs)
+        except TemplateNotFound:
+            return render_template(template_name, **kwargs)
+    finally:
+        if render_override:
+            if previous_theme_id is _NO_THEME_RENDER_OVERRIDE:
+                g.__dict__.pop("_theme_render_id", None)
+            else:
+                g._theme_render_id = previous_theme_id
+
+
+# Name used by upstream's renderer; keep both names during the transition.
+render_theme_template = themed_render
 
 
 def _duplicate_setup_notice_dismissed():
@@ -198,33 +235,6 @@ def cwa_update_notification() -> None:
     else:
         return
 
-# Notify users once about theme migration to caliBlur
-def theme_migration_notification() -> None:
-    notice_file = '/app/theme_migration_notice'
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    
-    # Check if notification already shown today
-    if os.path.isfile(notice_file):
-        try:
-            with open(notice_file, 'r') as f:
-                last_notification = f.read().strip()
-                if last_notification == current_date:
-                    return
-        except Exception:
-            pass
-    
-    # Show notification
-    message = _("ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is temporarily disabled while we develop a new frontend for v5.0.0.")
-    flash(message, category="theme_migration")
-    
-    # Mark as shown today
-    try:
-        with open(notice_file, 'w') as f:
-            f.write(current_date)
-    except Exception as e:
-        print(f"[theme-migration-notification] Error writing notice file: {e}", flush=True)
-
-
 # Checks if translations are missing for the current language
 def translations_missing_notification() -> None:
     db = CWA_DB()
@@ -276,11 +286,6 @@ def render_title_template(*args, **kwargs):
             cwa_update_notification()
         except Exception as e:
             print(f"[cwa-update-notification-service] The following error occurred when checking for available updates:\n{e}", flush=True)
-    # Notify users about theme migration (once per day)
-    try:
-        theme_migration_notification()
-    except Exception as e:
-        print(f"[theme-migration-notification] Error showing theme migration notification: {e}", flush=True)
     # Notify any user if translations are missing for their language
     try:
         translations_missing_notification()
@@ -355,11 +360,11 @@ def render_title_template(*args, **kwargs):
     except Exception as e:
         log.debug("[cwa-duplicates] Failed to build duplicate notification context: %s", str(e))
     try:
-        return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
-                       accept=config.config_upload_formats.split(','),
-                       magic_shelf_routes=magic_shelf_routes,
-                       duplicate_notification=duplicate_notification,
-                       *args, **kwargs)
+        return themed_render(args[0], instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
+                             accept=config.config_upload_formats.split(','),
+                             magic_shelf_routes=magic_shelf_routes,
+                             duplicate_notification=duplicate_notification,
+                             **kwargs)
     except PermissionError:
         log.error("No permission to access {} file.".format(args[0]))
         abort(403)

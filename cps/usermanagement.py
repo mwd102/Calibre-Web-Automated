@@ -15,7 +15,7 @@ from flask_httpauth import HTTPBasicAuth
 from werkzeug.datastructures import Authorization
 from werkzeug.security import check_password_hash
 
-from . import lm, ub, config, logger, limiter, constants, services
+from . import lm, ub, config, logger, limiter, constants, services, themes
 
 
 log = logger.create()
@@ -67,8 +67,7 @@ def create_authenticated_user(username, email=None, auth_source="unknown"):
         user.allowed_column_value = getattr(config, 'config_allowed_column_value', '')
         user.denied_column_value = getattr(config, 'config_denied_column_value', '')
         
-        # Force dark theme (light theme deprecated)
-        user.theme = 1
+        user.theme = themes.normalize_theme_id(getattr(config, 'config_theme', None))
             
         # Kobo sync setting defaults to 0 (disabled) for new users
         user.kobo_only_shelves_sync = 0
@@ -259,4 +258,3 @@ def load_user(user_id, random, session_key):
     except (ValueError, TypeError) as e:
         log.error("Invalid user_id in load_user: %s", e)
         return None
-

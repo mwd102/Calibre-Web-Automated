@@ -10,6 +10,22 @@ import types
 import importlib.util
 from pathlib import Path
 
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def _restore_cps_modules():
+    originals = {
+        name: module
+        for name, module in sys.modules.items()
+        if name == "cps" or name.startswith("cps.")
+    }
+    yield
+    for name in list(sys.modules):
+        if name == "cps" or name.startswith("cps."):
+            sys.modules.pop(name, None)
+    sys.modules.update(originals)
+
 
 def _load_calibre_init():
     class DummyCalibreDB:

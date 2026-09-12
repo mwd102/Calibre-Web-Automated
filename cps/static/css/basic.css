@@ -1,0 +1,13 @@
+body { margin: 0; font-family: sans-serif; color: #222; }
+nav { min-height: 4.5rem; padding: .35rem 1.25rem; display: flex; align-items: center; gap: 1.25rem; border-bottom: 1px solid #bbb; }
+nav > a:first-child { margin-right: auto; }
+nav h1 { font-size: 1.35rem; margin: 0; }
+nav a, .theme a, a { color: #222; }
+.search { display: flex; height: 2.75rem; }
+.search input { width: 18ch; padding: 0 .35rem; }
+.search button { padding: 0 .75rem; background: #fff; border: 1px solid #ccc; }
+.theme { text-align: center; margin: .65rem; }
+.body { padding: .35rem 1.25rem; }
+.listing { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 1.25rem; }
+.pagination { display: flex; justify-content: space-between; padding: .65rem 0; font-weight: 700; }
+.cover img { width: 150px; height: 250px; object-fit: cover; }

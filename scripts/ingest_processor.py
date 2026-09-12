@@ -221,7 +221,8 @@ def _load_cps_settings_from_app_db() -> None:
             cur = con.cursor()
             row = cur.execute(
                 "SELECT config_use_google_drive, config_google_drive_folder, "
-                "config_calibre_dir, config_certfile, config_keyfile "
+                "config_calibre_dir, config_certfile, config_keyfile, "
+                "config_kepubifypath "
                 "FROM settings LIMIT 1"
             ).fetchone()
             if not row:
@@ -235,6 +236,9 @@ def _load_cps_settings_from_app_db() -> None:
                 _cps_config.config_certfile = row[3]
             if row[4]:
                 _cps_config.config_keyfile = row[4]
+            # Preserve an explicitly empty value as a disabled helper. The
+            # resolver below rejects every non-allow-listed executable name.
+            _cps_config.config_kepubifypath = row[5]
     except Exception as e:
         print(f"[ingest-processor] WARN: Could not read CPS settings from app.db ({app_db_path}): {e}", flush=True)
 
@@ -535,6 +539,14 @@ class NewBookProcessor:
         self.convert_retained_formats = _normalize_format_list(self.cwa_settings.get('auto_convert_retained_formats', []))
         self.is_kindle_epub_fixer = self.cwa_settings['kindle_epub_fixer']
 
+        try:
+            from binary_helper import resolve_binary_path, SUPPORTED_KEPUBIFY_BINARIES
+            configured_kepubify = getattr(_cps_config, "config_kepubifypath", None)
+            self.kepubify_binary = resolve_binary_path(configured_kepubify,
+                                                       SUPPORTED_KEPUBIFY_BINARIES)
+        except (ImportError, AttributeError):
+            self.kepubify_binary = ""
+
         # Formats
         self.supported_book_formats = {
             'acsm','azw','azw3','azw4','cbz','cbr','cb7','cbc','chm','djvu','docx','epub','fb2','fbz','html','htmlz','kepub','kfx','kfx-zip','lit','lrf','mobi','odt','pdf','prc','pdb','pml','rb','rtf','snb','tcr','txtz','txt'
@@ -773,8 +785,13 @@ class NewBookProcessor:
         if convert_successful:
             converted_filepath = Path(converted_filepath)
             target_filepath = f"{self.tmp_conversion_dir}{converted_filepath.stem}.kepub"
+            if not self.kepubify_binary:
+                print("[ingest-processor]: Kepubify is disabled or not configured with an allowed binary name.",
+                      flush=True)
+                return False, ""
             try:
-                subprocess.run(['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, converted_filepath], check=True)
+                subprocess.run([self.kepubify_binary, '--inplace', '--calibre',
+                                '--output', self.tmp_conversion_dir, converted_filepath], check=True)
                 if self.cwa_settings['auto_backup_conversions']:
                     self.backup(self.filepath, backup_type="converted")
 

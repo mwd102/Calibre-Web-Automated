@@ -1,0 +1,23 @@
+version: v2beta1
+name: calibre-web-automated-uat
+
+pipelines:
+  deploy: |-
+    create_deployments --all
+  dev: |-
+    create_deployments --all
+    start_dev --all
+
+deployments:
+  cwa-uat:
+    kubectl:
+      manifests:
+        - ./kubernetes/uat.yaml
+
+dev:
+  cwa:
+    labelSelector:
+      app.kubernetes.io/name: books-cwa-dev
+    container: cwa
+    ports:
+      - port: 8083:8083

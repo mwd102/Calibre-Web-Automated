@@ -11,6 +11,7 @@ import re
 from flask_babel import lazy_gettext as N_
 
 from . import config, logger
+from .binary_helper import resolve_binary_path, SUPPORTED_KEPUBIFY_BINARIES, SUPPORTED_UNRAR_BINARIES
 from .subproc_wrapper import process_wait
 
 
@@ -41,11 +42,16 @@ def get_calibre_version():
 
 
 def get_unrar_version():
-    unrar_version = _get_command_version(config.config_rarfile_location, r'UNRAR.*\d')
+    unrar_binary = resolve_binary_path(config.config_rarfile_location, SUPPORTED_UNRAR_BINARIES)
+    if not unrar_binary:
+        return _NOT_INSTALLED
+
+    unrar_version = _get_command_version(unrar_binary, r'UNRAR.*\d')
     if unrar_version == "not installed":
-        unrar_version = _get_command_version(config.config_rarfile_location, r'unrar.*\d', '-V')
+        unrar_version = _get_command_version(unrar_binary, r'unrar.*\d', '-V')
     return unrar_version
 
 
 def get_kepubify_version():
-    return _get_command_version(config.config_kepubifypath, r'kepubify\s', '--version')
+    kepubify_binary = resolve_binary_path(config.config_kepubifypath, SUPPORTED_KEPUBIFY_BINARIES)
+    return _get_command_version(kepubify_binary, r'kepubify\s', '--version')

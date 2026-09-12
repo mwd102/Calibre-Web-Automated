@@ -7,7 +7,7 @@
 from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, abort, jsonify, current_app
 from flask_babel import gettext as _, lazy_gettext as _l
 
-from . import logger, config, constants, csrf, helper, ub, calibre_db
+from . import logger, config, constants, csrf, helper, ub, calibre_db, themes
 from .usermanagement import login_required_if_no_ano, user_login_required
 from .admin import admin_required
 from .render_template import render_title_template
@@ -161,8 +161,17 @@ def validate_and_cleanup_provider_enabled_map(enabled_map, available_provider_id
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
 @login_required_if_no_ano
 def cwa_switch_theme():
-    # Theme switching temporarily disabled for v5.0.0 frontend development
-    flash(_("Theme switching is temporarily disabled until v5.0.0"), category="warning")
+    # Keep the quick switch limited to the two public, configurable themes.
+    current_theme = themes.normalize_theme_id(getattr(current_user, 'theme', None))
+    new_theme = 0 if current_theme == 1 else 1
+    try:
+        current_user.theme = new_theme
+        ub.session_commit()
+        flash(_("Theme changed to %(theme)s", theme=themes.get_theme(new_theme)["label"]), category="success")
+    except Exception as e:
+        ub.session.rollback()
+        log.error("Error switching theme: %s", e)
+        flash(_("Unable to change theme"), category="error")
     target = request.referrer or url_for("web.index")
     # Basic safety: only allow same-host redirects
     try:
@@ -173,21 +182,6 @@ def cwa_switch_theme():
     except Exception:
         target = url_for("web.index")
     return redirect(target, code=302)
-    
-    # Original theme switching logic (disabled)
-    # try:
-    #     # current_user.theme may not exist for old sessions before migration; default to 1 (caliBlur)
-    #     current = getattr(current_user, 'theme', 1)
-    #     new_theme = 0 if current == 1 else 1
-    #     from . import ub
-    #     user = ub.session.query(ub.User).filter(ub.User.id == current_user.id).first()
-    #     if user:
-    #         user.theme = new_theme
-    #         ub.session_commit()
-    #     else:
-    #         log.error("Theme switch: user not found in DB")
-    # except Exception as e:
-    #     log.error(f"Error switching theme: {e}")
 
 ##————————————————————————————————————————————————————————————————————————————##
 ##                                                                            ##
@@ -1043,10 +1037,9 @@ def set_cwa_settings():
         cwa_settings = cwa_db.get_cwa_settings()
 
     # Check if Hardcover token is available
-    from os import getenv
     hardcover_token_available = bool(
-        getattr(config, "config_hardcover_token", None) or 
-        getenv("HARDCOVER_TOKEN")
+        getattr(config, "config_hardcover_token", None)
+        or helper.get_secret("HARDCOVER_TOKEN")
     )
 
 
