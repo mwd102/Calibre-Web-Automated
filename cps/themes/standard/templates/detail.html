@@ -539,6 +539,8 @@
                             <p id="book_of">{{ _("Book %(index)s of %(range)s", index=entry.series_index|formatfloat(2), range=(url_for('web.books_list', data='series', sort_param='stored', book_id=entry.series[0].id)|escapedlink(entry.series[0].name))|safe) }}</p>
                         {% endif %}
 
+                        {% block book_overview %}{% endblock %}
+
                         <div class="book-metadata">
                             <div class="book-id meta-chip">
                                 <span>{{ _('ID') }}:</span>
@@ -738,12 +740,14 @@
                     </div>
                 </div>
 
+                {% block book_description %}
                 {% if entry.comments|length > 0 and entry.comments[0].text|length > 0 %}
                     <div class="book-detail-description">
                         <h3 id="decription">{{ _('Description:') }}</h3>
                         {{ entry.comments[0].text|clean_string|safe }}
                     </div>
                 {% endif %}
+                {% endblock %}
                 <div id="shelf-action-errors" class="pull-left" role="alert"></div>
         <div id="action-toast" class="action-toast" role="status" aria-live="polite"></div>
         {% if current_user.kindle_mail and entry.email_share_list and current_user.allow_additional_ereader_emails %}
