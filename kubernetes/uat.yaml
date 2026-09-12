@@ -80,6 +80,17 @@ spec:
         - name: books-cwa-dev-ghcr-pull
       nodeSelector:
         topology.kubernetes.io/zone: ovh
+      initContainers:
+        - name: prepare-state
+          image: busybox:1.37.0
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              touch /config/cwa_ingest_status
+              chown 99:100 /config /config/cwa_ingest_status /calibre-library
+          volumeMounts:
+            - {name: config, mountPath: /config}
+            - {name: library, mountPath: /calibre-library}
       containers:
         - name: cwa
           image: ghcr.io/mwd102/calibre-web-automated@sha256:9cc71fa12c35a684e05176cc9be83c3ac0bccd194754db286aa31b481bfd19ef
