@@ -3,10 +3,8 @@ name: calibre-web-automated-uat
 
 pipelines:
   deploy: |-
-    build_images --all
     create_deployments --all
   dev: |-
-    build_images --all
     create_deployments --all
     start_dev --all
 
