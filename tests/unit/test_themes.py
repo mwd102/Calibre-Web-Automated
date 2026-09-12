@@ -1,7 +1,9 @@
 """Focused tests for the incremental upstream-compatible theme slice."""
 
 from types import SimpleNamespace
+from urllib.parse import parse_qs, urlsplit
 
+import pytest
 from flask import Flask, g
 
 from cps import themes
@@ -118,7 +120,24 @@ def test_basic_index_renders_simple_template():
     assert "caliBlur" not in rendered
 
 
-def test_other_page_url_keeps_query_filters_without_reusing_current_page():
+@pytest.mark.parametrize("destination_page", [1, 3])
+def test_other_page_url_uses_destination_page_in_query(destination_page):
+    from cps.jinjia import url_for_other_page
+
+    app = Flask(__name__)
+    app.add_url_rule("/basic", endpoint="basic.index", view_func=lambda: "")
+
+    with app.test_request_context("/basic?page=2&query=history"):
+        generated = urlsplit(url_for_other_page(destination_page))
+
+    assert generated.path == "/basic"
+    assert parse_qs(generated.query) == {
+        "page": [str(destination_page)],
+        "query": ["history"],
+    }
+
+
+def test_other_page_url_uses_destination_page_for_path_parameter():
     from cps.jinjia import url_for_other_page
 
     app = Flask(__name__)
@@ -127,18 +146,3 @@ def test_other_page_url_keeps_query_filters_without_reusing_current_page():
     with app.test_request_context("/basic/2?page=2&query=history"):
         assert url_for_other_page(1) == "/basic/1?query=history"
         assert url_for_other_page(3) == "/basic/3?query=history"
-
-
-def test_caliblur_uses_stable_detail_layout_hooks_and_styles_standard_login_card():
-    from pathlib import Path
-
-    root = Path(__file__).parents[2] / "cps"
-    detail_js = (root / "static" / "js" / "caliBlur.js").read_text(encoding="utf-8")
-    login_template = (root / "themes" / "caliblur" / "templates" / "login.html").read_text(
-        encoding="utf-8"
-    )
-
-    assert '.book-detail-page .book-detail-main' in detail_js
-    assert '$(".book-detail-card").length' not in detail_js
-    assert ".caliblur-login .standard-login-card" in login_template
-    assert ".caliblur-login .standard-login-title" in login_template

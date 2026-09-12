@@ -33,7 +33,7 @@ $(".plexBack a").attr('href', encodeURI(document.referrer));
 // Detect the Standard detail contract inherited by caliBlur.  The card wrapper
 // is presentation-only and is not present in every Standard layout revision;
 // the page/main hooks are the stable integration markers.
-var isNewDetailLayout = $(".book-detail-page .book-detail-main").length > 0;
+var isNewDetailLayout = $(".book-detail-card, .book-detail-page .book-detail-main").length > 0;
 
 if (history.length === 1 ||
     curHref[0] +
