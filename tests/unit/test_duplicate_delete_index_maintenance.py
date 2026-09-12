@@ -5,6 +5,33 @@ import importlib.util
 import pathlib
 import sys
 
+import pytest
+
+
+def _is_stubbed_module(name):
+    return (
+        name == "cps"
+        or name.startswith("cps.")
+        or name == "cwa_db"
+        or name == "flask"
+        or name == "flask_babel"
+        or name == "sqlalchemy"
+        or name.startswith("sqlalchemy.")
+        or name == "werkzeug"
+        or name.startswith("werkzeug.")
+    )
+
+
+@pytest.fixture(autouse=True)
+def _restore_stubbed_modules():
+    """Keep this module's import stubs isolated from the rest of the suite."""
+    originals = {name: module for name, module in sys.modules.items() if _is_stubbed_module(name)}
+    yield
+    for name in list(sys.modules):
+        if _is_stubbed_module(name):
+            sys.modules.pop(name, None)
+    sys.modules.update(originals)
+
 
 def _install_stub(name, attrs=None):
     module = ModuleType(name)
@@ -98,17 +125,7 @@ class _CwaDB:
 
 def _clear_modules():
     for name in list(sys.modules):
-        if (
-            name == "cps"
-            or name.startswith("cps.")
-            or name == "cwa_db"
-            or name == "flask"
-            or name == "flask_babel"
-            or name == "sqlalchemy"
-            or name.startswith("sqlalchemy.")
-            or name == "werkzeug"
-            or name.startswith("werkzeug.")
-        ):
+        if _is_stubbed_module(name):
             sys.modules.pop(name, None)
 
 
@@ -194,6 +211,13 @@ def _load_editbooks_module(delete_key_calls):
     _install_stub("cps.render_template", {"render_title_template": lambda *args, **kwargs: ""})
     _install_stub("cps.redirect", {"get_redirect_location": lambda location, endpoint: location or f"/{endpoint}"})
     _install_stub("cps.file_helper", {"validate_mime_type": lambda *args, **kwargs: True})
+    _install_stub(
+        "cps.binary_helper",
+        {
+            "resolve_binary_path": lambda configured_path, supported: configured_path,
+            "SUPPORTED_UNRAR_BINARIES": ("unrar",),
+        },
+    )
     _install_stub("cps.cwa_functions", {"get_ingest_dir": lambda: "/ingest"})
     _install_stub(
         "cps.usermanagement",

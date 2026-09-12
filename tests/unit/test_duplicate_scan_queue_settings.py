@@ -6,6 +6,29 @@ import importlib.util
 import pathlib
 import sys
 
+import pytest
+
+
+def _is_stubbed_module(name):
+    return (
+        name == "cps"
+        or name.startswith("cps.")
+        or name == "cwa_db"
+        or name == "flask"
+        or name == "flask_babel"
+    )
+
+
+@pytest.fixture(autouse=True)
+def _restore_stubbed_modules():
+    """Keep this module's import stubs isolated from the rest of the suite."""
+    originals = {name: module for name, module in sys.modules.items() if _is_stubbed_module(name)}
+    yield
+    for name in list(sys.modules):
+        if _is_stubbed_module(name):
+            sys.modules.pop(name, None)
+    sys.modules.update(originals)
+
 
 def _install_stub(name, attrs=None):
     module = ModuleType(name)
@@ -73,19 +96,22 @@ class _SettingsCwaDB:
 
 def _clear_modules():
     for name in list(sys.modules):
-        if name == "cps" or name.startswith("cps.") or name == "cwa_db":
+        if _is_stubbed_module(name):
             sys.modules.pop(name, None)
 
 
 def _load_cwa_functions(monkeypatch, request):
     _clear_modules()
     cps = _install_stub("cps")
-    for name in ("config", "constants", "csrf", "helper", "ub", "calibre_db"):
+    for name in ("config", "constants", "csrf", "helper", "ub", "calibre_db", "themes"):
         module = _install_stub(f"cps.{name}")
         setattr(cps, name, module)
     cps.config.config_kobo_sync_magic_shelves = False
     cps.config.save = lambda: None
     cps.helper.get_internal_api_url = lambda path: f"http://localhost{path}"
+    cps.helper.get_secret = lambda name: None
+    cps.themes.normalize_theme_id = lambda theme_id: theme_id
+    cps.themes.get_theme = lambda theme_id: {"label": str(theme_id)}
     cps.logger = _install_stub("cps.logger", {"create": lambda: _Logger()})
     cps.csrf.exempt = lambda fn: fn
 

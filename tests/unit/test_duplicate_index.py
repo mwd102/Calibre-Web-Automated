@@ -15,6 +15,21 @@ import sys
 import pytest
 
 
+def _is_stubbed_module(name):
+    return name == "cps" or name.startswith("cps.") or name == "cwa_db"
+
+
+@pytest.fixture(autouse=True)
+def _restore_stubbed_modules():
+    """Keep the synthetic cps package isolated without reloading SQLAlchemy."""
+    originals = {name: module for name, module in sys.modules.items() if _is_stubbed_module(name)}
+    yield
+    for name in list(sys.modules):
+        if _is_stubbed_module(name):
+            sys.modules.pop(name, None)
+    sys.modules.update(originals)
+
+
 def _install_stub(name, attrs=None):
     module = ModuleType(name)
     if attrs:
@@ -26,9 +41,7 @@ def _install_stub(name, attrs=None):
 
 def _load_duplicate_index_module():
     for name in list(sys.modules):
-        if name in ("cps.duplicate_index", "cps.duplicates", "cps", "sqlalchemy") or name.startswith(
-            "sqlalchemy."
-        ):
+        if _is_stubbed_module(name):
             sys.modules.pop(name, None)
 
     cps = _install_stub("cps")
@@ -250,16 +263,6 @@ def duplicate_index(monkeypatch):
     monkeypatch.setattr(module, "CWA_DB", _FakeCwaDB)
     monkeypatch.setattr(module, "joinedload", lambda value: value)
     yield module
-    for name in (
-        "cps.duplicate_index",
-        "cps.duplicates",
-        "cps.calibre_db",
-        "cps.db",
-        "cps.logger",
-        "cps",
-        "cwa_db",
-    ):
-        sys.modules.pop(name, None)
 
 
 def test_effective_criteria_falls_back_to_title_author(duplicate_index):
