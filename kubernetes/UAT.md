@@ -8,8 +8,9 @@ claim or publish a public route. DevSpace owns the resources labelled
 
 Use the explicit shell-01 Hyperion kubeconfig and namespace:
 
-The immutable amd64 UAT image is built by the `Build Hyperion UAT image`
-GitHub Actions workflow from a selected commit. Pin the resulting image digest
+The immutable amd64 UAT image is built by dispatching the existing
+`Build & Push - Dev - Split Strategy` workflow with `uat_only=true` from the
+selected branch. Pin the resulting image digest
 in `uat.yaml` before deployment; a cold build is too large for shell-01's
 local Docker disk. The normal DevSpace `build` command remains available on a
 machine with enough build storage.
