@@ -2,25 +2,25 @@
 {% extends theme("layout.html") %}
 {% block header %}
 <style>
-.shelf-actions {
+.standard-shelf-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
     align-items: center;
     justify-content: space-between;
-    background: #202c358c;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
     padding: 2rem;
     flex-direction: row;
     margin-inline: 15px;
     border-radius: 4px;
 }
-.magic-shelf-buttons {
+.standard-magic-shelf-buttons {
     display: flex;
     gap: 1rem;
 }
-/* Override caliBlur_override.css fixed positioning */
-.shelf-actions .filterheader {
+.standard-shelf-actions .filterheader {
     position: static !important;
     margin: 0 !important;
     display: block !important;
@@ -28,14 +28,14 @@
     float: none !important;
 }
 @media (max-width: 767px) {
-    .shelf-actions {
+    .standard-shelf-actions {
         flex-direction: column;
         align-items: stretch;
     }
-    .magic-shelf-buttons {
+    .standard-magic-shelf-buttons {
         justify-content: center;
     }
-    .shelf-actions .filterheader {
+    .standard-shelf-actions .filterheader {
         text-align: center;
     }
 }
@@ -44,12 +44,12 @@
 {% block body %}
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 {% if current_user.show_detail_random() and page != "discover" %}
-<div class="discover random-books">
-  <h2 class="random-books">{{_('Discover (Random Books)')}}</h2>
-  <div class="row display-flex">
+<div class="discover random-books standard-book-section" role="region" aria-labelledby="random-books-title">
+  <h2 id="random-books-title" class="random-books standard-section-title">{{_('Discover (Random Books)')}}</h2>
+  <div class="row display-flex standard-book-grid">
    {% for entry in random %}
-    <div class="col-sm-3 col-lg-2 col-xs-6 book session" id="books_rand">
-      <div class="cover">
+    <div class="col-sm-3 col-lg-2 col-xs-6 book session standard-book-card" id="books_rand">
+      <div class="cover standard-book-cover">
           <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
              {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
              data-book-id="{{ entry.Books.id }}"
@@ -61,7 +61,7 @@
               </span>
           </a>
       </div>
-      <div class="meta">
+      <div class="meta standard-book-meta">
         <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
           <p title="{{entry.Books.title}}" class="title">{{entry.Books.title|shortentitle}}</p>
         </a>
@@ -109,8 +109,8 @@
   </div>
 </div>
 {% endif %}
-<div class="discover load-more">
-  <h2 class="{{title}}">
+<div class="discover load-more standard-book-section">
+  <h2 class="{{title}} standard-section-title">
     {{title | safe}}
   </h2>
   {% if page == 'magicshelf' %}
@@ -121,9 +121,9 @@
   {% endif %}
 
   {% set show_shelf_actions = page != 'discover' %}
-  {% if show_shelf_actions %}<div class="shelf-actions">{% endif %}
+  {% if show_shelf_actions %}<div class="shelf-actions standard-shelf-actions">{% endif %}
     {% if page == 'magicshelf' %}
-    <div class="magic-shelf-buttons">
+    <div class="magic-shelf-buttons standard-magic-shelf-buttons">
         <a href="{{url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1, refresh=1)}}" 
            class="btn btn-default"
            style="display: flex;
@@ -165,7 +165,7 @@
     {% endif %}
 
    {% if page != 'discover' %}
-    <div class="filterheader hidden-xs">
+    <div class="filterheader standard-filterheader hidden-xs">
     {% if page == 'hot' %}
       <a data-toggle="tooltip" title="{{_('Sort ascending according to download count')}}" id="hot_asc" class="btn btn-primary{% if order == "hotasc" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='hotasc')}}"><span class="glyphicon glyphicon-sort-by-order"></span></a>
       <a data-toggle="tooltip" title="{{_('Sort descending according to download count')}}" id="hot_desc" class="btn btn-primary{% if order == "hotdesc" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='hotdesc')}}"><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
@@ -186,11 +186,11 @@
     </div>
    {% endif %}
   {% if show_shelf_actions %}</div>{% endif %}
-  <div class="row display-flex">
+  <div class="row display-flex standard-book-grid">
     {% if entries[0] %}
     {% for entry in entries %}
-    <div class="col-sm-3 col-lg-2 col-xs-6 book session" id="books">
-      <div class="cover">
+    <div class="col-sm-3 col-lg-2 col-xs-6 book session standard-book-card" id="books">
+      <div class="cover standard-book-cover">
           <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
              {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
              data-book-id="{{ entry.Books.id }}"
@@ -202,7 +202,7 @@
             </span>
           </a>
       </div>
-      <div class="meta">
+      <div class="meta standard-book-meta">
         <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
           <p title="{{ entry.Books.title }}" class="title">{{entry.Books.title|shortentitle}}</p>
         </a>
