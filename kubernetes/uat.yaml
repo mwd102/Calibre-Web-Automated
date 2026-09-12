@@ -73,7 +73,7 @@ spec:
         app.kubernetes.io/name: books-cwa-dev
         hyperion.mwd.lol/owner: manual
       annotations:
-        cwa.mwd.lol/source-commit: 48224dfbf0653177c9c79cce77e43a4d4ca82c11
+        cwa.mwd.lol/source-commit: 1ba1cec9d4899face27678dcf1c0b14596ca3460
     spec:
       automountServiceAccountToken: false
       imagePullSecrets:
@@ -93,7 +93,7 @@ spec:
             - {name: library, mountPath: /calibre-library}
       containers:
         - name: cwa
-          image: ghcr.io/mwd102/calibre-web-automated@sha256:9cc71fa12c35a684e05176cc9be83c3ac0bccd194754db286aa31b481bfd19ef
+          image: ghcr.io/mwd102/calibre-web-automated@sha256:1d2677d740d4bcd4d9ffc6fe515467e25130a946774d2e1b8b070162c8f4dc3c
           imagePullPolicy: Always
           env:
             - {name: PUID, value: "99"}
