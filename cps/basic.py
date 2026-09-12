@@ -4,8 +4,9 @@
 
 """Small upstream-compatible reader-oriented view.
 
-Only this blueprint selects the Simple theme.  The existing ``web`` blueprint
-continues to use CWA's flat-template renderer and caliBlur behavior.
+Only this blueprint selects the internal Simple view theme.  The existing
+``web`` blueprint continues to use the flat-template fallback while honoring
+the selected Standard or caliBlur theme.
 """
 
 from flask import Blueprint, redirect, request, url_for

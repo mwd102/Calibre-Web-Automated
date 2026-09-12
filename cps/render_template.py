@@ -221,33 +221,6 @@ def cwa_update_notification() -> None:
     else:
         return
 
-# Notify users once about theme migration to caliBlur
-def theme_migration_notification() -> None:
-    notice_file = '/app/theme_migration_notice'
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    
-    # Check if notification already shown today
-    if os.path.isfile(notice_file):
-        try:
-            with open(notice_file, 'r') as f:
-                last_notification = f.read().strip()
-                if last_notification == current_date:
-                    return
-        except Exception:
-            pass
-    
-    # Show notification
-    message = _("ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is temporarily disabled while we develop a new frontend for v5.0.0.")
-    flash(message, category="theme_migration")
-    
-    # Mark as shown today
-    try:
-        with open(notice_file, 'w') as f:
-            f.write(current_date)
-    except Exception as e:
-        print(f"[theme-migration-notification] Error writing notice file: {e}", flush=True)
-
-
 # Checks if translations are missing for the current language
 def translations_missing_notification() -> None:
     db = CWA_DB()
@@ -299,11 +272,6 @@ def render_title_template(*args, **kwargs):
             cwa_update_notification()
         except Exception as e:
             print(f"[cwa-update-notification-service] The following error occurred when checking for available updates:\n{e}", flush=True)
-    # Notify users about theme migration (once per day)
-    try:
-        theme_migration_notification()
-    except Exception as e:
-        print(f"[theme-migration-notification] Error showing theme migration notification: {e}", flush=True)
     # Notify any user if translations are missing for their language
     try:
         translations_missing_notification()
@@ -378,11 +346,11 @@ def render_title_template(*args, **kwargs):
     except Exception as e:
         log.debug("[cwa-duplicates] Failed to build duplicate notification context: %s", str(e))
     try:
-        return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
-                       accept=config.config_upload_formats.split(','),
-                       magic_shelf_routes=magic_shelf_routes,
-                       duplicate_notification=duplicate_notification,
-                       *args, **kwargs)
+        return themed_render(args[0], instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
+                             accept=config.config_upload_formats.split(','),
+                             magic_shelf_routes=magic_shelf_routes,
+                             duplicate_notification=duplicate_notification,
+                             **kwargs)
     except PermissionError:
         log.error("No permission to access {} file.".format(args[0]))
         abort(403)

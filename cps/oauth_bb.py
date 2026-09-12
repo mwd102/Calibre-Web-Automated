@@ -48,6 +48,7 @@ from flask_dance.contrib.github import make_github_blueprint, github
 from flask_dance.contrib.google import make_google_blueprint, google
 from oauthlib.oauth2 import TokenExpiredError, InvalidGrantError
 from .cw_login import login_user, current_user
+from . import themes
 from sqlalchemy.orm.exc import NoResultFound
 from .usermanagement import user_login_required
 
@@ -449,8 +450,7 @@ def register_user_from_generic_oauth(token=None):
         user.allowed_column_value = getattr(config, 'config_allowed_column_value', '')
         user.denied_column_value = getattr(config, 'config_denied_column_value', '')
         
-        # Force dark theme (light theme deprecated)
-        user.theme = 1
+        user.theme = themes.normalize_theme_id(getattr(config, 'config_theme', None))
             
         # Kobo sync setting defaults to 0 (disabled) for new users
         user.kobo_only_shelves_sync = 0

@@ -32,7 +32,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.exc import IntegrityError, OperationalError, InvalidRequestError
 from sqlalchemy.sql.expression import func, or_, text
 
-from . import constants, logger, helper, services, cli_param
+from . import constants, logger, helper, services, cli_param, themes
 from . import db, calibre_db, ub, web_server, config, updater_thread, gdriveutils, \
     kobo_sync_status, schedule
 from .helper import check_valid_domain, send_test_mail, reset_password, generate_password_hash, check_email, \
@@ -139,14 +139,20 @@ def before_request():
     g.allow_registration = config.config_public_reg
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
-    # Theme enforcement: light theme fully deprecated, force caliBlur (dark) in runtime
+    # Resolve the selected user theme once per request.  The registry only
+    # exposes configurable themes; internal view themes are selected by their
+    # own blueprint instead of being accepted as a persisted user preference.
     try:
-        g.current_theme = getattr(current_user, 'theme', config.config_theme)
-        if current_user.is_anonymous and not hasattr(current_user, 'theme'):
-            g.current_theme = config.config_theme
+        configured_theme = themes.normalize_theme_id(getattr(config, 'config_theme', None))
+        user_theme = getattr(current_user, 'theme', None)
+        if getattr(current_user, 'is_authenticated', False) and themes.is_valid_theme(user_theme):
+            g.current_theme = int(user_theme)
+        else:
+            g.current_theme = configured_theme
     except Exception:
-        g.current_theme = getattr(config, 'config_theme', 1)
-    g.current_theme = 1
+        g.current_theme = themes.CONFIG_DEFAULT_THEME_ID
+    g.theme = themes.get_theme(g.current_theme)
+    g.available_themes = themes.get_available_themes()
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',
@@ -898,6 +904,10 @@ def update_view_configuration():
         return view_configuration()
     _config_int(to_save, "config_restricted_column")
 
+    if not themes.is_valid_theme(to_save.get("config_theme")):
+        flash(_("Invalid Theme"), category="error")
+        log.debug("Invalid theme setting")
+        return view_configuration()
     _config_int(to_save, "config_theme")
     _config_int(to_save, "config_random_books")
     _config_int(to_save, "config_books_per_page")
@@ -2511,9 +2521,9 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.sidebar_view |= constants.DETAIL_RANDOM
 
     content.role = constants.selected_roles(to_save)
-    # Force dark theme (caliBlur = 1) for new users
+    # New users inherit the configured theme and may change it later.
     try:
-        content.theme = 1
+        content.theme = themes.normalize_theme_id(config.config_theme)
     except Exception:
         pass
     try:
@@ -2606,12 +2616,10 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             log.error(ex)
             flash(str(ex), category="error")
         return redirect(url_for('admin.admin'))
-    # Theme update for admin editing user (force dark)
+    # Theme update for admin editing user.
     if 'theme' in to_save:
-        try:
-            content.theme = 1
-        except Exception:
-            pass
+        if themes.is_valid_theme(to_save["theme"]):
+            content.theme = int(to_save["theme"])
     # Proceed with remaining updates (previously skipped when 'theme' in to_save)
     if not ub.session.query(ub.User).filter(ub.User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
                                             ub.User.id != content.id).count() and 'admin_role' not in to_save:

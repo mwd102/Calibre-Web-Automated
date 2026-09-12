@@ -18,6 +18,14 @@ def test_theme_lookup_falls_back_safely_and_forces_basic_to_simple():
     assert not themes.is_valid_theme("invalid")
 
 
+def test_theme_normalization_allows_user_themes_but_not_internal_views():
+    assert themes.normalize_theme_id(0) == 0
+    assert themes.normalize_theme_id("1") == 1
+    assert themes.normalize_theme_id(2) == themes.CONFIG_DEFAULT_THEME_ID
+    assert themes.normalize_theme_id("invalid", fallback=0) == 0
+    assert themes.normalize_theme_id(None, fallback="invalid") == themes.CONFIG_DEFAULT_THEME_ID
+
+
 def test_theme_template_path_rejects_traversal():
     assert themes.template_path("simple", "basic_index.html") == "simple/templates/basic_index.html"
     for name in ("../layout.html", "/layout.html", "nested\\layout.html"):

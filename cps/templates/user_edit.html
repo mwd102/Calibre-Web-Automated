@@ -271,7 +271,9 @@
       <div class="form-group">
         <label for="theme">{{ _('Theme') }}</label>
         <select name="theme" id="theme" class="form-control">
-          <option value="1" selected>caliBlur (Dark)</option>
+          {% for theme in g.available_themes %}
+          <option value="{{ theme['id'] }}" {% if theme['id'] == (content.theme if content.theme is not none else g.current_theme) %}selected{% endif %}>{{ _(theme['label']) }}</option>
+          {% endfor %}
         </select>
       </div>
     </div>

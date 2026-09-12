@@ -12,6 +12,9 @@ be introduced independently from the first alternate-view slice.
 from types import MappingProxyType
 
 
+CONFIG_DEFAULT_THEME_ID = 1
+
+
 def _theme(**values):
     """Create immutable theme metadata so callers cannot alter the registry."""
     return MappingProxyType(values)
@@ -25,6 +28,7 @@ THEMES = (
         configurable=True,
         css_files=(),
         js_files=(),
+        login_extra_buttons=(),
         body_class="",
         show_home_shortcuts=False,
         profile_dropdown=False,
@@ -42,6 +46,7 @@ THEMES = (
             "js/libs/readmore.min.js",
             "js/caliBlur.js",
         ),
+        login_extra_buttons=(),
         body_class="blur",
         show_home_shortcuts=True,
         profile_dropdown=True,
@@ -54,6 +59,7 @@ THEMES = (
         configurable=False,
         css_files=(),
         js_files=(),
+        login_extra_buttons=(),
         body_class="",
         show_home_shortcuts=False,
         profile_dropdown=False,
@@ -74,6 +80,27 @@ def get_available_themes():
 
 def get_default_theme():
     return DEFAULT_THEME
+
+
+def normalize_theme_id(theme_id, fallback=CONFIG_DEFAULT_THEME_ID):
+    """Return a valid configurable theme ID, or a safe fallback.
+
+    Theme IDs come from persisted settings and submitted form data.  Keep
+    unknown, non-configurable, and malformed values from selecting an
+    internal view theme such as Simple, or from causing a rendering error.
+    """
+    try:
+        theme_id = int(theme_id)
+    except (TypeError, ValueError):
+        theme_id = None
+
+    if is_valid_theme(theme_id):
+        return theme_id
+    try:
+        fallback = int(fallback)
+    except (TypeError, ValueError):
+        fallback = CONFIG_DEFAULT_THEME_ID
+    return fallback if is_valid_theme(fallback) else CONFIG_DEFAULT_THEME_ID
 
 
 def get_theme(theme_id):

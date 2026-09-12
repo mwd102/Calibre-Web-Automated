@@ -28,7 +28,7 @@ from sqlalchemy.sql.functions import coalesce
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from . import constants, logger, isoLanguages, services, helper
+from . import constants, logger, isoLanguages, services, helper, themes
 from . import db, ub, config, app
 from . import calibre_db, kobo_sync_status
 from .search import render_search_results, render_adv_search_results
@@ -2097,9 +2097,9 @@ def register_post():
         content.role = config.config_default_role
         content.locale = config.config_default_locale
         content.sidebar_view = config.config_default_show
-        # Default to configured theme for new self-registered users (fallback to caliBlur=1)
+        # Default to the configured theme for new self-registered users.
         try:
-            content.theme = getattr(config, 'config_theme', 1)
+            content.theme = themes.normalize_theme_id(getattr(config, 'config_theme', None))
         except Exception:
             pass
         try:
@@ -2495,12 +2495,10 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                     ub.session.delete(hidden)
                     log.info(f"User {current_user.id} unhid custom shelf {hidden.shelf_id}")
         
-        # Theme change (force dark)
+        # Theme change; ignore malformed or internal view-theme IDs.
         if 'theme' in to_save:
-            try:
-                current_user.theme = 1
-            except Exception:
-                pass
+            if themes.is_valid_theme(to_save["theme"]):
+                current_user.theme = int(to_save["theme"])
 
         # OPDS root order
         opds_order_raw = to_save.get("opds_root_order", "").strip()
