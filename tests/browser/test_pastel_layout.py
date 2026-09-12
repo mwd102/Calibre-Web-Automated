@@ -79,3 +79,17 @@ def test_book_popup_has_one_scroll_area_and_reachable_controls(pastel_page, widt
     last = page.locator('.meta-chip').last.bounding_box()
     body = page.locator('.modal-body').bounding_box()
     assert body['y'] <= last['y'] and last['y'] + last['height'] <= body['y'] + body['height'] + 1
+
+
+@pytest.mark.parametrize('width', [320, 390])
+def test_mobile_search_focus_fits_without_javascript(pastel_page, width):
+    page = pastel_page
+    page.set_viewport_size({'width': width, 'height': 844})
+    page.locator('.navbar > .container-fluid').evaluate('''e => {
+        e.insertAdjacentHTML('beforeend', '<form role="search"><div class="form-group"><input id="query" class="form-control" value="Gone World"></div></form>');
+    }''')
+    page.locator('#query').focus()
+    bounds = page.locator('#query').bounding_box()
+    assert 0 <= bounds['x'] < bounds['x'] + bounds['width'] <= width
+    assert bounds['width'] >= width - 100
+    assert page.locator('#query').evaluate('(e)=>getComputedStyle(e).color') == 'rgb(53, 50, 68)'

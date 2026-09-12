@@ -482,3 +482,30 @@ body.pastel.admin > div.container-fluid > div > div.col-sm-10 > div.container-fl
         background: var(--surface) !important;
     }
 }
+
+/* Search can receive focus before caliBlur's focus handler is registered. */
+@media (max-width: 767px) {
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > form[role=search]:focus-within {
+        left: 0; right: 0; width: 100%; z-index: 1100;
+        background: var(--surface) !important;
+    }
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > form[role=search]:focus-within > .form-group { width: 100%; }
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > form[role=search] #query:focus {
+        position: relative; left: 48px; margin: 0 !important;
+        width: calc(100vw - 96px) !important;
+        background: var(--surface) !important; color: var(--ink) !important;
+    }
+    body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > .col-sm-3 > .text-center > #delete {
+        position: static !important; width: auto !important; margin: 12px auto;
+    }
+    body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > .col-sm-3 > .text-center > #delete::before { display: none; }
+}
+body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > .col-sm-9 {
+    background: var(--surface) !important; border: 1px solid var(--line); border-radius: 12px;
+}
+body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > div:nth-child(10) > label::before {
+    color: var(--muted) !important; background: var(--surface) !important;
+}
+/* Bootstrap clearfix pseudo-elements otherwise occupy empty grid cells. */
+body.pastel .row.display-flex::before, body.pastel .row.display-flex::after { display: none; }
+body.pastel .discover > h2::after { background: #b1cbb8 !important; }
