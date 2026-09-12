@@ -623,6 +623,8 @@ def get_encryption_key(key_path):
         try:
             with open(key_file, "wb") as f:
                 f.write(key)
+            if os.name == "posix":
+                os.chmod(key_file, 0o600)
         except PermissionError as e:
             error = e
     return key, error
