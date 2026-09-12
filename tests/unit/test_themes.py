@@ -1,7 +1,9 @@
 """Focused tests for the incremental upstream-compatible theme slice."""
 
 from types import SimpleNamespace
+from urllib.parse import parse_qs, urlsplit
 
+import pytest
 from flask import Flask, g
 
 from cps import themes
@@ -116,3 +118,31 @@ def test_basic_index_renders_simple_template():
     assert "Test Library" in rendered
     assert "No Results Found" in rendered
     assert "caliBlur" not in rendered
+
+
+@pytest.mark.parametrize("destination_page", [1, 3])
+def test_other_page_url_uses_destination_page_in_query(destination_page):
+    from cps.jinjia import url_for_other_page
+
+    app = Flask(__name__)
+    app.add_url_rule("/basic", endpoint="basic.index", view_func=lambda: "")
+
+    with app.test_request_context("/basic?page=2&query=history"):
+        generated = urlsplit(url_for_other_page(destination_page))
+
+    assert generated.path == "/basic"
+    assert parse_qs(generated.query) == {
+        "page": [str(destination_page)],
+        "query": ["history"],
+    }
+
+
+def test_other_page_url_uses_destination_page_for_path_parameter():
+    from cps.jinjia import url_for_other_page
+
+    app = Flask(__name__)
+    app.add_url_rule("/basic/<int:page>", endpoint="basic.index", view_func=lambda page: "")
+
+    with app.test_request_context("/basic/2?page=2&query=history"):
+        assert url_for_other_page(1) == "/basic/1?query=history"
+        assert url_for_other_page(3) == "/basic/3?query=history"
