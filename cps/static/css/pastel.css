@@ -438,3 +438,32 @@ body.pastel .blur-wrapper { display: none !important; }
     }
 }
 .pastel #bookDetailsModal > .modal-dialog.modal-lg { transform: none !important; }
+
+/* Settings templates also contain dark inline surfaces. */
+body.pastel :is(.profile-header-container, .settings-container, .opds-order-item) {
+    background: var(--surface) !important;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+body.pastel .profile-header-container { background: var(--lavender) !important; }
+body.pastel :is(.profile-subtitle, .settings-explanation, .cwa-settings-disclaimer, .opds-order-toggle) {
+    color: var(--muted) !important;
+}
+body.pastel :is(.opds-order-label, .opds-order-drag-handle) { color: var(--ink) !important; }
+body.pastel .profile-picture:not([style*="background-image"]) { filter: brightness(.45); }
+body.pastel .cwa-settings-tip {
+    background: var(--sage) !important;
+    color: #345b42 !important;
+    border-color: #a9c5b2 !important;
+}
+body.pastel .table { background: var(--surface) !important; }
+body.pastel .table a:not(.btn) { color: var(--accent) !important; }
+body.pastel .btn a { color: inherit !important; }
+@media (max-width: 767px) {
+    body.pastel.me > div.container-fluid > div > div.col-sm-10 > div.discover[name="profile-page"] {
+        margin: 20px 12px !important;
+        width: calc(100% - 24px) !important;
+    }
+    body.pastel .settings-container { padding: 20px 16px; }
+}
+body.pastel .modal-header .close { color: var(--ink) !important; opacity: 1; text-shadow: none; }
