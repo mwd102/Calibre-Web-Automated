@@ -1,0 +1,81 @@
+{#
+  caliBlur search view.
+
+  Search behavior stays in the shared Standard template so result data,
+  controls, routes, and modal hooks remain in one implementation.  This
+  wrapper supplies only the caliBlur presentation layer.
+#}
+{% extends "standard/templates/search.html" %}
+
+{% block header %}
+    {{ super() }}
+    <style>
+        .caliblur-search > .discover {
+            color: hsla(0, 0%, 100%, .7);
+        }
+
+        .caliblur-search > .discover > h2 {
+            color: #eee;
+            font-family: "Open Sans Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            letter-spacing: .02em;
+            position: relative;
+        }
+
+        .caliblur-search > .discover > h2::after {
+            background: #cc7b19;
+            content: "";
+            display: block;
+            height: 2px;
+            margin-top: 8px;
+            opacity: .8;
+            width: 3rem;
+        }
+
+        .caliblur-search .book.session {
+            transition: transform .15s ease-in-out;
+        }
+
+        .caliblur-search .book.session:hover {
+            transform: translateY(-3px);
+        }
+
+        .caliblur-search .book-cover-link:focus-visible {
+            outline: 2px solid #cc7b19;
+            outline-offset: 4px;
+        }
+
+        .caliblur-search #shelf-actions {
+            background: #202c358c;
+            border-radius: 4px;
+            margin: 0 15px 20px;
+            padding: 2rem;
+        }
+
+        .caliblur-search .filterheader {
+            margin: 20px 0;
+            padding: 0 10px 0 20px;
+        }
+
+        @media (max-width: 767px) {
+            .caliblur-search > .discover > h2::after {
+                margin-top: 6px;
+            }
+
+            .caliblur-search #shelf-actions {
+                margin-inline: 10px;
+                padding: 1.5rem;
+            }
+
+            .caliblur-search .filterheader {
+                margin: 15px 0;
+                padding: 0 10px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="caliblur-search" data-theme-layout="caliblur">
+        {{ super() }}
+    </div>
+{% endblock %}
