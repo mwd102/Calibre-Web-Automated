@@ -19,10 +19,9 @@
     {% block header %}{% endblock %}
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/upload.css') }}" rel="stylesheet" media="screen">
-    {% if g.current_theme == 1 %}
-      <link href="{{ url_for('static', filename='css/caliBlur.css') }}" rel="stylesheet" media="screen">
-      <link href="{{ url_for('static', filename='css/caliBlur_override.css') }}" rel="stylesheet" media="screen">
-    {% endif %}
+    {% for css_file in g.theme.css_files %}
+      <link href="{{ url_for('static', filename=css_file) }}" rel="stylesheet" media="screen">
+    {% endfor %}
     <link href="{{ url_for('static', filename='css/cwa.css') }}" rel="stylesheet" media="screen">
     {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
     <link href="{{ url_for('static', filename='css/duplicates-notifications.css') }}" rel="stylesheet" media="screen">
@@ -90,7 +89,7 @@
 
     </script>
   </head>
-  <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
+  <body class="{{ page }} {{ bodyClass }} {{ g.theme.body_class }}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">
@@ -104,7 +103,7 @@
           </button>
           <a class="navbar-brand" href="{{url_for('web.index')}}">{{instance}}</a>
         </div>
-        {% if g.current_theme == 1 %}
+        {% if g.theme.show_home_shortcuts %}
             <div class="home-btn"><a class="home-btn-tooltip" href="{{url_for("web.index",page=1)}}" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Home"></a></div>
             <div class="plexBack"><a href="{{url_for('web.index')}}"></a></div>
         {% endif %}
@@ -127,7 +126,7 @@
           {% endif %}
           <ul class="nav navbar-nav navbar-right" id="main-nav">
             {% if current_user.is_authenticated or g.allow_anonymous %}
-              {% if g.current_theme == 1 %}
+              {% if g.theme.profile_dropdown %}
               <li class="dropdown"><a href="#" class="dropdown-toggle profileDrop" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span></a>
                 <ul class="dropdown-menu profileDropli">
                     <li><a id="top_user" data-text="{{_('Account')}}" href="{{url_for('web.profile')}}"><span class="glyphicon glyphicon-user"></span> <span class="hidden-sm">{{current_user.name}}</span></a></li>
@@ -166,14 +165,14 @@
                 <li><a id="top_admin" data-text="{{_('Settings')}}" href="{{url_for('admin.admin')}}"><span class="glyphicon glyphicon-dashboard"></span> <span class="hidden-sm">{{_('Admin')}}</span></a></li>
               {% endif %}
               <li><a id="refresh-library" style="cursor: pointer;" data-text="{{_('Refresh Library')}}" onclick="refreshLibrary()"><span class="glyphicon glyphicon-refresh"></span> <span class="hidden-sm">{{_('Refresh Library')}}</span></a></li>
-              {% if g.current_theme == 0 %}
+              {% if not g.theme.profile_dropdown %}
               <li><a id="top_user" data-text="{{_('Account')}}" href="{% if not current_user.is_anonymous %}{{url_for('web.profile')}}{% else %}{{url_for('web.login', next=(request.path + "?" + request.query_string.decode("utf-8")).rstrip("?"))}}{% endif %}"><span class="glyphicon glyphicon-user"></span> <span class="hidden-sm">{{current_user.name}}</span></a></li>
                 {% if not current_user.is_anonymous %}
                 <li><a id="logout" href="{{url_for('web.logout', next=(request.path + "?" + request.query_string.decode("utf-8")).rstrip("?"))}}"><span class="glyphicon glyphicon-log-out"></span> <span class="hidden-sm">{{_('Logout')}}</span></a></li>
                 {% endif %}
               {% endif %}
             {% endif %}
-            {% if g.allow_registration and not current_user.is_authenticated and g.current_theme == 0 %}
+            {% if g.allow_registration and not current_user.is_authenticated and not g.theme.profile_dropdown %}
             <li><a id="login" href="{{url_for('web.login')}}"><span class="glyphicon glyphicon-log-in"></span> {{_('Login')}}</a></li>
             <li><a id="register" href="{{url_for('web.register')}}"><span class="glyphicon glyphicon-user"></span> {{_('Register')}}</a></li>
             {% endif %}
@@ -267,7 +266,7 @@
       {%endif%}
     {% endfor %}
     {% block flash %}{% endblock %}
-    {% if g.current_theme == 1 %}
+    {% if g.theme.show_upload_loader %}
       <div id="loader" hidden="true">
         <center>
           <h3>{{_('Uploading...')}}</h3>
@@ -387,10 +386,8 @@
     <script src="{{ url_for('static', filename='js/libs/jquery.form.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/uploadprogress.js') }}"> </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    {% if g.current_theme == 1 %}
-      <script src="{{ url_for('static', filename='js/libs/jquery.visible.min.js') }}"></script>
-      <script src="{{ url_for('static', filename='js/libs/compromise.min.js') }}"></script>
-      <script src="{{ url_for('static', filename='js/libs/readmore.min.js') }}"></script>
+    {% for js_file in g.theme.js_files %}
+      {% if js_file == 'js/caliBlur.js' %}
       <script>
         // Make script root available for JS
         window.scriptRoot = "{{ request.script_root }}";
@@ -404,8 +401,9 @@
         // Add user permissions
         window.cwaUserData.canEditBooks = {{ 'true' if current_user.role_edit() else 'false' }};
       </script>
-      <script src="{{ url_for('static', filename='js/caliBlur.js') }}"></script>
-    {% endif %}
+      {% endif %}
+      <script src="{{ url_for('static', filename=js_file) }}"></script>
+    {% endfor %}
     {% block js %}{% endblock %}
     {% if current_user.is_authenticated %}
     <script src="{{ url_for('static', filename='user-profile-data/CWA-profile-updater.js') }}"></script>
