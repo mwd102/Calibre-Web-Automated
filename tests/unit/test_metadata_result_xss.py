@@ -80,6 +80,7 @@ def test_metadata_serializer_keeps_http_and_local_urls():
 
     assert serializers["_safe_metadata_url"](" https://example.test/book ") == "https://example.test/book"
     assert serializers["_safe_metadata_url"]("/static/cover.jpg") == "/static/cover.jpg"
+    assert serializers["_safe_metadata_url"]("//evil.example/cover.jpg") == ""
     assert serializers["_safe_metadata_url"]("mailto:author@example.test") == ""
     assert serializers["_safe_metadata_url"]("data:image/svg+xml,<svg>") == ""
 

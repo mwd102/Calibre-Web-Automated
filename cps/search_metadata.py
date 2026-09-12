@@ -38,7 +38,7 @@ def _safe_metadata_url(value):
     parsed = urlsplit(value)
     if parsed.scheme in ("http", "https"):
         return value
-    if not parsed.scheme and value.startswith("/"):
+    if not parsed.scheme and value.startswith("/") and not value.startswith("//"):
         return value
     return ""
 
