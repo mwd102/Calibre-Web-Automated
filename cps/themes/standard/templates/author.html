@@ -1,28 +1,168 @@
+{% import theme('image.html') as image %}
 {% extends theme("layout.html") %}
+{% block header %}
+<style>
+.standard-author-page {
+    margin-bottom: 50px;
+}
+
+.standard-author-page .standard-author-heading,
+.standard-author-page .standard-author-section-heading {
+    margin: 0 0 1.5rem;
+    font-weight: 600;
+}
+
+.standard-author-page .standard-author-profile {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin: 0 15px 2rem;
+    padding: 1.5rem;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.standard-author-page .standard-author-profile .author-photo {
+    float: none;
+    flex: 0 0 auto;
+    width: 120px;
+    max-width: 100%;
+    height: auto;
+    margin: 0;
+    border: 1px solid #ddd;
+}
+
+.standard-author-page .standard-author-profile-content {
+    flex: 1 1 280px;
+    min-width: 0;
+}
+
+.standard-author-page .standard-author-profile-content p:last-child {
+    margin-bottom: 0;
+}
+
+.standard-author-page .standard-author-profile .author-link {
+    white-space: nowrap;
+}
+
+.standard-author-page .standard-author-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.standard-author-page .standard-author-controls .filterheader {
+    position: static !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: auto !important;
+    margin: 0 !important;
+    float: none !important;
+}
+
+.standard-author-page .standard-author-grid {
+    margin-top: 0;
+}
+
+.standard-author-page .standard-author-card {
+    margin-bottom: 1.5rem;
+    padding: 10px;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.standard-author-page .standard-author-cover {
+    margin-bottom: 8px;
+}
+
+.standard-author-page .standard-author-cover img {
+    border: 1px solid #eee;
+    box-shadow: none;
+}
+
+.standard-author-page .standard-author-meta {
+    min-width: 0;
+    margin-top: 0;
+}
+
+.standard-author-page .standard-author-meta .title {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.standard-author-page .standard-author-meta .author,
+.standard-author-page .standard-author-meta .series {
+    margin-bottom: 0.5rem;
+}
+
+.standard-author-page .standard-author-more {
+    margin-top: 2rem;
+}
+
+.standard-author-page .standard-author-more-link {
+    display: inline-block;
+    margin-top: 1rem;
+}
+
+@media (max-width: 767px) {
+    .standard-author-page .standard-author-profile {
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .standard-author-page .standard-author-profile-content {
+        flex-basis: auto;
+    }
+
+    .standard-author-page .standard-author-controls {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .standard-author-page .standard-author-controls .filterheader {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
 {% block body %}
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-<h2>{{title}}</h2>
+<div class="standard-author-page">
+<h2 class="standard-author-heading">{{title}}</h2>
 
 {% if author is not none %}
-<section class="author-bio">
+<section class="author-bio standard-author-profile" aria-labelledby="standard-author-name">
   {%if author.image_url is not none %}
   <img title="{{author.name}}" src="{{author.image_url}}" alt="{{author.name}}" class="author-photo pull-left">
   {% endif %}
 
-  {%if author.safe_about is not none %}
-  <p>{{author.safe_about|safe}}</p>
-  {% endif %}
+  <div class="standard-author-profile-content">
+    <h3 id="standard-author-name" class="standard-author-section-heading">{{author.name.replace('|',',')}}</h3>
+    {%if author.safe_about is not none %}
+    <p>{{author.safe_about|safe}}</p>
+    {% endif %}
 
-  - {{_("via")}} <a href="{{author.link}}" class="author-link" target="_blank" rel="noopener">Goodreads</a>
+    - {{_("via")}} <a href="{{author.link}}" class="author-link" target="_blank" rel="noopener">Goodreads</a>
+  </div>
 </section>
 
 <div class="clearfix"></div>
 {% endif %}
 
-<div class="discover load-more">
+<div class="discover load-more standard-author-library">
   {% if author is not none %}
-    <h3>{{_("In Library")}}</h3>
+    <h3 class="standard-author-section-heading">{{_("In Library")}}</h3>
   {% endif %}
+  <div class="standard-author-controls">
     <div class="filterheader hidden-xs">
       <a id="new" data-toggle="tooltip" title="{{_('Sort according to book date, newest first')}}" class="btn btn-primary{% if order == "new" %} active{% endif%}" href="{{url_for('web.books_list', data='author', book_id=id, sort_param='new')}}"><span class="glyphicon glyphicon-book"></span> <span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order"></span></a>
       <a id="old" data-toggle="tooltip" title="{{_('Sort according to book date, oldest first')}}" class="btn btn-primary{% if order == "old" %} active{% endif%}" href="{{url_for('web.books_list', data='author', book_id=id, sort_param='old')}}"><span class="glyphicon glyphicon-book"></span> <span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
@@ -31,10 +171,11 @@
       <a id="pub_new" data-toggle="tooltip" title="{{_('Sort according to publishing date, newest first')}}" class="btn btn-primary{% if order == "pubnew" %} active{% endif%}" href="{{url_for('web.books_list', data='author', book_id=id, sort_param='pubnew')}}"><span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order"></span></a>
       <a id="pub_old" data-toggle="tooltip" title="{{_('Sort according to publishing date, oldest first')}}" class="btn btn-primary{% if order == "pubold" %} active{% endif%}" href="{{url_for('web.books_list', data='author', book_id=id, sort_param='pubold')}}"><span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
     </div>
-  <div class="row display-flex">
+  </div>
+  <div class="row display-flex standard-author-grid">
     {% for entry in entries %}
-    <div id="books" class="col-sm-3 col-lg-2 col-xs-6 book session">
-      <div class="cover">
+    <div id="books" class="col-sm-3 col-lg-2 col-xs-6 book isotope-item session standard-author-card">
+      <div class="cover standard-author-cover">
         <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
            {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
            data-book-id="{{ entry.Books.id }}"
@@ -46,7 +187,7 @@
             </span>
         </a>
       </div>
-      <div class="meta">
+      <div class="meta standard-author-meta">
         <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
           <p title="{{ entry.Books.title }}" class="title">{{entry.Books.title|shortentitle}}</p>
         </a>
@@ -98,17 +239,17 @@
 </div>
 
 {% if other_books and author is not none %}
-<div class="discover">
-  <h3>{{_("More by")}} {{ author.name.replace('|',',') }}</h3>
-  <div class="row">
+<div class="discover standard-author-more">
+  <h3 class="standard-author-section-heading">{{_("More by")}} {{ author.name.replace('|',',') }}</h3>
+  <div class="row display-flex standard-author-grid">
     {% for entry in other_books %}
-    <div class="col-sm-3 col-lg-2 col-xs-6 book session">
-      <div class="cover">
+    <div class="col-sm-3 col-lg-2 col-xs-6 book isotope-item session standard-author-card">
+      <div class="cover standard-author-cover">
         <a href="https://www.goodreads.com/book/show/{{ entry.gid['#text'] }}" target="_blank" rel="noopener">
           <img title="{{entry.title}}" src="{{ entry.image_url }}" />
         </a>
       </div>
-      <div class="meta">
+      <div class="meta standard-author-meta">
         <p title="{{ entry.title }}" class="title">{{entry.title|shortentitle}}</p>
         <p class="author">
 		  {% for author in entry.authors %}
@@ -145,9 +286,10 @@
     {% endfor %}
   </div>
 
-  <a href="{{author.link}}" class="author-link" target="_blank" rel="noopener">
+  <a href="{{author.link}}" class="author-link standard-author-more-link" target="_blank" rel="noopener">
     <img src="{{ url_for('static', filename='img/goodreads.svg') }}" alt="Goodreads">
   </a>
 </div>
 {% endif %}
+</div>
 {% endblock %}
