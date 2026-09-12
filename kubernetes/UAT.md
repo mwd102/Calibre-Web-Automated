@@ -25,12 +25,31 @@ the repository README; change that password on first login before inviting
 other reviewers. No SMTP credentials or production book data are copied into
 this instance.
 
+The current private review route is
+`https://shell-01.tailcff11.ts.net:18083/`. On shell-01, a persistent user
+service forwards local port 18083 to `svc/books-cwa-dev:8083`, and Tailscale
+Serve publishes that port to the Tailnet. The route has no Cloudflare or public
+ingress. Check the forwarding service with
+`systemctl --user status cwa-uat-portforward.service` and the Tailnet mapping
+with `tailscale serve status`.
+
 The initial review should cover login, selecting Standard and caliBlur themes,
 search and book details in each theme, upload/ingest of a disposable book,
 metadata editing, shelves, and the admin settings. Test Kobo, OAuth, LDAP,
 mail delivery, and external metadata providers only after configuring separate
 UAT credentials or fixtures for those paths.
 
+The initial disposable TXT ingest succeeded and produced an EPUB in the UAT
+library. KOReader checksum generation logged `no such table:
+book_format_checksums` on this fresh install; investigate that separately
+before accepting KOReader sync as tested.
+
 `devspace purge` removes DevSpace-managed resources, including the UAT claims.
 Export anything you want to retain before purging. Do not use it while UAT is
 still in progress.
+
+When UAT is complete, disable the Tailnet mapping with
+`sudo tailscale serve --https=18083 off`, stop the forwarding service with
+`systemctl --user stop cwa-uat-portforward.service`, and then run `devspace
+purge` with the same explicit kubeconfig and namespace. These are separate
+steps so the review route can be removed without deleting UAT data.
