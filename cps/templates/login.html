@@ -42,7 +42,7 @@
     {% endif %}
 
     {% endif %}
-    {% if g.current_theme == 1 %}
+    {% if g.theme.profile_dropdown %}
     {% if g.allow_registration %}
     <a class="btn btn-default" id="register" href="{{url_for('web.register')}}"><span
         class="glyphicon glyphicon-user"></span> {{_('Register')}}</a>
