@@ -200,3 +200,20 @@ separate from this successful GHCR-only build.
 Final live checks passed for home/book pages at 390, 768, and 1440 pixels,
 including distinct header/sidebar gradients, no horizontal overflow, and the
 description above metadata. Real XHR details and login health returned HTTP 200.
+
+## Header and interaction polish (2026-09-12)
+
+PR #11 moves the library name into the top bar and reserves responsive space
+for search/actions. The sidebar starts below the header. Directional gradients,
+soft shadows, inset highlights, and short hover transitions add depth; reduced
+motion disables movement. Source: `892f628dba9dda3ebbce641a7de9c24cf2b4daad`;
+GHCR-only build: `34724331244`.
+
+Eight browser regressions pass. Authenticated checks cover header alignment,
+brand/search separation, and overflow at 320, 390, 768, 1024, 1280, and 1440px,
+plus book description ordering and reduced-motion behavior.
+Final deployed image:
+`sha256:c3832db598ebe98000d560a2a3d840ac22fa0b423e8e6869d45fd603aa5b2a85`.
+The stylesheet hash matches source. All six live viewport checks and the book/
+reduced-motion checks passed against this image. CI smoke/unit, browser security,
+and policy checks pass.
