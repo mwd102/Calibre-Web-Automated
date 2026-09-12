@@ -467,3 +467,18 @@ body.pastel .btn a { color: inherit !important; }
     body.pastel .settings-container { padding: 20px 16px; }
 }
 body.pastel .modal-header .close { color: var(--ink) !important; opacity: 1; text-shadow: none; }
+body.pastel .table > :is(thead, tbody, tfoot) > tr > :is(th, td) {
+    background: transparent !important;
+    border-color: var(--line) !important;
+}
+body.pastel .table > tbody > tr { background: var(--surface) !important; }
+body.pastel .table-striped > tbody > tr:nth-of-type(odd) { background: var(--lavender) !important; }
+body.pastel.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row:first-of-type > div.col > h2::before {
+    color: var(--muted) !important;
+    background: var(--surface) !important;
+}
+@media (max-width: 767px) {
+    body.pastel > div.container-fluid > div > div.col-sm-10 > div.discover > :is(h1, h2) {
+        background: var(--surface) !important;
+    }
+}
