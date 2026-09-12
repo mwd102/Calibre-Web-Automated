@@ -45,6 +45,12 @@ from .string_helper import strip_whitespaces
 
 log = logger.create()
 
+
+def _sqlite_string_literal(value):
+    """Escape a value embedded in a SQLite string literal."""
+    return str(value).replace("'", "''")
+
+
 cc_exceptions = ['composite', 'series']
 cc_classes = {}
 
@@ -735,8 +741,10 @@ class CalibreDB:
                                          poolclass=StaticPool)
             enable_sqlite_foreign_keys(check_engine)
             with check_engine.begin() as connection:
-                connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
-                connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
+                connection.execute(text("attach database '{}' as calibre;".format(
+                    _sqlite_string_literal(dbpath))))
+                connection.execute(text("attach database '{}' as app_settings;".format(
+                    _sqlite_string_literal(app_db_path))))
                 # Try enabling WAL to improve concurrency unless running on a network share
                 # Controlled by env var NETWORK_SHARE_MODE (default False)
                 try:
@@ -796,8 +804,10 @@ class CalibreDB:
                                            poolclass=StaticPool)
                 enable_sqlite_foreign_keys(cls.engine)
                 with cls.engine.begin() as connection:
-                    connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
-                    connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
+                    connection.execute(text("attach database '{}' as calibre;".format(
+                        _sqlite_string_literal(dbpath))))
+                    connection.execute(text("attach database '{}' as app_settings;".format(
+                        _sqlite_string_literal(app_db_path))))
                     # Try enabling WAL to improve concurrency unless running on a network share
                     # Controlled by env var NETWORK_SHARE_MODE (default False)
                     try:
