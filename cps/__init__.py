@@ -26,7 +26,7 @@ from .dep_check import dependency_check
 from .updater import Updater
 from . import config_sql
 from . import cache_buster
-from . import ub, db, magic_shelf
+from . import ub, db, magic_shelf, themes
 from .secret_helper import get_secret
 
 try:
@@ -91,6 +91,10 @@ app.jinja_loader = ChoiceLoader([
     FileSystemLoader(os.path.join(app.root_path, 'themes')),
     app.jinja_loader,
 ])
+# Upstream-compatible helper used by migrated theme templates.  It resolves
+# to the active theme only when that themed template exists, preserving the
+# current flat CWA template tree during the staged migration.
+app.jinja_env.globals['theme'] = themes.resolve_template
 
 # Fix for running behind reverse proxy (e.g. nginx, apache, caddy, ...)
 # Without it, url_for will generate http:// urls even if https:// is used

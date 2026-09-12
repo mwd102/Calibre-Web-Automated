@@ -11,6 +11,9 @@ be introduced independently from the first alternate-view slice.
 
 from types import MappingProxyType
 
+from flask import current_app, g, request
+from jinja2 import TemplateNotFound
+
 
 CONFIG_DEFAULT_THEME_ID = 1
 
@@ -145,3 +148,30 @@ def template_path(identifier, template_name):
     if identifier not in THEMES_BY_IDENTIFIER:
         raise ValueError("Unknown theme identifier")
     return f"{identifier}/templates/{template_name}"
+
+
+def resolve_template(template_name, theme_id=None):
+    """Return a themed template path when it exists, otherwise the flat path.
+
+    This is the compatibility equivalent of upstream's ``theme()`` Jinja
+    helper.  Theme migration can therefore happen one template at a time:
+    existing CWA templates continue to resolve from ``cps/templates`` until a
+    theme-specific version is present.
+    """
+    if theme_id is None:
+        theme_id = getattr(g, "current_theme", CONFIG_DEFAULT_THEME_ID)
+    identifier = get_theme_identifier(theme_id, request_blueprint_name())
+    themed_name = template_path(identifier, template_name)
+    try:
+        current_app.jinja_loader.get_source(current_app.jinja_env, themed_name)
+    except (TemplateNotFound, AttributeError):
+        return template_name
+    return themed_name
+
+
+def request_blueprint_name():
+    """Return the active blueprint without requiring a request at import time."""
+    try:
+        return request.blueprint
+    except RuntimeError:
+        return None

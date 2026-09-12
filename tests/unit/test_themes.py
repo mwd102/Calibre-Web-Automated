@@ -37,6 +37,23 @@ def test_theme_template_path_rejects_traversal():
             raise AssertionError("unsafe template path was accepted")
 
 
+def test_theme_helper_prefers_existing_theme_template_and_falls_back(tmp_path):
+    from jinja2 import ChoiceLoader, FileSystemLoader
+
+    (tmp_path / "standard" / "templates").mkdir(parents=True)
+    (tmp_path / "standard" / "templates" / "modal.html").write_text(
+        "standard modal", encoding="utf-8"
+    )
+    (tmp_path / "flat.html").write_text("flat", encoding="utf-8")
+    app = Flask(__name__, template_folder=str(tmp_path))
+    app.jinja_loader = ChoiceLoader([FileSystemLoader(str(tmp_path))])
+
+    with app.test_request_context("/"):
+        g.current_theme = 0
+        assert themes.resolve_template("modal.html") == "standard/templates/modal.html"
+        assert themes.resolve_template("flat.html") == "flat.html"
+
+
 def test_theme_render_falls_back_to_flat_loader(tmp_path):
     (tmp_path / "fallback.html").write_text("flat fallback", encoding="utf-8")
     app = Flask(__name__, template_folder=str(tmp_path))
