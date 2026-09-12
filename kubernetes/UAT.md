@@ -70,6 +70,12 @@ The Job refuses a stale/missing source or an active UAT SQLite WAL. It retains t
 The first Job attempt failed on a JuiceFS SQLite backup read before replacing
 the UAT catalog. This retry reads the production snapshot as an atomic file,
 checks its SQLite integrity, and reuses the verified UAT backup.
+On 2026-09-12, the retry completed with 5,608 imported entries, preserving the
+original one-entry UAT catalog. SQLite `quick_check` passed on the UAT copy;
+production and UAT deployments were both 1/1 ready, and the private review
+route returned HTTP 302 to login. The first failed Job remains as an audit
+record. Rollback is to stop UAT, restore the saved UAT catalog to
+`metadata.db`, then restart UAT; production needs no rollback.
 This is catalog-only: book files and covers are not cloned or mounted, so
 downloads and file-based operations will not work for production entries.
 Do not use destructive library actions while reviewing this catalog. UAT's
