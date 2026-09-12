@@ -281,6 +281,22 @@ class TestOAuthLogic:
             }
         ]
 
+        # Callbacks are registered at application initialization, not exposed
+        # as module globals. Capture the actual signal receivers for testing.
+        self.receivers = {}
+
+        def capture_receiver(*args, **kwargs):
+            def register(receiver):
+                self.receivers[receiver.__name__] = receiver
+                return receiver
+            return register
+
+        with patch.object(oauth_bb, 'generate_oauth_blueprints',
+                          return_value=oauth_bb.oauthblueprints), \
+                patch.object(oauth_bb.oauth_authorized, 'connect_via',
+                             side_effect=capture_receiver):
+            oauth_bb.init_oauth_blueprints()
+
     def test_register_user_uses_manual_session(self):
         """
         Verify register_user_from_generic_oauth uses manual session instantiation
@@ -297,10 +313,9 @@ class TestOAuthLogic:
             assert call_args is not None
             assert call_args[1].get('token') == token
 
-    def test_generic_logged_in_aborts(self):
+    def test_generic_logged_in_returns_response(self):
         """
-        Verify generic_logged_in calls abort() when a response is received.
-        This confirms the 'Direct Login' flow is active.
+        Verify the Generic OAuth receiver returns the direct-login response.
         """
         token = {'access_token': 'test_token'}
         
@@ -317,12 +332,13 @@ class TestOAuthLogic:
             with patch.object(oauth_bb, 'abort') as mock_abort:
                 # Also patch log to see errors
                 with patch.object(oauth_bb, 'log') as mock_log:
-                    oauth_bb.generic_logged_in(mock_blueprint, token)
+                    response = self.receivers['generic_logged_in'](mock_blueprint, token)
                     
                     # Check if register was called
                     assert mock_reg.called, "register_user_from_generic_oauth was not called"
                     
-                    mock_abort.assert_called_once_with(mock_response)
+                    assert response is mock_response
+                    mock_abort.assert_not_called()
 
     def test_github_logged_in_aborts(self):
         """
@@ -337,7 +353,7 @@ class TestOAuthLogic:
         with patch.object(oauth_bb, 'bind_oauth_or_register', return_value=mock_response) as mock_bind:
             with patch.object(oauth_bb, 'abort') as mock_abort:
                 with patch.object(oauth_bb, 'oauth_update_token'):
-                    oauth_bb.github_logged_in(mock_blueprint, token)
+                    self.receivers['github_logged_in'](mock_blueprint, token)
                     
                     mock_bind.assert_called()
                     mock_abort.assert_called_once_with(mock_response)
@@ -355,7 +371,7 @@ class TestOAuthLogic:
         with patch.object(oauth_bb, 'bind_oauth_or_register', return_value=mock_response) as mock_bind:
             with patch.object(oauth_bb, 'abort') as mock_abort:
                 with patch.object(oauth_bb, 'oauth_update_token'):
-                    oauth_bb.google_logged_in(mock_blueprint, token)
+                    self.receivers['google_logged_in'](mock_blueprint, token)
                     
                     mock_bind.assert_called()
                     mock_abort.assert_called_once_with(mock_response)
