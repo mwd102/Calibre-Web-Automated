@@ -13,6 +13,7 @@ TESTING_STRATEGY.md
 
 # Enviroment Guff
 .devcontainer
+.devspace/
 poetry.lock
 replit.nix
 .replit

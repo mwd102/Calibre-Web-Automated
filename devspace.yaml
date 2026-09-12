@@ -1,0 +1,34 @@
+version: v2beta1
+name: calibre-web-automated-uat
+
+pipelines:
+  deploy: |-
+    build_images --all
+    create_deployments --all
+  dev: |-
+    build_images --all
+    create_deployments --all
+    start_dev --all
+
+images:
+  cwa:
+    image: ghcr.io/mwd102/calibre-web-automated
+    dockerfile: ./Dockerfile
+    context: ./
+    network: host
+    buildArgs:
+      VERSION: UAT
+
+deployments:
+  cwa-uat:
+    kubectl:
+      manifests:
+        - ./kubernetes/uat.yaml
+
+dev:
+  cwa:
+    labelSelector:
+      app.kubernetes.io/name: books-cwa-dev
+    container: cwa
+    ports:
+      - port: 8083:8083

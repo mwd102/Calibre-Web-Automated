@@ -1,0 +1,125 @@
+apiVersion: secrets.infisical.com/v1beta1
+kind: InfisicalStaticSecret
+metadata:
+  name: books-cwa-dev-ghcr-registry
+  labels:
+    hyperion.mwd.lol/owner: manual
+spec:
+  infisicalAuthRef:
+    name: hyperion
+    namespace: infisical-system
+  syncOptions:
+    refreshInterval: 1m
+    instantUpdates: false
+  sources:
+    - projectId: fbe3be60-360e-49c0-93d4-65b0f1dd7a7f
+      environmentSlug: prod
+      secretPath: /registry/ghcr
+  targets:
+    - name: books-cwa-dev-ghcr-pull
+      namespace: books
+      kind: Secret
+      creationPolicy: Owner
+      secretType: kubernetes.io/dockerconfigjson
+      template:
+        engineVersion: v1
+        data:
+          .dockerconfigjson: |
+            {"auths":{"ghcr.io":{"username":"{{ secretFrom "/registry/ghcr" "GHCR_USERNAME" }}","password":"{{ secretFrom "/registry/ghcr" "GHCR_TOKEN" }}"}}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: books-cwa-dev-config
+  labels:
+    hyperion.mwd.lol/owner: manual
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn-ovh
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: books-cwa-dev-library
+  labels:
+    hyperion.mwd.lol/owner: manual
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn-ovh
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: books-cwa-dev
+  labels:
+    app.kubernetes.io/name: books-cwa-dev
+    hyperion.mwd.lol/owner: manual
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: books-cwa-dev
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: books-cwa-dev
+        hyperion.mwd.lol/owner: manual
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: books-cwa-dev-ghcr-pull
+      nodeSelector:
+        topology.kubernetes.io/zone: ovh
+      containers:
+        - name: cwa
+          image: ghcr.io/mwd102/calibre-web-automated
+          imagePullPolicy: Always
+          env:
+            - {name: PUID, value: "99"}
+            - {name: PGID, value: "100"}
+            - {name: TZ, value: America/Vancouver}
+          ports:
+            - {name: http, containerPort: 8083}
+          startupProbe:
+            httpGet: {path: /login, port: http}
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: {path: /login, port: http}
+            periodSeconds: 10
+          resources:
+            requests: {cpu: 100m, memory: 512Mi}
+            limits: {cpu: "2", memory: 2Gi}
+          volumeMounts:
+            - {name: config, mountPath: /config}
+            - {name: library, mountPath: /calibre-library}
+            - {name: ingest, mountPath: /cwa-book-ingest}
+      volumes:
+        - name: config
+          persistentVolumeClaim: {claimName: books-cwa-dev-config}
+        - name: library
+          persistentVolumeClaim: {claimName: books-cwa-dev-library}
+        - name: ingest
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: books-cwa-dev
+  labels:
+    app.kubernetes.io/name: books-cwa-dev
+    hyperion.mwd.lol/owner: manual
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: books-cwa-dev
+  ports:
+    - {name: http, port: 8083, targetPort: http}

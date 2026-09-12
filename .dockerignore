@@ -18,6 +18,10 @@ changelogs
 cwa-wiki
 wiki_images
 .devcontainer
+.devspace
+devspace.yaml
+kubernetes/uat.yaml
+kubernetes/UAT.md
 
 # Test infrastructure (not needed in production image)
 tests/
