@@ -4,6 +4,7 @@ body.pastel {
     /* Rosé Pine Dawn: https://rosepinetheme.com/palette/ingredients/
      * Navigation uses light tints of Rose and Iris over Dawn Base. */
     --paper: #faf4ed;
+    --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
     --rose: #d7827e;
     --iris: #907aa9;
     --topbar: color-mix(in srgb, var(--rose) 28%, var(--paper));
@@ -41,7 +42,7 @@ body.pastel::before, body.pastel::after,
     text-shadow: none !important;
 }
 .pastel :is(h1, h2, h3) {
-    font-family: Georgia, "Times New Roman", serif !important;
+    font-family: var(--font-ui) !important;
     text-transform: none !important;
     letter-spacing: -.02em;
 }
@@ -53,7 +54,7 @@ body.pastel::before, body.pastel::after,
 .pastel .navbar-brand {
     display: block !important;
     color: var(--ink) !important;
-    font-family: Georgia, "Times New Roman", serif !important;
+    font-family: var(--font-ui) !important;
     font-size: 21px !important;
     text-shadow: none !important;
 }
@@ -643,4 +644,39 @@ body.pastel .navbar input.form-control { box-shadow: 0 2px 7px #57527909 inset !
         position: fixed; top: 60px; bottom: 0; left: 0;
         width: 240px; overflow-y: auto; padding-top: 12px;
     }
+}
+
+/* One typographic family, with an explicit brand and heading hierarchy. */
+body.pastel :is(h1, h2, h3, h4, h5, .navbar a, .navigation a, .navigation .nav-head, .btn, input, select, textarea, label) {
+    font-family: var(--font-ui) !important;
+}
+body.pastel :is(h1, h2, h3, h4, h5) { font-weight: 600; letter-spacing: -.025em; }
+body.pastel .book-detail-meta h2#title { font-size: clamp(27px, 2.6vw, 36px) !important; line-height: 1.2; }
+body.pastel .book-detail-description h3 { font-size: 20px; line-height: 1.35; }
+body.pastel .book-detail-meta .author { font-weight: 500; }
+body.pastel .navigation .nav-head { font-size: 11px; letter-spacing: .065em; font-weight: 650; }
+body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+    display: flex !important; align-items: center; gap: 10px;
+    padding: 0 16px; line-height: 1.15; text-decoration: none;
+}
+body.pastel .pastel-brand-mark {
+    display: block; width: 32px; height: 32px; flex: 0 0 32px;
+    filter: drop-shadow(0 2px 2px #57527915);
+}
+body.pastel .pastel-brand-wordmark { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+body.pastel .pastel-brand-name {
+    font-size: 17px; font-weight: 650; letter-spacing: -.035em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+body.pastel .pastel-brand-edition {
+    font-size: 9px; font-weight: 600; letter-spacing: .17em;
+    text-transform: uppercase; color: var(--muted);
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+    body.pastel .pastel-brand-name { font-size: 16px; }
+}
+body.pastel .navbar-brand .pastel-brand-mark {
+    margin: 0 !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important;
+    box-shadow: none !important; object-fit: contain;
 }
