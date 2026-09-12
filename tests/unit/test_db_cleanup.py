@@ -53,6 +53,47 @@ def test_delete_shelf_rows_removes_books_and_opds_exposures(app_session):
 
 
 @pytest.mark.unit
+def test_cleanup_helpers_do_not_commit_and_can_be_rolled_back(app_session):
+    owner = ub.User(name="rollback", email="rollback@example.invalid")
+    shelf = ub.Shelf(name="Keep after rollback", user=owner)
+    app_session.add_all([owner, shelf])
+    app_session.commit()
+
+    db_cleanup.delete_shelf_rows(app_session, shelf.id)
+    assert app_session.query(ub.Shelf).filter_by(id=shelf.id).first() is None
+    app_session.rollback()
+
+    assert app_session.query(ub.Shelf).filter_by(id=shelf.id).one().name == "Keep after rollback"
+    _assert_fk_clean(app_session)
+
+
+@pytest.mark.unit
+def test_delete_magic_shelf_rows_removes_all_references_only_for_target(app_session):
+    owner = ub.User(name="magic-owner", email="magic-owner@example.invalid")
+    viewer = ub.User(name="magic-viewer", email="magic-viewer@example.invalid")
+    target = ub.MagicShelf(name="Target", user=owner)
+    keep = ub.MagicShelf(name="Keep", user=owner)
+    app_session.add_all([owner, viewer, target, keep])
+    app_session.flush()
+    for magic in (target, keep):
+        app_session.add_all([
+            ub.MagicShelfCache(shelf_id=magic.id, user_id=viewer.id, book_ids=[]),
+            ub.OpdsMagicShelfExposure(user_id=viewer.id, shelf_id=magic.id),
+            ub.HiddenMagicShelfTemplate(user_id=viewer.id, shelf_id=magic.id),
+        ])
+    app_session.commit()
+
+    db_cleanup.delete_magic_shelf_rows(app_session, target.id)
+    app_session.commit()
+
+    assert app_session.query(ub.MagicShelf).all() == [keep]
+    assert app_session.query(ub.MagicShelfCache).one().shelf_id == keep.id
+    assert app_session.query(ub.OpdsMagicShelfExposure).one().shelf_id == keep.id
+    assert app_session.query(ub.HiddenMagicShelfTemplate).one().shelf_id == keep.id
+    _assert_fk_clean(app_session)
+
+
+@pytest.mark.unit
 def test_delete_kobo_states_removes_both_child_models(app_session):
     user = ub.User(name="reader", email="reader@example.invalid")
     app_session.add(user)
@@ -102,7 +143,9 @@ def test_delete_user_rows_removes_real_model_dependency_graph(app_session):
     ])
     token = ub.RemoteAuthToken()
     token.user_id = user.id
-    app_session.add(token)
+    other_shelf = ub.Shelf(name="Other shelf", user=other)
+    other_state = ub.KoboReadingState(user_id=other.id, book_id=99)
+    app_session.add_all([token, other_shelf, other_state])
     app_session.commit()
 
     db_cleanup.delete_user_rows(app_session, user.id)
@@ -110,13 +153,15 @@ def test_delete_user_rows_removes_real_model_dependency_graph(app_session):
 
     assert app_session.query(ub.User).all() == [other]
     for model in (
-        ub.Shelf, ub.MagicShelf, ub.BookShelf, ub.OpdsShelfExposure,
+        ub.MagicShelf, ub.BookShelf, ub.OpdsShelfExposure,
         ub.MagicShelfCache, ub.OpdsMagicShelfExposure,
-        ub.HiddenMagicShelfTemplate, ub.KoboReadingState, ub.KoboBookmark,
+        ub.HiddenMagicShelfTemplate, ub.KoboBookmark,
         ub.KoboStatistics, ub.ReadBook, ub.Downloads, ub.Bookmark,
         ub.ArchivedBook, ub.KoboSyncedBooks, ub.KoboAnnotationSync,
         ub.ShelfArchive, ub.DismissedDuplicateGroup, ub.RemoteAuthToken,
         ub.User_Sessions,
     ):
         assert app_session.query(model).count() == 0, model.__name__
+    assert app_session.query(ub.Shelf).all() == [other_shelf]
+    assert app_session.query(ub.KoboReadingState).all() == [other_state]
     _assert_fk_clean(app_session)

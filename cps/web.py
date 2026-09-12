@@ -28,7 +28,7 @@ from sqlalchemy.sql.functions import coalesce
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from . import constants, logger, isoLanguages, services, helper, themes
+from . import constants, logger, isoLanguages, services, helper, themes, db_cleanup
 from . import db, ub, config, app
 from . import calibre_db, kobo_sync_status
 from .search import render_search_results, render_adv_search_results
@@ -1346,12 +1346,7 @@ def delete_magic_shelf(shelf_id):
     
     try:
         shelf_name = shelf.name
-        # Delete cache entries first
-        ub.session.query(ub.MagicShelfCache).filter_by(shelf_id=shelf_id).delete()
-        # Delete any hide records for this shelf
-        ub.session.query(ub.HiddenMagicShelfTemplate).filter_by(shelf_id=shelf_id).delete()
-        # Delete the shelf
-        ub.session.delete(shelf)
+        db_cleanup.delete_magic_shelf_rows(ub.session, shelf_id)
         ub.session_commit()
         log.info(f"User {current_user.id} deleted magic shelf {shelf_id} ('{shelf_name}')")
         return jsonify({"success": True})

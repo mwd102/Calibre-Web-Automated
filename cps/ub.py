@@ -1149,6 +1149,7 @@ def migrate_Database(_session):
                 if shelf.name not in current_template_names:
                     # This is an old/deprecated system shelf - delete it
                     _session.query(MagicShelfCache).filter_by(shelf_id=shelf.id).delete()
+                    _session.query(OpdsMagicShelfExposure).filter_by(shelf_id=shelf.id).delete()
                     _session.query(HiddenMagicShelfTemplate).filter_by(shelf_id=shelf.id).delete()
                     _session.delete(shelf)
                     total_deleted += 1
