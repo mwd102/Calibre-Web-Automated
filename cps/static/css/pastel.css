@@ -1,15 +1,21 @@
 /* Pastel adapts caliBlur's Bootstrap shell. Keep overrides scoped to this theme.
  * !important is used where upstream uses important rules or high specificity. */
 body.pastel {
-    --paper: #f7f1e5;
-    --surface: #fcf7ed;
+    /* Rosé Pine Dawn: https://rosepinetheme.com/palette/ingredients/
+     * Navigation uses light tints of Rose and Iris over Dawn Base. */
+    --paper: #faf4ed;
+    --rose: #d7827e;
+    --iris: #907aa9;
+    --topbar: color-mix(in srgb, var(--rose) 28%, var(--paper));
+    --sidebar: color-mix(in srgb, var(--iris) 18%, var(--paper));
+    --nav-hover: color-mix(in srgb, var(--iris) 28%, var(--paper));
+    --surface: #fffaf3;
     --lavender: #e7def0;
     --sage: #d9e7dc;
     --peach: #f3ded2;
-    --sage-hover: #c6dccd;
     --ink: #353244;
     --muted: #666173;
-    --line: #d8d3cf;
+    --line: #907aa926;
     --accent: #655085;
     --color-background: var(--paper);
     --color-background-mobile: var(--paper);
@@ -107,7 +113,7 @@ body.pastel::before, body.pastel::after,
 .pastel .table-hover > tbody > tr:hover { background: #f0ecf5 !important; }
 .pastel .pagination > li > a { background: var(--surface); color: var(--accent); border-color: var(--line); }
 .pastel .pagination > .active > a { background: var(--accent); color: #fff; }
-.pastel .caliblur-index > h2::after { background: #b1cbb8; height: 4px; border-radius: 2px; }
+.pastel .caliblur-index > h2::after { background: var(--rose); height: 4px; border-radius: 2px; }
 .pastel .book .cover img { border-radius: 7px; box-shadow: 0 6px 14px #35324420; }
 .pastel .cover .badge { background: var(--sage); color: #345b42; box-shadow: none; }
 .pastel .rating .glyphicon-star { color: #8a6528 !important; }
@@ -205,14 +211,14 @@ body.pastel::before, body.pastel::after,
 /* Replace caliBlur's fixed charcoal chrome, including its mobile pseudo-labels. */
 body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
     color: var(--ink) !important;
-    background: var(--sage) !important;
+    background: var(--sidebar) !important;
 }
 body.pastel > .container-fluid > .row-fluid > .col-sm-2 {
     background: var(--lavender) !important;
 }
 body.pastel > .container-fluid > .row-fluid > .col-sm-2::after {
-    background: var(--sage) !important;
-    border-bottom: 1px solid var(--line);
+    background: var(--paper) !important;
+    border-bottom: 0;
 }
 body.pastel > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h2,
 .pastel .navigation li.nav-head {
@@ -510,7 +516,7 @@ body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > for
 }
 /* Bootstrap clearfix pseudo-elements otherwise occupy empty grid cells. */
 body.pastel .row.display-flex::before, body.pastel .row.display-flex::after { display: none; }
-body.pastel .discover > h2::after { background: #b1cbb8 !important; }
+body.pastel .discover > h2::after { background: var(--rose) !important; }
 body.pastel .standard-search-grid {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -523,17 +529,47 @@ body.pastel .standard-search-grid > .standard-search-card {
     body.pastel .standard-search-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* Sage navigation anchors the cream, peach, and lilac reading palette. */
-body.pastel :is(.navbar, .navbar-default, .navbar-collapse, .navigation),
+/* Distinct navigation surfaces, with shading instead of hard seams. */
+body.pastel :is(.navbar, .navbar-default, .navbar-collapse) {
+    background: linear-gradient(110deg, var(--topbar), color-mix(in srgb, var(--rose) 16%, var(--paper))) !important;
+    border: 0 !important;
+    box-shadow: 0 3px 16px #5752790c !important;
+}
+body.pastel .navigation,
 body.pastel #main-nav + .col-sm-2,
 body.pastel > .container-fluid > .row-fluid > .col-sm-2 {
-    background: var(--sage) !important;
-    border-color: #c5d8c9 !important;
+    background: linear-gradient(180deg, var(--sidebar), color-mix(in srgb, var(--iris) 9%, var(--paper))) !important;
+    border: 0 !important;
+    box-shadow: 6px 0 20px #57527906;
 }
 body.pastel .navigation :is(.active > a, a:hover, a:focus),
 body.pastel .nav > li > a:hover, body.pastel .nav > li > a:focus {
-    background: var(--sage-hover) !important;
+    background: var(--nav-hover) !important;
+}
+body.pastel :is(.shelf-actions, .filterheader) {
+    background: linear-gradient(120deg, var(--surface), #f2e9e1) !important;
+    border: 0 !important;
+    border-radius: 14px;
+    box-shadow: 0 5px 18px #57527908;
+}
+body.pastel :is(.shelf-actions, .filterheader) .btn {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: var(--ink) !important;
+}
+body.pastel :is(.shelf-actions, .filterheader) .btn:is(.active, :hover, :focus-visible) {
+    background: var(--lavender) !important;
+    box-shadow: 0 2px 7px #57527912 !important;
 }
 body.pastel .meta-pill { background: var(--lavender) !important; color: #57476b !important; }
 body.pastel .settings-container:nth-of-type(even) { background: #eee7f3 !important; }
 body.pastel .settings-container:nth-of-type(odd) { background: #f6e7dc !important; }
+body.pastel .book-detail-description {
+    border-color: transparent;
+    box-shadow: 0 8px 26px #d7827e12;
+}
+body.pastel .pagination > a::before { color: var(--accent) !important; }
+
+@media (max-width: 767px) {
+    body.pastel .navbar-collapse { background: var(--sidebar) !important; }
+}
