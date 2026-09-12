@@ -765,3 +765,15 @@ body.pastel .pagination .page-jump-menu { top: auto; bottom: 100%; }
         height: calc(100% - 48px) !important;
     }
 }
+/* Restore readable Previous/Next labels instead of caliBlur's pale arrows. */
+body.pastel .pagination > :is(.page-next, .page-previous) > a {
+    width: auto !important;
+    padding: 6px 12px !important;
+    font-family: var(--font-ui) !important;
+    font-size: 14px !important;
+    color: var(--accent) !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 8px;
+}
+body.pastel .pagination > :is(.page-next, .page-previous) > a::before { display: none !important; }
