@@ -65,6 +65,7 @@ from .tasks.metadata_backup import TaskBackupMetadata
 from .file_helper import get_temp_dir
 from .epub_helper import get_content_opf, create_new_metadata_backup, updateEpub, replace_metadata
 from .embed_helper import do_calibre_export
+from .secret_helper import get_secret
 
 log = logger.create()
 

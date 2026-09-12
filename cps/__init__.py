@@ -27,6 +27,7 @@ from .updater import Updater
 from . import config_sql
 from . import cache_buster
 from . import ub, db, magic_shelf
+from .secret_helper import get_secret
 
 try:
     from flask_limiter import Limiter
@@ -205,7 +206,7 @@ def create_app():
     log.info('Starting Calibre Web...')
     Principal(app)
     lm.init_app(app)
-    app.secret_key = os.getenv('SECRET_KEY', config_sql.get_flask_session_key(ub.session))
+    app.secret_key = get_secret('SECRET_KEY', config_sql.get_flask_session_key(ub.session))
 
     web_server.init_app(app, config)
     from .cw_babel import babel, get_locale
@@ -394,4 +395,3 @@ def create_app():
     register_startup_tasks()
 
     return app
-

@@ -215,10 +215,9 @@ def trigger_hardcover_auto_fetch():
     
     try:
         # Check if token is available
-        from os import getenv
         token_available = bool(
-            getattr(config, "config_hardcover_token", None) or 
-            getenv("HARDCOVER_TOKEN")
+            getattr(config, "config_hardcover_token", None)
+            or helper.get_secret("HARDCOVER_TOKEN")
         )
         
         if not token_available:
