@@ -116,3 +116,29 @@ def test_basic_index_renders_simple_template():
     assert "Test Library" in rendered
     assert "No Results Found" in rendered
     assert "caliBlur" not in rendered
+
+
+def test_other_page_url_keeps_query_filters_without_reusing_current_page():
+    from cps.jinjia import url_for_other_page
+
+    app = Flask(__name__)
+    app.add_url_rule("/basic/<int:page>", endpoint="basic.index", view_func=lambda page: "")
+
+    with app.test_request_context("/basic/2?page=2&query=history"):
+        assert url_for_other_page(1) == "/basic/1?query=history"
+        assert url_for_other_page(3) == "/basic/3?query=history"
+
+
+def test_caliblur_uses_stable_detail_layout_hooks_and_styles_standard_login_card():
+    from pathlib import Path
+
+    root = Path(__file__).parents[2] / "cps"
+    detail_js = (root / "static" / "js" / "caliBlur.js").read_text(encoding="utf-8")
+    login_template = (root / "themes" / "caliblur" / "templates" / "login.html").read_text(
+        encoding="utf-8"
+    )
+
+    assert '.book-detail-page .book-detail-main' in detail_js
+    assert '$(".book-detail-card").length' not in detail_js
+    assert ".caliblur-login .standard-login-card" in login_template
+    assert ".caliblur-login .standard-login-title" in login_template

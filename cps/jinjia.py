@@ -29,7 +29,10 @@ def url_for_other_page(page):
     args = request.view_args.copy()
     args['page'] = page
     for get, val in request.args.items():
-        args[get] = val
+        # Preserve filters/search terms, but never let the current query-string
+        # page overwrite the page selected by the pagination control.
+        if get != 'page':
+            args[get] = val
     return url_for(request.endpoint, **args)
 
 
