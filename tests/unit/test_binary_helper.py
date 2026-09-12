@@ -34,6 +34,13 @@ def test_allowed_binary_can_be_selected_from_configured_directory(tmp_path):
     assert resolve_binary_path(str(tmp_path), SUPPORTED_KEPUBIFY_BINARIES) == str(configured)
 
 
+@pytest.mark.parametrize("binary_name", ["kepubify-linux-arm", "kepubify-linux-arm64"])
+def test_official_linux_arm_kepubify_binary_is_allowed(tmp_path, binary_name):
+    configured = _executable(tmp_path / binary_name)
+
+    assert resolve_binary_path(str(configured), SUPPORTED_KEPUBIFY_BINARIES) == str(configured)
+
+
 def test_arbitrary_configured_executable_name_is_rejected(tmp_path):
     configured = _executable(tmp_path / "run-anything")
 

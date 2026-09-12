@@ -67,20 +67,11 @@ fi
 
 export CALIBRE_DBPATH=/config
 
+APP_DB_CREATED=0
 if [[ ! -f /config/app.db ]]; then
   echo "First time run, creating app.db..."
   cd /app/calibre-web-automated && s6-setuidgid abc python3 /app/calibre-web-automated/cps.py -d > /dev/null 2>&1
-  # handle app.db updates for kepubify and ext binary path
-  # borrowed from crocodilestick because it's a better solution than what i was doing
-  sqlite3 /config/app.db <<EOS
-    update settings set config_kepubifypath='/usr/bin/kepubify' where config_kepubifypath is NULL or LENGTH(config_kepubifypath)=0;
-EOS
-
-  if [[ $? == 0 ]]; then
-    echo "Successfully set kepubify paths in '/config/app.db'!"
-  elif [[ $? > 0 ]]; then
-    echo "Could not set binary paths for '/config/app.db' (see errors above)."
-  fi
+  APP_DB_CREATED=1
 fi
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -161,6 +152,7 @@ echo "[cwa-init] Checking for an existing app.db in /config..."
 if [ ! -f /config/app.db ]; then
     echo "[cwa-init] No existing app.db found! Creating new one..."
     cp /app/calibre-web-automated/empty_library/app.db /config/app.db
+    APP_DB_CREATED=1
 else
     echo "[cwa-init] Existing app.db found!"
 fi
@@ -169,10 +161,15 @@ fi
 #  Ensure correct binary paths in app.db
 #------------------------------------------------------------------------------------------------------------------------
 
-echo "[cwa-init] Setting binary paths in '/config/app.db' to the correct ones..."
+echo "[cwa-init] Initializing unset binary paths in '/config/app.db'..."
 
 sqlite3 /config/app.db <<EOS
-    update settings set config_kepubifypath='/usr/bin/kepubify', config_converterpath='/usr/bin/ebook-convert', config_binariesdir='/usr/bin';
+    update settings set config_kepubifypath='/usr/bin/kepubify'
+      where config_kepubifypath is NULL or ($APP_DB_CREATED = 1 and config_kepubifypath = '');
+    update settings set config_converterpath='/usr/bin/ebook-convert'
+      where config_converterpath is NULL or ($APP_DB_CREATED = 1 and config_converterpath = '');
+    update settings set config_binariesdir='/usr/bin'
+      where config_binariesdir is NULL or ($APP_DB_CREATED = 1 and config_binariesdir = '');
 EOS
 
 if [[ $? == 0 ]]
@@ -184,33 +181,39 @@ then
 fi
 
 #------------------------------------------------------------------------------------------------------------------------
-#  One-time theme migration (force dark theme in app.db)
+#  Initialize unset theme preferences
 #------------------------------------------------------------------------------------------------------------------------
 
-echo "[cwa-init] Enforcing dark theme in app.db (one-time migration)..."
+echo "[cwa-init] Initializing unset theme preferences in app.db..."
 
-python3 - <<'PY'
+APP_DB_CREATED="$APP_DB_CREATED" python3 - <<'PY'
+import os
 import sqlite3
 
 db_path = "/config/app.db"
 try:
   conn = sqlite3.connect(db_path)
   cur = conn.cursor()
-  # Force global default theme to dark
+  fresh_database = os.environ.get("APP_DB_CREATED") == "1"
+  # New databases use the container's dark default. Existing explicit choices
+  # are never overwritten on restart.
   try:
-    cur.execute("UPDATE settings SET config_theme = 1")
+    if fresh_database:
+      cur.execute("UPDATE settings SET config_theme = 1 WHERE config_theme IS NULL OR config_theme = 0")
+    else:
+      cur.execute("UPDATE settings SET config_theme = 1 WHERE config_theme IS NULL")
   except Exception:
     pass
-  # Force all users to dark if theme column exists
+  # Fill only legacy NULL user preferences if the theme column exists.
   try:
     cur.execute("PRAGMA table_info(user)")
     cols = {row[1] for row in cur.fetchall()}
     if "theme" in cols:
-      cur.execute("UPDATE user SET theme = 1 WHERE theme IS NULL OR theme != 1")
+      cur.execute("UPDATE user SET theme = 1 WHERE theme IS NULL")
   except Exception:
     pass
   conn.commit()
-  print("[cwa-init] Dark theme enforcement completed.")
+  print("[cwa-init] Theme preference initialization completed.")
 except Exception as e:
   print(f"[cwa-init] Theme migration skipped due to error: {e}")
 finally:
