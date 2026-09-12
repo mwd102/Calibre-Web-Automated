@@ -1,13 +1,15 @@
 /* Pastel adapts caliBlur's Bootstrap shell. Keep overrides scoped to this theme.
  * !important is used where upstream uses important rules or high specificity. */
 body.pastel {
-    --paper: #faf8f5;
-    --surface: #fffefd;
-    --lavender: #ebe5f5;
-    --sage: #e3eee5;
+    --paper: #f7f1e5;
+    --surface: #fcf7ed;
+    --lavender: #e7def0;
+    --sage: #d9e7dc;
+    --peach: #f3ded2;
+    --sage-hover: #c6dccd;
     --ink: #353244;
     --muted: #666173;
-    --line: #ded9e5;
+    --line: #d8d3cf;
     --accent: #655085;
     --color-background: var(--paper);
     --color-background-mobile: var(--paper);
@@ -147,8 +149,8 @@ body.pastel::before, body.pastel::after,
 .pastel .book-detail-description {
     padding: 22px 26px;
     margin: 20px 0 24px;
-    background: var(--surface);
-    border: 1px solid var(--line);
+    background: var(--peach);
+    border: 1px solid #e3cbbd;
     border-radius: 16px;
     font-size: 16px;
     line-height: 1.8;
@@ -203,13 +205,13 @@ body.pastel::before, body.pastel::after,
 /* Replace caliBlur's fixed charcoal chrome, including its mobile pseudo-labels. */
 body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
     color: var(--ink) !important;
-    background: var(--lavender) !important;
+    background: var(--sage) !important;
 }
 body.pastel > .container-fluid > .row-fluid > .col-sm-2 {
     background: var(--lavender) !important;
 }
 body.pastel > .container-fluid > .row-fluid > .col-sm-2::after {
-    background: var(--surface) !important;
+    background: var(--sage) !important;
     border-bottom: 1px solid var(--line);
 }
 body.pastel > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h2,
@@ -445,7 +447,7 @@ body.pastel :is(.profile-header-container, .settings-container, .opds-order-item
     border: 1px solid var(--line);
     border-radius: 12px;
 }
-body.pastel .profile-header-container { background: var(--lavender) !important; }
+body.pastel .profile-header-container { background: var(--peach) !important; }
 body.pastel :is(.profile-subtitle, .settings-explanation, .cwa-settings-disclaimer, .opds-order-toggle) {
     color: var(--muted) !important;
 }
@@ -520,3 +522,18 @@ body.pastel .standard-search-grid > .standard-search-card {
 @media (max-width: 767px) {
     body.pastel .standard-search-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Sage navigation anchors the cream, peach, and lilac reading palette. */
+body.pastel :is(.navbar, .navbar-default, .navbar-collapse, .navigation),
+body.pastel #main-nav + .col-sm-2,
+body.pastel > .container-fluid > .row-fluid > .col-sm-2 {
+    background: var(--sage) !important;
+    border-color: #c5d8c9 !important;
+}
+body.pastel .navigation :is(.active > a, a:hover, a:focus),
+body.pastel .nav > li > a:hover, body.pastel .nav > li > a:focus {
+    background: var(--sage-hover) !important;
+}
+body.pastel .meta-pill { background: var(--lavender) !important; color: #57476b !important; }
+body.pastel .settings-container:nth-of-type(even) { background: #eee7f3 !important; }
+body.pastel .settings-container:nth-of-type(odd) { background: #f6e7dc !important; }
