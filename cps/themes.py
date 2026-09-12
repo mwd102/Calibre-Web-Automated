@@ -159,7 +159,11 @@ def resolve_template(template_name, theme_id=None):
     theme-specific version is present.
     """
     if theme_id is None:
-        theme_id = getattr(g, "current_theme", CONFIG_DEFAULT_THEME_ID)
+        theme_id = getattr(
+            g,
+            "_theme_render_id",
+            getattr(g, "current_theme", CONFIG_DEFAULT_THEME_ID),
+        )
     identifier = get_theme_identifier(theme_id, request_blueprint_name())
     themed_name = template_path(identifier, template_name)
     try:

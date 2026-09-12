@@ -28,6 +28,8 @@ from cwa_db import CWA_DB
 
 log = logger.create()
 
+_NO_THEME_RENDER_OVERRIDE = object()
+
 
 def themed_render(template_name, theme_id=None, **kwargs):
     """Render a theme template, falling back to CWA's flat template tree.
@@ -36,15 +38,27 @@ def themed_render(template_name, theme_id=None, **kwargs):
     migration.  ``theme_id`` is explicit for alternate-view routes; otherwise
     the request's current CWA theme is used.
     """
-    if theme_id is None:
-        theme_id = getattr(g, "current_theme", 1)
-    theme = themes.get_theme(theme_id)
-    themed_name = themes.template_path(theme["identifier"], template_name)
-    kwargs.setdefault("_theme", theme)
+    render_override = theme_id is not None
+    previous_theme_id = _NO_THEME_RENDER_OVERRIDE
+    if render_override:
+        previous_theme_id = g.__dict__.get("_theme_render_id", _NO_THEME_RENDER_OVERRIDE)
+        g._theme_render_id = theme_id
     try:
-        return render_template(themed_name, **kwargs)
-    except TemplateNotFound:
-        return render_template(template_name, **kwargs)
+        if theme_id is None:
+            theme_id = getattr(g, "current_theme", 1)
+        theme = themes.get_theme(theme_id)
+        themed_name = themes.template_path(theme["identifier"], template_name)
+        kwargs.setdefault("_theme", theme)
+        try:
+            return render_template(themed_name, **kwargs)
+        except TemplateNotFound:
+            return render_template(template_name, **kwargs)
+    finally:
+        if render_override:
+            if previous_theme_id is _NO_THEME_RENDER_OVERRIDE:
+                g.__dict__.pop("_theme_render_id", None)
+            else:
+                g._theme_render_id = previous_theme_id
 
 
 # Name used by upstream's renderer; keep both names during the transition.
