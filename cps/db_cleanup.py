@@ -82,3 +82,17 @@ def delete_user_rows(session, user_id):
     session.query(ub.Shelf).filter(ub.Shelf.user_id == user_id).delete(synchronize_session=False)
     session.query(ub.MagicShelf).filter(ub.MagicShelf.user_id == user_id).delete(synchronize_session=False)
     session.query(ub.User).filter(ub.User.id == user_id).delete(synchronize_session=False)
+
+
+def delete_user(session, user):
+    """Delete ``user`` while retaining values needed by the request caller.
+
+    Bulk deletion leaves the supplied ORM instance associated with the session.
+    Once the transaction commits, reading an expired attribute from that deleted
+    row raises ``ObjectDeletedError``.  Capture the display name first and only
+    return the detached scalar value to the caller.
+    """
+    user_id = user.id
+    user_name = user.name
+    delete_user_rows(session, user_id)
+    return user_name

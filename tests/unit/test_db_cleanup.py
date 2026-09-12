@@ -4,6 +4,7 @@
 
 import pytest
 from sqlalchemy import create_engine, event, text
+from sqlalchemy.orm.exc import ObjectDeletedError
 from sqlalchemy.orm import sessionmaker
 
 from cps import db_cleanup, ub
@@ -165,3 +166,21 @@ def test_delete_user_rows_removes_real_model_dependency_graph(app_session):
     assert app_session.query(ub.Shelf).all() == [other_shelf]
     assert app_session.query(ub.KoboReadingState).all() == [other_state]
     _assert_fk_clean(app_session)
+
+
+@pytest.mark.unit
+def test_delete_user_captures_name_before_caller_commits(app_session):
+    """Exercise the helper exactly as admin._delete_user does around commit."""
+    user = ub.User(name="deleted-display-name", email="deleted@example.invalid")
+    app_session.add(user)
+    app_session.commit()
+
+    user_name = db_cleanup.delete_user(app_session, user)
+    app_session.commit()
+
+    assert user_name == "deleted-display-name"
+    assert app_session.query(ub.User).filter_by(name=user_name).first() is None
+    # This documents the regression: the original instance is stale after the
+    # bulk delete and therefore must not be used by the request after commit.
+    with pytest.raises(ObjectDeletedError):
+        _ = user.name
