@@ -350,7 +350,10 @@ class ConfigSQL(object):
     def to_dict(self):
         storage = {}
         for k, v in self.__dict__.items():
-            if k[0] != '_' and not k.endswith("_e") and k != "cli" and 'api' not in k.lower():
+            key = k.lower()
+            if (k[0] != '_' and not k.endswith("_e") and k != "cli"
+                    and k not in ("mail_password", "config_ldap_serv_password")
+                    and not any(value in key for value in ("api", "token", "secret"))):
                 storage[k] = v
         return storage
 
