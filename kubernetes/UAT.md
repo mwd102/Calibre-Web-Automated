@@ -109,3 +109,42 @@ The next application task is a UI refresh, not a production data cutover.
 To resume UAT deliberately, scale `books-cwa-dev` to one replica with the
 explicit kubeconfig above and recreate a private review route; do not assume
 the old Tailnet route is still active.
+
+## Pastel UI review (2026-09-12)
+
+UAT is resumed for the Pastel UI from source commit
+`968dbc21f3aec991b769102c6a25b1fefdfaad5f` (application PR #7).
+The GHCR-only build is GitHub Actions run `34720104372`; `uat.yaml` pins its
+immutable image digest. Deploy with the DevSpace command above to reuse the
+retained config and catalog PVCs.
+
+The private review address is `https://shell-01.tailcff11.ts.net:18083/`.
+Sign in with the existing UAT account and select **Pastel Theme**, or use
+**Switch Theme** to cycle Standard → caliBlur → Pastel. Catalog-only limitations
+from the prior review still apply.
+
+The forwarding process runs as a transient user service on shell-01; it survives
+the agent session and retries if the pod restarts. Recreate it after a host reboot:
+
+```sh
+systemd-run --user --unit=cwa-uat-portforward \
+  --description='CWA dev review port forward' \
+  --property=Restart=always --property=RestartSec=5 \
+  /usr/local/bin/kubectl \
+  --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig \
+  -n books port-forward --address=127.0.0.1 svc/books-cwa-dev 18083:8083
+sudo -n tailscale serve --bg --https=18083 http://127.0.0.1:18083
+```
+
+To pause the review while retaining the test data:
+
+```sh
+sudo -n tailscale serve --https=18083 off
+systemctl --user stop cwa-uat-portforward.service
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig \
+  -n books scale deployment/books-cwa-dev --replicas=0
+```
+
+Verification: dev and production were both 1/1 ready; the private login URL
+returned HTTP 200; served `pastel.css` matched the source SHA-256. The retained
+UAT catalog contained 5,608 entries and SQLite `quick_check` returned `ok`.
