@@ -118,3 +118,52 @@ def test_single_book_thumbnail_snapshot_path_avoids_calibre_db_query():
     ]
     assert len(fallback_calls) == 1
     assert fallback_calls[0].lineno > snapshot_branch.lineno
+
+
+def test_cover_scan_reads_snapshot_without_shared_calibre_session(tmp_path):
+    """The worker must read committed cover fields without registering UDFs on
+    the request connection, including paths containing URI metacharacters.
+    """
+    import sqlite3
+    from contextlib import closing
+    from dataclasses import dataclass
+    from datetime import datetime
+    from types import SimpleNamespace
+
+    library = tmp_path / 'library #1'
+    library.mkdir()
+    with closing(sqlite3.connect(library / 'metadata.db')) as connection:
+        connection.execute('CREATE TABLE books (id INTEGER, path TEXT, last_modified TEXT, has_cover INTEGER)')
+        connection.executemany('INSERT INTO books VALUES (?, ?, ?, ?)', [
+            (1, 'Author/First (1)', '2026-09-12 12:30:45.123456+00:00', 1),
+            (2, 'Author/Second (2)', '2026-09-11 12:30:00', 1),
+            (3, 'Author/No cover (3)', '2026-09-10 12:30:00', 0),
+        ])
+        connection.commit()
+
+    @dataclass
+    class BookCoverSource:
+        id: int
+        path: str
+        last_modified: datetime
+
+    # Execute the production method independently of the application's startup.
+    method = _function_def(_module_tree('cps/tasks/thumbnail.py'), 'get_books_with_covers')
+    method.decorator_list = []
+    namespace = dict(sqlite3=sqlite3, closing=closing, Path=Path,
+                     config=SimpleNamespace(config_calibre_dir=str(library)),
+                     BookCoverSource=BookCoverSource, datetime=datetime)
+    exec(compile(ast.Module(body=[method], type_ignores=[]), '<cover scan>', 'exec'), namespace)
+    scan = namespace['get_books_with_covers']
+    assert [book.id for book in scan()] == [1, 2]
+    assert scan(1) == [BookCoverSource(1, 'Author/First (1)',
+                                    datetime.fromisoformat('2026-09-12 12:30:45.123456+00:00'))]
+    assert scan(3) == []
+    assert scan(999) == []
+
+    # A missing library must fail instead of silently creating metadata.db.
+    import pytest
+    (library / 'metadata.db').unlink()
+    with pytest.raises(sqlite3.OperationalError):
+        scan()
+    assert not (library / 'metadata.db').exists()

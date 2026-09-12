@@ -173,8 +173,9 @@ def test_book_description_order_and_actions_survive_theme_inheritance(theme_id, 
     shell = ('{% from theme("modal_dialogs.html") import delete_book %}'
              '{% block header %}{% endblock %}{% block body %}{% endblock %}')
     app.jinja_loader = ChoiceLoader([
-        DictLoader({'layout.html': shell, 'fragment.html': shell}),
+        DictLoader({'layout.html': shell}),
         FileSystemLoader(str(Path(__file__).parents[2] / 'cps/themes')),
+        FileSystemLoader(str(Path(__file__).parents[2] / 'cps/templates')),
     ])
     user = Mock()
     user.is_anonymous = False
