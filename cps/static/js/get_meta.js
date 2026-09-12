@@ -209,29 +209,30 @@ $(function () {
 
   function addIdentifier(name, value) {
     var randId = Math.floor(Math.random() * 1000000).toString();
-    var line = "<tr>";
-    line +=
-      '<td><input type="text" class="form-control identifier-type" name="identifier-type-' +
-      randId +
-      '" required="required" placeholder="' +
-      _("Identifier Type") +
-      '" value="' +
-      name +
-      '"></td>';
-    line +=
-      '<td><input type="text" class="form-control identifier-val" name="identifier-val-' +
-      randId +
-      '" required="required" placeholder="' +
-      _("Identifier Value") +
-      '" value="' +
-      value +
-      '"></td>';
-    line +=
-      '<td><button type="button" class="btn btn-default identifier-remove">' +
-      _("Remove") +
-      "</button></td>";
-    line += "</tr>";
-    $("#identifier-table").append(line);
+    var $line = $("<tr>");
+    var $type = $("<input>", {
+      type: "text",
+      class: "form-control identifier-type",
+      name: "identifier-type-" + randId,
+      required: "required",
+      placeholder: _("Identifier Type"),
+    }).val(name);
+    var $identifier = $("<input>", {
+      type: "text",
+      class: "form-control identifier-val",
+      name: "identifier-val-" + randId,
+      required: "required",
+      placeholder: _("Identifier Value"),
+    }).val(value);
+    var $remove = $("<button>", {
+      type: "button",
+      class: "btn btn-default identifier-remove",
+    }).text(_("Remove"));
+
+    $line.append($("<td>").append($type));
+    $line.append($("<td>").append($identifier));
+    $line.append($("<td>").append($remove));
+    $("#identifier-table tbody").append($line);
   }
 
   function doSearch(keyword) {

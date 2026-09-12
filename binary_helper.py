@@ -19,6 +19,8 @@ else:
     SUPPORTED_KEPUBIFY_BINARIES = (
         "kepubify-linux-64bit",
         "kepubify-linux-32bit",
+        "kepubify-linux-arm64",
+        "kepubify-linux-arm",
         "kepubify",
     )
 
