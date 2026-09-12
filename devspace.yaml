@@ -8,15 +8,6 @@ pipelines:
     create_deployments --all
     start_dev --all
 
-images:
-  cwa:
-    image: ghcr.io/mwd102/calibre-web-automated
-    dockerfile: ./Dockerfile
-    context: ./
-    network: host
-    buildArgs:
-      VERSION: UAT
-
 deployments:
   cwa-uat:
     kubectl:
