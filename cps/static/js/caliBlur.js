@@ -1247,6 +1247,8 @@ $(function() {
     // Initialize on page load
     initDirectReadingHandler();
     
+    $(document).on("pastel:books-appended", initDirectReadingHandler);
+
     // Re-initialize on window resize with debouncing
     var resizeTimer;
     $(window).on('resize', function() {
