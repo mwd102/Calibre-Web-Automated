@@ -573,3 +573,74 @@ body.pastel .pagination > a::before { color: var(--accent) !important; }
 @media (max-width: 767px) {
     body.pastel .navbar-collapse { background: var(--sidebar) !important; }
 }
+
+/* Put the brand back in the header; reserve its space before search. */
+body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+    margin: 0 !important;
+    background: transparent !important;
+    font-weight: 600;
+    letter-spacing: -.035em;
+}
+@media (min-width: 768px) {
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+        position: absolute; top: 0; left: 0; width: 200px;
+        height: 60px; line-height: 60px; font-size: 16px !important;
+    }
+    body.pastel > .navbar > .container-fluid > form[role=search] { margin-left: 216px; }
+    body.pastel > .navbar > .container-fluid > form[role=search] > .form-group {
+        width: clamp(120px, calc(100vw - 640px), 320px);
+    }
+    body.pastel > .container-fluid > div > .col-sm-2 { top: 0 !important; height: 100% !important; }
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+    body.pastel #advanced_search .hidden-sm { display: none !important; }
+}
+@media (min-width: 1200px) {
+    body.pastel > .navbar > .container-fluid > form[role=search] > .form-group {
+        width: min(320px, calc(100vw - 850px));
+    }
+}
+
+@media (min-width: 1200px) {
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a { width: 240px; font-size: 18px !important; }
+    body.pastel > .navbar > .container-fluid > form[role=search] { margin-left: 256px; }
+}
+
+/* Light falling across the surfaces gives the palette a little depth. */
+body.pastel :is(.navbar, .navbar-default, .navbar-collapse) {
+    background: linear-gradient(115deg, color-mix(in srgb, var(--rose) 36%, var(--paper)), var(--topbar) 45%, color-mix(in srgb, var(--iris) 15%, var(--paper))) !important;
+    box-shadow: 0 1px 0 #fffaf380 inset, 0 5px 20px #57527912 !important;
+}
+body.pastel .navigation {
+    background: linear-gradient(160deg, color-mix(in srgb, var(--iris) 24%, var(--paper)), var(--sidebar) 35%, var(--paper) 100%) !important;
+}
+body.pastel > .container-fluid > div > .col-sm-10 {
+    background-image: radial-gradient(ellipse at 0 0, #d7827e0c, transparent 60%), radial-gradient(ellipse at 100% 100%, #907aa910, transparent 65%);
+}
+body.pastel .book-detail-description {
+    background: linear-gradient(135deg, #f7e6d8, var(--peach) 55%, #f1d9d8);
+    box-shadow: 0 1px 0 #fffaf390 inset, 0 10px 30px #907aa915;
+}
+body.pastel :is(.shelf-actions, .filterheader) { box-shadow: 0 1px 0 #ffffff90 inset, 0 8px 24px #5752790c; }
+body.pastel .shelf-actions .filterheader { background: transparent !important; box-shadow: none; }
+body.pastel :is(.btn, .navigation a, .book .cover img, .form-control) {
+    transition: background-color 160ms ease, box-shadow 180ms ease, transform 180ms ease, border-color 160ms ease;
+}
+body.pastel .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px #57527918 !important; }
+body.pastel .btn:active { transform: translateY(0); }
+body.pastel .book .cover:hover img { transform: translateY(-3px); box-shadow: 0 12px 24px #57527928; }
+body.pastel .navbar input.form-control { box-shadow: 0 2px 7px #57527909 inset !important; border-color: #ffffff70 !important; }
+@media (max-width: 767px) {
+    body.pastel .navbar-collapse { background: var(--sidebar) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.pastel .btn:hover, body.pastel .book .cover:hover img { transform: none; }
+}
+@media (min-width: 768px) {
+    body.pastel > .navbar > .container-fluid > form[role=search] { position: relative; }
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > form::before { left: 14px; top: 12px; }
+    body.pastel .navigation {
+        position: fixed; top: 60px; bottom: 0; left: 0;
+        width: 240px; overflow-y: auto; padding-top: 12px;
+    }
+}
