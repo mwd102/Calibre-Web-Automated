@@ -180,3 +180,23 @@ Final deployment verification: dev rolled out 1/1 ready with digest
 The container's stylesheet and thumbnail module hashes match source. The live
 layout/popup and desktop/phone search sequence passed against this image;
 login health checks remained HTTP 200. Production remained 1/1 ready.
+
+## Rosé Pine Dawn palette refinement (2026-09-12)
+
+PR #10 separates the navigation surfaces using tints of Rosé Pine Dawn's Rose
+(`#d7827e`) and Iris (`#907aa9`) over Base (`#faf4ed`), with Dawn Surface
+(`#fffaf3`) for controls. Source palette: https://rosepinetheme.com/palette/ingredients/.
+The top bar uses Rose, the left menu uses Iris, and the sort strip uses warm
+neutrals with a lilac selected state. Gentle gradients and low-opacity shadows
+soften the boundaries. The peach/purple book detail treatment is retained.
+
+Source commit: `cbdda6c505eb7beb4ec3512071b999aba0bfe829`.
+GHCR-only build: `34723606171`. Eight responsive Chromium tests pass.
+The deployed image is
+`sha256:d265a14ee09cd7eb12fe0dd2c522f0ce8ada4812ce1b1b42b33cf4f967b9dd17`.
+The deployed stylesheet hash matches the source. CI smoke/unit, browser security,
+and Hyperion policy checks pass. The legacy Docker Hub/ARM workflow remains
+separate from this successful GHCR-only build.
+Final live checks passed for home/book pages at 390, 768, and 1440 pixels,
+including distinct header/sidebar gradients, no horizontal overflow, and the
+description above metadata. Real XHR details and login health returned HTTP 200.
