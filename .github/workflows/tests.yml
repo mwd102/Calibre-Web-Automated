@@ -352,8 +352,8 @@ jobs:
           echo "Integration Tests: ${{ needs.integration-tests.result }}"
           echo "E2E Tests: ${{ needs.e2e-tests.result }}"
           
-          if [[ "${{ needs.fast-tests.result }}" == "failure" ]]; then
-            echo "❌ Fast tests failed"
+          if [[ "${{ needs.fast-tests.result }}" != "success" ]]; then
+            echo "Fast tests did not pass"
             exit 1
           fi
 

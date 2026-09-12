@@ -9,6 +9,31 @@ import importlib.util
 import pathlib
 import sys
 
+import pytest
+
+
+def _is_stubbed_module(name):
+    return (
+        name == "cps"
+        or name.startswith("cps.")
+        or name == "cwa_db"
+        or name == "flask"
+        or name == "flask_babel"
+        or name == "sqlalchemy"
+        or name.startswith("sqlalchemy.")
+    )
+
+
+@pytest.fixture(autouse=True)
+def _restore_stubbed_modules():
+    """Restore real modules after each isolated import-harness test."""
+    originals = {name: module for name, module in sys.modules.items() if _is_stubbed_module(name)}
+    yield
+    for name in list(sys.modules):
+        if _is_stubbed_module(name):
+            sys.modules.pop(name, None)
+    sys.modules.update(originals)
+
 
 def _install_stub(name, attrs=None):
     module = ModuleType(name)
@@ -75,13 +100,7 @@ class _TaskCwaDB:
 
 def _clear_modules():
     for name in list(sys.modules):
-        if (
-            name == "cps"
-            or name.startswith("cps.")
-            or name == "cwa_db"
-            or name == "sqlalchemy"
-            or name.startswith("sqlalchemy.")
-        ):
+        if _is_stubbed_module(name):
             sys.modules.pop(name, None)
 
 
