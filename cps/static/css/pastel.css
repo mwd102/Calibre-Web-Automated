@@ -509,3 +509,14 @@ body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > for
 /* Bootstrap clearfix pseudo-elements otherwise occupy empty grid cells. */
 body.pastel .row.display-flex::before, body.pastel .row.display-flex::after { display: none; }
 body.pastel .discover > h2::after { background: #b1cbb8 !important; }
+body.pastel .standard-search-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 24px 16px; height: auto !important; margin: 24px 16px !important;
+}
+body.pastel .standard-search-grid > .standard-search-card {
+    position: static !important; width: auto !important; margin: 0 !important; padding: 0 !important;
+}
+@media (max-width: 767px) {
+    body.pastel .standard-search-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
