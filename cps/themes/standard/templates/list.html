@@ -5,10 +5,123 @@ SPDX-License-Identifier: GPL-3.0-or-later
 See CONTRIBUTORS for full list of authors. -->
 
 {% extends theme("layout.html") %}
+{% block header %}
+<style>
+.standard-list-page {
+    margin-bottom: 50px;
+}
+
+.standard-list-page > h1 {
+    margin: 0 0 1.5rem;
+    font-weight: 600;
+}
+
+.standard-list-page .standard-list-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.standard-list-page .standard-list-toolbar .filterheader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.standard-list-page .standard-list-toolbar .btn {
+    margin: 0;
+}
+
+.standard-list-page .character-dropdown {
+    display: inline-block;
+    margin-left: 0.25rem;
+}
+
+.standard-list-page .character-dropdown .form-control {
+    display: inline-block;
+    width: auto;
+    min-width: 12rem;
+}
+
+.standard-list-page .standard-list-container {
+    margin-bottom: 0;
+}
+
+.standard-list-page .standard-list-column {
+    margin-bottom: 0;
+}
+
+.standard-list-page .standard-list-row {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 0 0 8px;
+    padding: 8px 10px;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.standard-list-page .standard-list-row:hover {
+    border-color: #ccc;
+    background: #fafafa;
+}
+
+.standard-list-page .standard-list-index {
+    flex: 0 0 auto;
+    text-align: left;
+}
+
+.standard-list-page .standard-list-index .badge {
+    color: #555;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+}
+
+.standard-list-page .standard-list-entry {
+    min-width: 0;
+}
+
+.standard-list-page .standard-list-link {
+    display: block;
+    width: 100%;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+}
+
+.standard-list-page .standard-list-rating {
+    margin-bottom: 2px;
+}
+
+.standard-list-page .standard-downloads-heading {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+@media (max-width: 767px) {
+    .standard-list-page .standard-list-row {
+        margin-bottom: 6px;
+    }
+
+    .standard-list-page .character-dropdown {
+        margin-left: 0;
+    }
+}
+</style>
+{% endblock %}
 {% block body %}
+<div class="standard-list-page">
 <h1 class="{{page}}">{{_(title)}}</h1>
 
-    <div class="filterheader hidden-xs">
+    <div class="filterheader standard-list-toolbar hidden-xs">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       {% if entries.__len__() and data == 'author' %}
         <div id="sort_name" class="btn btn-primary"><b>B,A <-> A B</b></div>
@@ -21,9 +134,9 @@ See CONTRIBUTORS for full list of authors. -->
       {% if charlist|length %}
         {% if charlist|length > 9 %}
           <!-- Use a dropdown when there are many characters -->
-          <div class="character-dropdown" style="display:inline-block; margin-left: .5rem;">
+          <div class="character-dropdown">
             <label for="char-dropdown" class="sr-only">{{ _('Filter by initial') }}</label>
-            <select id="char-dropdown" class="form-control" style="display:inline-block; width:auto;">
+            <select id="char-dropdown" class="form-control">
               <option value="" selected disabled>{{ _('Filter by initial') }}</option>
               {% for char in charlist %}
                 <option value="{{char[0]}}">{{char[0]}}</option>
@@ -43,22 +156,22 @@ See CONTRIBUTORS for full list of authors. -->
       <button class="update-view btn btn-primary" data-target="series_view" id="grid-button" data-view="grid">{{_('Grid')}}</button>
       {% endif %}
     </div>
-  <div class="container" id="{{_(title)}}">
+  <div class="container standard-list-container" id="{{_(title)}}">
     {% if title == "Downloads" %}
-      <h1 style="padding-top: 1rem; padding-bottom: 2rem;">Users Downloaded Books:</h1>
+      <h1 class="standard-downloads-heading">Users Downloaded Books:</h1>
     {% endif %}
-    <div id="{{_(title)}}_list" class="col-xs-12 col-sm-6 list-container">
+    <div id="{{_(title)}}_list" class="col-xs-12 col-sm-6 list-container standard-list-column">
     {% for entry in entries %}
       {% if loop.index0 == (loop.length/2+loop.length%2)|int and loop.length > 20 %}
         </div>
-        <div id="second" class="col-xs-12 col-sm-6">
+        <div id="second" class="col-xs-12 col-sm-6 standard-list-column">
       {% endif %}
-      <div class="row" id="{{_(title)}}_row" {% if entry[0].sort %}data-name="{{entry[0].name}}"{% endif %} data-id="{% if entry[0].sort %}{{entry[0].sort}}{% else %}{% if entry[0].format %}{{entry[0].format}}{% else %}{% if entry[0].rating %}{{entry[0].rating}}{% else %}{{entry[0].name}}{% endif %}{% endif %}{% endif %}">
-        <div class="col-xs-2 col-sm-2 col-md-1" align="left"><span class="badge">{{entry[1]}}</span></div>
-        <div class="col-xs-10 col-sm-10 col-md-11">
-          <a style="width: -webkit-fill-available; display: block;" id="list_{{loop.index0}}" href="{% if entry.format %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry.format )}}{% else %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry[0].id )}}{% endif %}">
+      <div class="row standard-list-row" id="{{_(title)}}_row" {% if entry[0].sort %}data-name="{{entry[0].name}}"{% endif %} data-id="{% if entry[0].sort %}{{entry[0].sort}}{% else %}{% if entry[0].format %}{{entry[0].format}}{% else %}{% if entry[0].rating %}{{entry[0].rating}}{% else %}{{entry[0].name}}{% endif %}{% endif %}{% endif %}">
+        <div class="col-xs-2 col-sm-2 col-md-1 standard-list-index" align="left"><span class="badge">{{entry[1]}}</span></div>
+        <div class="col-xs-10 col-sm-10 col-md-11 standard-list-entry">
+          <a class="standard-list-link" id="list_{{loop.index0}}" href="{% if entry.format %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry.format )}}{% else %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry[0].id )}}{% endif %}">
           {% if entry.name %}
-          <div class="rating">
+          <div class="rating standard-list-rating">
           {% for number in range(entry.name|int) %}
             <span class="glyphicon glyphicon-star good"></span>
             {% if loop.last and loop.index < 5 %}
@@ -78,6 +191,7 @@ See CONTRIBUTORS for full list of authors. -->
     {% endfor %}
     </div>
   </div>
+</div>
 {% endblock %}
 {% block js %}
 <script src="{{ url_for('static', filename='js/filter_list.js') }}"></script>
