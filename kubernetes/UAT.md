@@ -243,3 +243,7 @@ Image: `sha256:71f040bc680c91a5421b8c2b394a37af3b6f10b40441c4f5cb97edb120441042`
 The deployed stylesheet hash matches source. Thirty-one theme/browser tests pass;
 CI smoke/unit, browser security, and Hyperion policy checks pass. The independent
 default Docker registry build retains its existing authentication failure.
+Authenticated verification against this image passed at 320, 390, 768, 1024,
+1280, and 1440 pixels: shelf/card bounds, visible heading, and separation from
+list controls. Discover titles open book details; the standalone Discover page
+still shows its random listing without a duplicate discovery shelf.
