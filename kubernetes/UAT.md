@@ -232,3 +232,18 @@ Authenticated checks against the deployed image pass at 320, 390, 768, 1024,
 book-title font families, description ordering, and reduced motion. CI smoke/unit,
 browser security, and Hyperion policy checks pass. The separate default Docker
 build still fails its existing registry authentication; the GHCR UAT build passed.
+
+## Discover shelf (2026-09-12)
+
+PR #13 restores Standard's random-book shelf in Pastel by overriding caliBlur's
+hidden section and fixed heading rules. The existing random selection, profile
+visibility preference, and standalone Discover page behavior are preserved.
+Source: `1db4752dd1abeb073d57d2159564a92d44bbf6f9`; GHCR UAT build: `34725992797`.
+Image: `sha256:71f040bc680c91a5421b8c2b394a37af3b6f10b40441c4f5cb97edb120441042`.
+The deployed stylesheet hash matches source. Thirty-one theme/browser tests pass;
+CI smoke/unit, browser security, and Hyperion policy checks pass. The independent
+default Docker registry build retains its existing authentication failure.
+Authenticated verification against this image passed at 320, 390, 768, 1024,
+1280, and 1440 pixels: shelf/card bounds, visible heading, and separation from
+list controls. Discover titles open book details; the standalone Discover page
+still shows its random listing without a duplicate discovery shelf.
