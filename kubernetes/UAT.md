@@ -78,10 +78,18 @@ record. Rollback is to stop UAT, restore the saved UAT catalog to
 `metadata.db`, then restart UAT; production needs no rollback.
 This is catalog-only: book files and covers are not cloned or mounted, so
 downloads and file-based operations will not work for production entries.
+The cover endpoint reads `cover.jpg` from each book's directory, so generic
+cover placeholders are expected in this review.
 Do not use destructive library actions while reviewing this catalog. UAT's
 `app.db`, users, and credentials remain separate. Removing the Job after
 verification does not remove either catalog; `devspace purge` does remove the
 UAT claim, so retain the backup first if needed.
+
+On 2026-09-12, the caliBlur book-action contrast fix was deployed from
+`1ba1cec9d4899face27678dcf1c0b14596ca3460` using the pinned GHCR image
+in `uat.yaml`. UAT rolled out 1/1 ready, retained 5,608 catalog entries, and
+the private route redirected to login. Standard theme styles were unchanged;
+the user still needs to visually accept the caliBlur icon fix.
 
 `devspace purge` removes DevSpace-managed resources, including the UAT claims.
 Export anything you want to retain before purging. Do not use it while UAT is

@@ -92,6 +92,19 @@
             gap: 0;
         }
 
+        /* Standard's white action buttons disappear against caliBlur's white icons. */
+        .caliblur-detail .book-action-bar .action-icon-btn {
+            background-color: rgba(22, 31, 39, .85) !important;
+            border: 1px solid rgba(255, 255, 255, .25) !important;
+            color: #fff !important;
+        }
+
+        .caliblur-detail .book-action-bar .action-icon-btn:hover,
+        .caliblur-detail .book-action-bar .action-icon-btn:focus {
+            background-color: #a66212 !important;
+            color: #fff !important;
+        }
+
         .caliblur-detail .book-detail-meta h2#title {
             color: #eee;
             font-family: "Open Sans Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
