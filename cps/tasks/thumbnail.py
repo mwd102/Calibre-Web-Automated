@@ -6,6 +6,9 @@
 # See CONTRIBUTORS for full list of authors.
 
 import os
+import sqlite3
+from contextlib import closing
+from pathlib import Path
 from shutil import copyfile, copyfileobj
 from urllib.request import urlopen
 from io import BytesIO
@@ -123,11 +126,21 @@ class TaskGenerateCoverThumbnails(CalibreTask):
 
     @staticmethod
     def get_books_with_covers(book_id=-1):
-        filter_exp = (db.Books.id == book_id) if book_id != -1 else True
-        calibre_db = db.CalibreDB(expire_on_commit=False, init=True)
-        books_cover = calibre_db.session.query(db.Books).filter(db.Books.has_cover == 1).filter(filter_exp).all()
-        calibre_db.session.close()
-        return books_cover
+        # CalibreDB uses a shared SQLite connection. Registering its Python
+        # functions in this worker can deadlock with a search invoking those
+        # functions on the request thread. Read only the cover snapshot through
+        # a separate connection, and close it before generating any images.
+        database = Path(config.config_calibre_dir) / "metadata.db"
+        query = "SELECT id, path, last_modified FROM books WHERE has_cover = 1"
+        parameters = ()
+        if book_id != -1:
+            query += " AND id = ?"
+            parameters = (book_id,)
+        with closing(sqlite3.connect(database.resolve().as_uri() + "?mode=ro", uri=True)) as connection:
+            rows = connection.execute(query, parameters).fetchall()
+        return [BookCoverSource(id=row[0], path=row[1],
+                                last_modified=datetime.fromisoformat(row[2]))
+                for row in rows]
 
     def get_cover_sources(self):
         if self.book_id != -1 and self.book_path:
