@@ -44,6 +44,45 @@ library. KOReader checksum generation logged `no such table:
 book_format_checksums` on this fresh install; investigate that separately
 before accepting KOReader sync as tested.
 
+## Real catalog review
+
+`uat-catalog-import.yaml` is a one-time, manual Job. Production's Books pod
+already creates an atomic SQLite backup of `metadata.db` every 60 seconds on
+the `books-shared` JuiceFS claim. The Job mounts only that snapshot directory,
+read-only, and copies a verified snapshot into the separate UAT library claim.
+It never mounts the production `books-state` claim. CWA needs its own writable
+catalog; a read-only SQLite file is not a supported full-function test target.
+
+Stop UAT before the import, then check it has no running pods:
+
+```sh
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books scale deployment/books-cwa-dev --replicas=0
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books rollout status deployment/books-cwa-dev
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books apply -f kubernetes/uat-catalog-import.yaml
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books wait --for=condition=complete job/books-cwa-dev-catalog-import-20260912-retry1 --timeout=180s
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books logs job/books-cwa-dev-catalog-import-20260912-retry1
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books scale deployment/books-cwa-dev --replicas=1
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig -n books rollout status deployment/books-cwa-dev
+```
+
+The Job refuses a stale/missing source or an active UAT SQLite WAL. It retains the prior UAT catalog as
+`metadata.db.uat-before-real-catalog-20260912` on the UAT library claim.
+The first Job attempt failed on a JuiceFS SQLite backup read before replacing
+the UAT catalog. This retry reads the production snapshot as an atomic file,
+checks its SQLite integrity, and reuses the verified UAT backup.
+On 2026-09-12, the retry completed with 5,608 imported entries, preserving the
+original one-entry UAT catalog. SQLite `quick_check` passed on the UAT copy;
+production and UAT deployments were both 1/1 ready, and the private review
+route returned HTTP 302 to login. The first failed Job remains as an audit
+record. Rollback is to stop UAT, restore the saved UAT catalog to
+`metadata.db`, then restart UAT; production needs no rollback.
+This is catalog-only: book files and covers are not cloned or mounted, so
+downloads and file-based operations will not work for production entries.
+Do not use destructive library actions while reviewing this catalog. UAT's
+`app.db`, users, and credentials remain separate. Removing the Job after
+verification does not remove either catalog; `devspace purge` does remove the
+UAT claim, so retain the backup first if needed.
+
 `devspace purge` removes DevSpace-managed resources, including the UAT claims.
 Export anything you want to retain before purging. Do not use it while UAT is
 still in progress.

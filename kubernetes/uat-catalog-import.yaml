@@ -1,0 +1,105 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: books-cwa-dev-catalog-import-20260912-retry1
+  labels:
+    hyperion.mwd.lol/owner: manual
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        hyperion.mwd.lol/owner: manual
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      nodeSelector:
+        topology.kubernetes.io/zone: ovh
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: import
+          image: python:3.13-alpine@sha256:540c7d91f98ff6880174c40e99067bf5941eb54d818a7a5e094d188b196a934d
+          command: [python, -c]
+          args:
+            - |
+              import os, shutil, sqlite3, time
+
+              source = "/snapshot/metadata.db"
+              target = "/calibre-library/metadata.db"
+              backup = "/calibre-library/metadata.db.uat-before-real-catalog-20260912"
+              temporary = target + ".importing"
+
+              assert os.path.isfile(source), "production snapshot is missing"
+              assert time.time() - os.path.getmtime(source) < 600, "production snapshot is stale"
+              assert os.path.isfile(target), "UAT catalog is missing"
+              wal = target + "-wal"
+              assert not os.path.exists(wal) or os.path.getsize(wal) == 0, "UAT SQLite WAL is active"
+
+              def copy_database(src, dst):
+                  with sqlite3.connect(f"file:{src}?mode=ro", uri=True) as source_db:
+                      with sqlite3.connect(dst) as destination_db:
+                          source_db.backup(destination_db)
+                          assert destination_db.execute("PRAGMA quick_check").fetchone()[0] == "ok"
+                          count = destination_db.execute("SELECT count(*) FROM books").fetchone()[0]
+                  return count
+
+              if os.path.exists(backup):
+                  with sqlite3.connect(f"file:{backup}?mode=ro", uri=True) as backup_db:
+                      assert backup_db.execute("PRAGMA quick_check").fetchone()[0] == "ok"
+                      original_count = backup_db.execute("SELECT count(*) FROM books").fetchone()[0]
+                  with sqlite3.connect(f"file:{target}?mode=ro", uri=True) as current_db:
+                      assert current_db.execute("SELECT count(*) FROM books").fetchone()[0] == original_count
+              else:
+                  original_count = copy_database(target, backup)
+
+              for attempt in range(3):
+                  try:
+                      if os.path.exists(temporary):
+                          os.unlink(temporary)
+                      shutil.copyfile(source, temporary)
+                      with sqlite3.connect(f"file:{temporary}?mode=ro", uri=True) as imported_db:
+                          assert imported_db.execute("PRAGMA quick_check").fetchone()[0] == "ok"
+                          imported_count = imported_db.execute("SELECT count(*) FROM books").fetchone()[0]
+                      break
+                  except (OSError, sqlite3.DatabaseError):
+                      if attempt == 2:
+                          raise
+                      time.sleep(2)
+              assert imported_count > 0, "source catalog is empty"
+              os.chmod(temporary, 0o664)
+              os.replace(temporary, target)
+              for suffix in ("-wal", "-shm"):
+                  try:
+                      os.unlink(target + suffix)
+                  except FileNotFoundError:
+                      pass
+              print(f"imported_books={imported_count} original_uat_books={original_count} source_was_read_only=true")
+          resources:
+            requests: {cpu: 25m, memory: 64Mi}
+            limits: {cpu: 250m, memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: snapshot
+              mountPath: /snapshot
+              readOnly: true
+              subPath: apps/annasfetcher/calibre
+            - name: uat-library
+              mountPath: /calibre-library
+      volumes:
+        - name: snapshot
+          persistentVolumeClaim:
+            claimName: books-shared
+            readOnly: true
+        - name: uat-library
+          persistentVolumeClaim:
+            claimName: books-cwa-dev-library
