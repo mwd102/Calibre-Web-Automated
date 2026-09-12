@@ -2579,10 +2579,10 @@ def _delete_user(content):
     if ub.session.query(ub.User).filter(ub.User.role.op('&')(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
                                         ub.User.id != content.id).count():
         if content.name != "Guest":
-            db_cleanup.delete_user_rows(ub.session, content.id)
+            user_name = db_cleanup.delete_user(ub.session, content)
             ub.session_commit()
-            log.info("User {} deleted".format(content.name))
-            return _("User '%(nick)s' deleted", nick=content.name)
+            log.info("User {} deleted".format(user_name))
+            return _("User '%(nick)s' deleted", nick=user_name)
         else:
             # log.warning(_("Can't delete Guest User"))
             raise Exception(_("Can't delete Guest User"))
