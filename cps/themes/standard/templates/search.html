@@ -1,15 +1,89 @@
-{% import 'image.html' as image %}
+{% import theme('image.html') as image %}
 {% extends theme("layout.html") %}
+{% block header %}
+<style>
+.standard-search-page {
+    margin-bottom: 50px;
+}
+
+.standard-search-page .standard-search-heading {
+    margin: 0 0 1.5rem;
+    font-weight: 600;
+}
+
+.standard-search-page .standard-search-shelf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 1rem;
+}
+
+.standard-search-page .standard-search-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 0 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.standard-search-page .standard-search-filters .btn {
+    margin-bottom: 0;
+}
+
+.standard-search-page .standard-search-shelf-actions .filterheader {
+    margin: 0;
+}
+
+.standard-search-page .standard-search-shelf-actions .btn-toolbar {
+    margin: 0;
+}
+
+.standard-search-page .standard-search-grid {
+    margin-top: 0;
+}
+
+.standard-search-page .standard-search-card {
+    margin-bottom: 1.5rem;
+}
+
+.standard-search-page .standard-search-card .standard-search-cover {
+    margin-bottom: 10px;
+}
+
+.standard-search-page .standard-search-card .standard-search-meta {
+    min-width: 0;
+}
+
+.standard-search-page .standard-search-card .title {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.standard-search-page .standard-search-card .author,
+.standard-search-page .standard-search-card .series {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 767px) {
+    .standard-search-page .standard-search-shelf-actions {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
 {% block body %}
-<div class="discover">
+<div class="discover standard-search-page">
     {% if entries|length < 1 %}
-      <h2>{{_('No Results Found')}}</h2>
+      <h2 class="standard-search-heading">{{_('No Results Found')}}</h2>
       <p>{{_('Search Term:')}} {{adv_searchterm}}</p>
     {% else %}
-      <h2>{{result_count}} {{_('Results for:')}} {{adv_searchterm}}</h2>
+      <h2 class="standard-search-heading">{{result_count}} {{_('Results for:')}} {{adv_searchterm}}</h2>
       {% if current_user.is_authenticated %}
         {% if current_user.shelf.all() or g.shelves_access %}
-          <div id="shelf-actions" class="btn-toolbar" role="toolbar">
+          <div id="shelf-actions" class="btn-toolbar standard-search-shelf-actions" role="toolbar">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="btn-group" role="group" aria-label="Add to shelves">
               <button id="add-to-shelf" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -27,7 +101,7 @@
           </div>
         {% endif %}
       {% endif %}
-      <div class="filterheader hidden-xs"><!-- ToDo: Implement filter for search results -->
+      <div class="filterheader standard-search-filters hidden-xs"><!-- ToDo: Implement filter for search results -->
         <a id="new" data-toggle="tooltip" title="{{_('Sort according to book date, newest first')}}" class="btn btn-primary{% if order == "new" %} active{% endif%}" href="{{url_for('web.books_list', data=page, sort_param='new', query=query)}}"><span class="glyphicon glyphicon-sort-by-order"></span></a>
         <a id="old" data-toggle="tooltip" title="{{_('Sort according to book date, oldest first')}}" class="btn btn-primary{% if order == "old" %} active{% endif%}" href="{{url_for('web.books_list', data=page, sort_param='old', query=query)}}"><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
         <a id="asc" data-toggle="tooltip" title="{{_('Sort title in alphabetical order')}}" class="btn btn-primary{% if order == "abc" %} active{% endif%}" href="{{url_for('web.books_list', data=page, sort_param='abc', query=query)}}"><span class="glyphicon glyphicon-font"></span><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
@@ -39,10 +113,10 @@
       </div>
   {% endif %}
 
-  <div class="row display-flex">
+  <div class="row display-flex standard-search-grid">
     {% for entry in entries %}
-    <div class="col-sm-3 col-lg-2 col-xs-6 book isotope-item session">
-      <div class="cover">
+    <div class="col-sm-3 col-lg-2 col-xs-6 book isotope-item session standard-search-card">
+      <div class="cover standard-search-cover">
         {% if entry.Books.has_cover is defined %}
            <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
               {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
@@ -56,7 +130,7 @@
           </a>
         {% endif %}
       </div>
-      <div class="meta">
+      <div class="meta standard-search-meta">
         <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
           <p title="{{entry.Books.title}}" class="title">{{entry.Books.title|shortentitle}}</p>
         </a>
