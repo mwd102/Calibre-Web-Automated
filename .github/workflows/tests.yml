@@ -90,8 +90,9 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/scripts
         run: |
+          # The EPUB fixer takes a process-wide lock during import; parallel collectors race.
           pytest -m "smoke or unit" \
-            -n auto \
+            -n 1 \
             --maxfail=3 \
             -v \
             --tb=short \
