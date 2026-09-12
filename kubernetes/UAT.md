@@ -148,3 +148,35 @@ kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig \
 Verification: dev and production were both 1/1 ready; the private login URL
 returned HTTP 200; served `pastel.css` matched the source SHA-256. The retained
 UAT catalog contained 5,608 entries and SQLite `quick_check` returned `ok`.
+
+## Pastel layout and palette follow-up (2026-09-12)
+
+PR #9 updates the review to source
+`4ca9fb24eacac196cae068a674928826a5e83289`, built by GHCR-only run
+`34722711967`. The palette now uses sage navigation, cream pages, peach reading
+panels, and lilac controls. `uat.yaml` records the immutable image.
+
+Authenticated Chromium review covers home and full book details at 320, 390,
+768, and 1440 pixels; real XHR popup loading, scrolling, and closing at phone
+and desktop widths; mobile menu and focused search; profile, admin, advanced
+search, regular search, and metadata edit navigation. Checks include viewport
+bounds and description-before-metadata ordering. The focused suite has 35
+passing tests; browser checks were rerun after the palette update.
+
+The wider review reproduced a search freeze while cover thumbnails were being
+scanned. Thread stacks identified a worker registering SQLite UDFs on the same
+connection used by search. Cover scans now read a snapshot through a separate,
+read-only SQLite connection. Repeat navigation/search checks confirm the app
+stays responsive. Temporary diagnostic edits are discarded by image rollout.
+
+The retained catalog still has no production book files or covers. Reader,
+download, mail, provider integrations, and destructive admin actions are not
+validated by this UI review. The legacy Docker Hub/ARM push workflow still has
+its separate credentials/runner failures; this deployment uses the successful
+GHCR-only workflow.
+
+Final deployment verification: dev rolled out 1/1 ready with digest
+`sha256:1dabdf02c74a0a60005f03445d2b90265a41c29b02ea165c8145ca62e144f67b`.
+The container's stylesheet and thumbnail module hashes match source. The live
+layout/popup and desktop/phone search sequence passed against this image;
+login health checks remained HTTP 200. Production remained 1/1 ready.
