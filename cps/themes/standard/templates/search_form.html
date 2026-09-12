@@ -1,7 +1,103 @@
 {% extends theme("layout.html") %}
+{% block header %}
+<style>
+.standard-search-form-page {
+    margin-bottom: 50px;
+}
+
+.standard-search-form-page .standard-search-form-heading {
+    margin: 0 0 1.5rem;
+    font-weight: 600;
+}
+
+.standard-search-form-page .standard-search-form-card {
+    float: none;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.standard-search-form-page #search > .form-group,
+.standard-search-form-page #search > .row {
+    margin-bottom: 1.25rem;
+}
+
+.standard-search-form-page #search > .form-group:last-of-type {
+    margin-bottom: 1.5rem;
+}
+
+.standard-search-form-page #search .form-group > label,
+.standard-search-form-page #search .form-group > div > label {
+    font-weight: 600;
+}
+
+.standard-search-form-page #search .form-control,
+.standard-search-form-page #search .bootstrap-select > .dropdown-toggle {
+    border-color: #ccc;
+    border-radius: 3px;
+    box-shadow: none;
+}
+
+.standard-search-form-page #search .form-control:focus,
+.standard-search-form-page #search .bootstrap-select.open > .dropdown-toggle,
+.standard-search-form-page #search .bootstrap-select > .dropdown-toggle:focus {
+    border-color: #66afe9;
+    box-shadow: 0 0 0 2px rgba(102, 175, 233, 0.15);
+}
+
+.standard-search-form-page #search .input-group .form-control:first-child {
+    border-radius: 3px 0 0 3px;
+}
+
+.standard-search-form-page #search .input-group-btn .datepicker_delete {
+    border-radius: 0 3px 3px 0;
+    border-color: #ccc;
+    background: #fff;
+    color: #777;
+}
+
+.standard-search-form-page #search .input-group-btn .datepicker_delete:hover,
+.standard-search-form-page #search .input-group-btn .datepicker_delete:focus {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.standard-search-form-page #search .bootstrap-select {
+    width: 100% !important;
+}
+
+.standard-search-form-page #search .bootstrap-select .dropdown-toggle .filter-option {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.standard-search-form-page #search .standard-search-form-submit {
+    margin-top: 0.25rem;
+    padding: 0.6rem 1.25rem;
+    border-color: #ccc;
+    background: #fff;
+    color: #333;
+}
+
+.standard-search-form-page #search .standard-search-form-submit:hover,
+.standard-search-form-page #search .standard-search-form-submit:focus {
+    background: #e9e9e9;
+    color: #222;
+}
+
+@media (max-width: 767px) {
+    .standard-search-form-page .standard-search-form-card {
+        padding: 1rem;
+    }
+}
+</style>
+{% endblock %}
 {% block body %}
-<h1 class="{{page}}">{{title}}</h1>
-<div class="col-md-10 col-lg-6">
+<div class="standard-search-form-page">
+<h1 class="{{page}} standard-search-form-heading">{{title}}</h1>
+<div class="col-md-10 col-lg-6 standard-search-form-card">
   <form role="form" id="search" action="{{ url_for('search.advanced_search_form') }}" method="POST">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form-group">
@@ -244,8 +340,9 @@
     {% endfor %}
     {% endif %}
 
-    <button type="submit" id="adv_submit" class="btn btn-default">{{_('Search')}}</button>
+    <button type="submit" id="adv_submit" class="btn btn-default standard-search-form-submit">{{_('Search')}}</button>
   </form>
+</div>
 </div>
 {% endblock %}
 
