@@ -21,19 +21,121 @@
   <link href="{{ url_for('static', filename='css/libs/bootstrap.min.css') }}" rel="stylesheet" media="screen">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/libs/bar-ui.css') }}" />
 
+  <style>
+    body.audio-detail-body {
+      padding-bottom: 6rem;
+      background: #f7f7f7;
+      color: #333;
+    }
+
+    .audio-detail-page {
+      padding-top: 1.5rem;
+    }
+
+    .audio-detail-shell {
+      margin: 0;
+      padding: 1.5rem 0;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .audio-detail-meta {
+      width: 100%;
+      margin-bottom: 0 !important;
+      padding: 0 1.5rem;
+    }
+
+    .audio-detail-meta #title {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .audio-detail-meta .author {
+      margin-bottom: 1rem;
+      font-size: 1.05em;
+    }
+
+    .audio-detail-meta #detailcover {
+      width: min(30%, 180px);
+      height: auto;
+      margin: 0 0 1rem 1.5rem !important;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    .audio-detail-meta .rating,
+    .audio-detail-meta .languages,
+    .audio-detail-meta .identifiers,
+    .audio-detail-meta .tags,
+    .audio-detail-meta .publishers,
+    .audio-detail-meta .publishing-date,
+    .audio-detail-meta .real_custom_columns,
+    .audio-detail-meta .custom_columns,
+    .audio-detail-meta .comments,
+    .audio-detail-meta .more-stuff {
+      margin-top: 1rem;
+    }
+
+    .audio-detail-meta .comments {
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+    }
+
+    .audio-detail-meta .comments h3 {
+      margin-top: 0;
+      font-size: 1.25em;
+    }
+
+    .audio-detail-meta .btn-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .audio-detail-meta .btn-group {
+      margin: 0;
+    }
+
+    .audio-detail-body .sm2-bar-ui.fixed {
+      z-index: 1030;
+    }
+
+    @media (max-width: 767px) {
+      .audio-detail-page {
+        padding-top: 0;
+      }
+
+      .audio-detail-shell {
+        padding-top: 1rem;
+      }
+
+      .audio-detail-meta {
+        padding: 0 1rem;
+      }
+
+      .audio-detail-meta #detailcover {
+        width: 120px;
+      }
+    }
+  </style>
+
   <script>
     "use strict";
   </script>
 
 </head>
 
-<body>
+<body class="audio-detail-body">
 
-  <div class="row" style="display: inline-block; width: 100%;">
-    <div class="col-sm-3 col-lg-3 col-xs-5">
+  <main class="container audio-detail-page">
+  <div class="row audio-detail-shell">
+    <div class="col-sm-3 col-lg-3 col-xs-5 audio-detail-spacer" aria-hidden="true">
       
     </div>
-    <div class="col-sm-6 col-lg-6 book-meta" style="margin-bottom: 2%;">
+    <div class="col-sm-6 col-lg-6 book-meta audio-detail-meta">
       <img id="detailcover" title="{{entry.title}}" src="{{url_for('web.get_cover', book_id=entry.id, resolution='og', c=entry|last_modified)}}" style="float: right; margin-top: 20px"/>
       <h2 id="title">{{entry.title}}</h2>
       <p class="author">
@@ -230,6 +332,7 @@
 
     </div>
   </div>
+  </main>
 
 <div class="sm2-bar-ui full-width fixed">
 
