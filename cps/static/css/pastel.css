@@ -251,3 +251,190 @@ body.pastel > div.navbar.navbar-default.navbar-static-top > div > form::before {
 .pastel .nav-head { color: var(--muted) !important; }
 .pastel .profileDrop::before { filter: brightness(.4); }
 .pastel .profileDrop::after { border-top-color: var(--accent) !important; }
+
+/* caliBlur's optional mobile blur has higher specificity than the base reset. */
+body.pastel .blur-wrapper { display: none !important; }
+
+/* Keep controls usable when the signed-in user can upload and edit books. */
+.pastel #form-upload .form-group { width: auto; }
+.pastel #form-upload .form-group .btn-file {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 40px;
+    min-width: 44px;
+    padding: 0;
+    margin: 10px 0;
+    font-size: 0;
+    overflow: hidden;
+}
+.pastel #form-upload .form-group .btn-file::before {
+    position: static;
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    font: 18px/1 "Glyphicons Halflings";
+    content: "\e027";
+    color: var(--accent);
+}
+.pastel #form-upload .form-group .btn-file::after { display: none; }
+.pastel .profileDrop > span::before { filter: brightness(.4); }
+.pastel .pagination .active > :is(a, span),
+.pastel .pagination .active > :is(a, span):hover {
+    background: var(--accent) !important;
+    color: #fff !important;
+    border-color: var(--accent) !important;
+}
+.pastel .book-detail-meta h2#title { max-width: 100%; }
+.pastel .book .series, .pastel .book .series a { color: var(--muted) !important; }
+.pastel .shelf-actions { padding: 12px; }
+
+/* XHR details omit Standard's header block. Supply their structural rules here,
+ * in the theme stylesheet that is present before a book is opened. */
+.pastel .book-action-bar, .pastel .book-action-bar .action-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.pastel .book-action-bar .btn-group { position: relative; float: none; }
+.pastel .book-action-bar .action-icon-btn {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+    line-height: 1;
+}
+.pastel .book-action-bar .action-icon-btn .glyphicon { font-size: 18px; }
+.pastel .book-metadata .meta-value { display: flex; flex-wrap: wrap; }
+.pastel .meta-pill { display: inline-flex; align-items: center; }
+.pastel .meta-pill.tag-pill, .pastel .meta-pill.shelf-pill { position: relative; padding-right: 24px; }
+.pastel .tag-remove, .pastel .shelf-remove {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 22px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: #345b42;
+    display: none;
+}
+.pastel .meta-pill:is(:hover, :focus-within) :is(.tag-remove, .shelf-remove) { display: block; }
+.pastel .action-toast { display: none; position: fixed; z-index: 1060; }
+
+/* Replace the legacy fixed cover/meta panes with one scrollable dialog body. */
+.pastel #bookDetailsModal {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0 !important;
+    background: #35324470;
+    overflow: auto;
+}
+.pastel #bookDetailsModal > .modal-dialog.modal-lg {
+    width: calc(100% - 48px);
+    max-width: 1120px;
+    height: auto;
+    margin: 24px auto;
+}
+.pastel #bookDetailsModal > .modal-dialog > .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+    overflow: hidden;
+}
+.pastel #bookDetailsModal > .modal-dialog > .modal-content > .modal-header {
+    position: static;
+    flex: 0 0 auto;
+    width: auto;
+    height: auto;
+    padding: 16px 22px;
+    background: var(--lavender);
+    border-color: var(--line);
+    line-height: 1.4;
+}
+.pastel #bookDetailsModal > .modal-dialog > .modal-content > .modal-header > h4 {
+    width: auto;
+    max-width: none;
+    height: auto;
+    line-height: 1.4;
+    margin: 0 40px 0 0;
+}
+.pastel #bookDetailsModal .modal-header > .close {
+    display: block;
+    position: static;
+    opacity: 1;
+    color: var(--ink);
+    font: 28px/1 system-ui, sans-serif;
+    text-shadow: none;
+}
+.pastel #bookDetailsModal > .modal-dialog > .modal-content > .modal-body {
+    position: relative;
+    inset: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    height: auto;
+    padding: 24px;
+    overflow: auto;
+}
+.pastel #bookDetailsModal .book-detail-meta { height: auto; overflow: visible; color: var(--ink); }
+.pastel #bookDetailsModal .book-detail-page { margin: 0; }
+.pastel #bookDetailsModal .discover > h2 { display: none; }
+.pastel #bookDetailsModal .modal-footer { display: none; }
+@media (max-width: 767px) {
+    .pastel .navbar > .container-fluid > .navbar-header > button.navbar-toggle > span.icon-bar {
+        position: static;
+        opacity: 1;
+        width: 22px;
+        height: 2px;
+    }
+    .pastel .navbar > .container-fluid > .navbar-header > button.navbar-toggle > span.icon-bar + span.icon-bar { margin-top: 4px; }
+    .pastel .shelf-actions { margin: 12px 0 20px; padding: 10px; }
+    .pastel .shelf-actions .filterheader {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        padding: 0;
+    }
+    .pastel .shelf-actions .filterheader .btn { margin: 0; padding: 6px 2px; }
+    .pastel #bookDetailsModal > .modal-dialog.modal-lg { width: calc(100% - 16px); margin: 8px auto; }
+    .pastel #bookDetailsModal > .modal-dialog > .modal-content { max-height: calc(100dvh - 16px); }
+    .pastel #bookDetailsModal > .modal-dialog > .modal-content > .modal-body { padding: 16px; }
+}
+.pastel #form-upload .form-group .btn-file::before { z-index: auto; }
+@media (min-width: 768px) {
+    .pastel .navbar > .container-fluid > .navbar-header { width: 0; }
+    body.pastel > .navbar > .container-fluid > form[role=search] { margin-left: 20px; }
+    body.pastel > .navbar > .container-fluid > form[role=search] > .form-group {
+        width: min(360px, calc(100vw - 420px));
+    }
+    body.pastel > .navbar > .container-fluid > form[role=search] #query { width: 100% !important; }
+    body.pastel > .navbar > .container-fluid > form[role=search] .input-group-btn { left: auto; right: 0; }
+}
+@media (max-width: 991px) {
+    .pastel .book-detail-main { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+    .pastel .book-detail-cover { justify-self: center; width: 150px !important; }
+    .pastel .book-metadata { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 767px) {
+    .pastel #form-upload > .form-group::before { display: none; }
+    .pastel #form-upload .form-group .btn-file { width: 210px; font-size: 13px; gap: 12px; }
+    .pastel .profileDrop + span.hidden-sm { color: var(--ink); }
+    body.pastel > .container-fluid > .row-fluid > .col-sm-10::after { background: var(--surface) !important; }
+}
+@media (max-width: 767px) {
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+        width: min(240px, calc(100vw - 110px));
+    }
+}
+.pastel #bookDetailsModal > .modal-dialog.modal-lg { transform: none !important; }
