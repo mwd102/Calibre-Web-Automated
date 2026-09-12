@@ -101,7 +101,19 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{{url_for('web.index')}}">{{instance}}</a>
+          <a class="navbar-brand" href="{{url_for('web.index')}}"{% if g.theme.identifier == 'pastel' %} aria-label="{{instance}}" title="{{instance}}"{% endif %}>
+            {% if g.theme.identifier == 'pastel' %}
+              <img class="pastel-brand-mark" src="{{url_for('static', filename='favicon.ico')}}" width="32" height="32" alt="">
+              <span class="pastel-brand-wordmark">
+                {% if instance == 'Calibre-Web Automated' %}
+                  <span class="pastel-brand-name">Calibre-Web</span>
+                  <span class="pastel-brand-edition">Automated</span>
+                {% else %}
+                  <span class="pastel-brand-name">{{instance}}</span>
+                {% endif %}
+              </span>
+            {% else %}{{instance}}{% endif %}
+          </a>
         </div>
         {% if g.theme.show_home_shortcuts %}
             <div class="home-btn"><a class="home-btn-tooltip" href="{{url_for("web.index",page=1)}}" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Home"></a></div>

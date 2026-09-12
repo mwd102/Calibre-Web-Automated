@@ -217,3 +217,18 @@ Final deployed image:
 The stylesheet hash matches source. All six live viewport checks and the book/
 reduced-motion checks passed against this image. CI smoke/unit, browser security,
 and policy checks pass.
+
+## Typography and brand mark (2026-09-12)
+
+PR #12 unifies Pastel heading/control typography and pairs the existing bundled
+Calibre-Web C mark with a compact wordmark. Other themes retain their branding;
+custom instance names retain their text and accessible label. No new font or
+image dependency is introduced. Source: `15447a9dedb3b4f1d853578e4e24ee9eba6a4eeb`;
+GHCR-only build: `34725173014`. Thirty-one theme/browser regressions pass.
+
+Deployed image: `sha256:894be5b11b140255e3c31cd825ab60b2b20896c7ffbfb4ca0b00a9d98bcd349c`.
+Authenticated checks against the deployed image pass at 320, 390, 768, 1024,
+1280, and 1440 pixels, including logo loading, header bounds, matching wordmark/
+book-title font families, description ordering, and reduced motion. CI smoke/unit,
+browser security, and Hyperion policy checks pass. The separate default Docker
+build still fails its existing registry authentication; the GHCR UAT build passed.
