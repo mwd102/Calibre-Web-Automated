@@ -1,0 +1,8 @@
+FROM crocodilestick/calibre-web-automated:latest AS development
+
+USER root
+RUN python3 -m pip install --no-cache-dir watchfiles
+WORKDIR /app/calibre-web-automated
+USER abc
+
+CMD ["watchfiles", "--filter", "python", "python3 cps.py", "/app/calibre-web-automated/cps"]

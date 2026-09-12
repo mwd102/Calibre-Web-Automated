@@ -1,0 +1,30 @@
+version: v2beta1
+name: calibre-web-automated
+
+images:
+  app:
+    image: ghcr.io/mwd102/calibre-web-automated-dev
+    context: .
+    dockerfile: Dockerfile.dev
+
+deployments:
+  app:
+    kubectl:
+      manifests:
+        - deploy/hyperion-dev.yaml
+
+dev:
+  app:
+    imageSelector: ghcr.io/mwd102/calibre-web-automated-dev
+    sync:
+      - path: ./cps:/app/calibre-web-automated/cps
+        excludePaths:
+          - "**/__pycache__/**"
+          - "**/*.pyc"
+      - path: ./cps.py:/app/calibre-web-automated/cps.py
+    ports:
+      - port: "8083:8083"
+    logs:
+      enabled: true
+    terminal:
+      enabled: true

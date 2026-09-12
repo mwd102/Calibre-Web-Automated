@@ -487,3 +487,14 @@ CWA is and always will be free and open source. If it makes your library life ea
 - Coffee ☕ (lots of coffee)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/crocodilestick)
+## Hyperion direct development
+
+Run `devspace dev` to build the development image, start the separate
+`calibre-web-automated-dev` workload in Hyperion's `books` namespace, sync
+changes under `cps/`, and forward the application to
+`http://localhost:8083`. The development instance uses disposable config,
+library, and ingest directories. Hyperion's shared Books JuiceFS view is
+available read-only at `/hyperion-books`.
+
+Use `devspace purge` to remove only the development workload. The stable
+Argo-managed Books application is not modified.

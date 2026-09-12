@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calibre-web-automated-dev
+  namespace: books
+  labels:
+    app.kubernetes.io/name: calibre-web-automated-dev
+    hyperion.mwd.lol/owner: manual
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/name: calibre-web-automated-dev}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: calibre-web-automated-dev
+        hyperion.mwd.lol/owner: manual
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: app
+          image: ghcr.io/mwd102/calibre-web-automated-dev
+          command: [watchfiles]
+          args: [--filter, python, "python3 cps.py", /app/calibre-web-automated/cps]
+          env:
+            - {name: TZ, value: America/Vancouver}
+          ports:
+            - {name: http, containerPort: 8083}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {memory: 1Gi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: config, mountPath: /config}
+            - {name: library, mountPath: /calibre-library}
+            - {name: ingest, mountPath: /cwa-book-ingest}
+            - {name: shared-books, mountPath: /hyperion-books, readOnly: true}
+      volumes:
+        - {name: config, emptyDir: {}}
+        - {name: library, emptyDir: {}}
+        - {name: ingest, emptyDir: {}}
+        - name: shared-books
+          persistentVolumeClaim: {claimName: books-shared, readOnly: true}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calibre-web-automated-dev
+  namespace: books
+  labels: {hyperion.mwd.lol/owner: manual}
+spec:
+  selector: {app.kubernetes.io/name: calibre-web-automated-dev}
+  ports:
+    - {name: http, port: 8083, targetPort: http}
