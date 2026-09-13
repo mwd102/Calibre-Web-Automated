@@ -104,11 +104,15 @@ def badges(title, authors, collection=None, year=None, isbns=()):
     return sorted(result, key=lambda b: (-b['year'], b['collection'], b['category']))
 
 
+def first_year(collection):
+    return 1918 if collection == "pulitzer" else 2015
+
+
 def selected_year(raw, collection):
     if raw in (None, '', 'all'):
         return None
     year = int(raw)
-    if not 2015 <= year <= datetime.now(timezone.utc).date().year:
+    if not first_year(collection) <= year <= datetime.now(timezone.utc).date().year:
         raise ValueError('Invalid collection year')
     return year
 

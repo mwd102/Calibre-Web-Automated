@@ -56,37 +56,7 @@ History & Biography|How to Kill a Witch|Claire Mitchell;Zoe Venditozzi'''
 for line in latest.splitlines():
  c,t,a=line.split('|');records.append(dict(year=2025,category=c,title=t,authors=a.split(';'),source='https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards'))
 (out/'goodreads.json').write_text(json.dumps(dict(name='Goodreads Choice',source='https://www.kaggle.com/datasets/krisbruurs/goodreads-choice-awards-2011-2024-books',note='Category winners, 2015–2025. Historical winners are selected by the highest recorded vote count per category in the public archive. 2026 winners have not been announced.',records=records,coverage=[]),ensure_ascii=False,indent=2)+'\n')
-f='''2015|All the Light We Cannot See|Anthony Doerr
-2016|The Sympathizer|Viet Thanh Nguyen
-2017|The Underground Railroad|Colson Whitehead
-2018|Less|Andrew Sean Greer
-2019|The Overstory|Richard Powers
-2020|The Nickel Boys|Colson Whitehead
-2021|The Night Watchman|Louise Erdrich
-2022|The Netanyahus|Joshua Cohen
-2023|Trust|Hernan Diaz
-2023|Demon Copperhead|Barbara Kingsolver
-2024|Night Watch|Jayne Anne Phillips
-2025|James|Percival Everett
-2026|Angel Down|Daniel Kraus'''
-n='''2015|The Sixth Extinction|Elizabeth Kolbert
-2016|Black Flags|Joby Warrick
-2017|Evicted|Matthew Desmond
-2018|Locking Up Our Own|James Forman Jr.
-2019|Amity and Prosperity|Eliza Griswold
-2020|The End of the Myth|Greg Grandin
-2020|The Undying|Anne Boyer
-2021|Wilmington’s Lie|David Zucchino
-2022|Invisible Child|Andrea Elliott
-2023|His Name Is George Floyd|Robert Samuels;Toluse Olorunnipa
-2024|A Day in the Life of Abed Salama|Nathan Thrall
-2025|To the Success of Our Hopeless Cause|Benjamin Nathans
-2026|There Is No Place for Us|Brian Goldstone'''
-records=[]
-for cat,raw,num in [('Fiction',f,219),('General Nonfiction',n,223)]:
- for line in raw.splitlines():
-  y,t,a=line.split('|');records.append(dict(year=int(y),category=cat,title=t,authors=a.split(';'),source=f'https://www.pulitzer.org/prize-winners-by-category/{num}'))
-(out/'pulitzer.json').write_text(json.dumps(dict(name='Pulitzer Winners',source='https://www.pulitzer.org/prize-winners-by-category',note='Fiction and General Nonfiction winners, 2015–2026, including joint winners. Other Pulitzer categories are outside this collection.',records=records,coverage=[]),ensure_ascii=False,indent=2)+'\n')
-print('NYT',len(group),'Goodreads',len(groups)+15,'Pulitzer',len(records))
+# Pulitzer is a separately reviewed all-time catalog; archive rebuilds preserve it.
+print('NYT', len(group), 'Goodreads', len(records))
 for c in coverage:
  if c['missing_dates']:print('Missing',c)

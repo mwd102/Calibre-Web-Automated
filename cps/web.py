@@ -907,7 +907,7 @@ def curated_shelf(collection):
     records = [r for r in data['records'] if year is None or r['year'] == year]
     return render_title_template('curated_shelf.html',
                                  title=data['name'], page='curated', collection=collection,
-                                 catalog=data, selected_year=year, years=range(datetime.now(timezone.utc).year, 2014, -1),
+                                 catalog=data, selected_year=year, years=range(datetime.now(timezone.utc).year, curated_shelves.first_year(collection) - 1, -1),
                                  record_count=len(records), annotations=annotations,
                                  entries=[SimpleNamespace(Books=b) for b in books],
                                  pagination=Pagination(page_number, per_page, len(annotations)))
