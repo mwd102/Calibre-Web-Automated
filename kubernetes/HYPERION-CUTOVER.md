@@ -1,6 +1,17 @@
 # Hyperion production replacement readiness
 
-Assessment: **not ready for an image-only production swap**. This is a preparation
+**Completed on 2026-09-13.** Hyperion now runs the released fork with its existing
+accounts, split library and Kobo identity. A final off-site state backup was
+restored and verified, and the book tree was cloned with writers stopped. The
+production deployment disables CWA background automation and preserves the
+Calibre-Web trusted-proxy/shared-secret boundary. See the
+[canonical production and rollback record](https://github.com/mwd102/Hyperion/blob/main/docs/books-migration.md#hyperion-cwa-cutover--2026-09-13)
+and [published release](https://github.com/mwd102/Calibre-Web-Automated/releases/tag/hyperion-2026.09.13.1).
+
+The assessment below is the historical pre-cutover checklist. Its blockers were
+resolved in the canonical production record; it is retained as migration context.
+
+Original assessment: **not ready for an image-only production swap**. This is a preparation
 record, not a deployable production manifest or authorization to cut over.
 Observations were verified on 2026-09-13; repeat them before release.
 
