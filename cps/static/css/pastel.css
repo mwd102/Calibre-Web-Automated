@@ -942,3 +942,4 @@ body.pastel #magic-shelf-form .query-builder {
     background: var(--surface) !important; color: var(--ink) !important; border-color: var(--line) !important;
 }
 body.pastel .discover > h2 { color: var(--ink) !important; }
+body.pastel .pastel-brand-name { color: var(--ink) !important; }
