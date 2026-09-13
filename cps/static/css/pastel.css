@@ -835,3 +835,12 @@ body.pastel .curated-intro { margin-top: 0; }
 body.pastel .curated-more { flex-basis: 100%; }
 body.pastel .curated-more summary { cursor: pointer; font-size: 12px; padding: 4px 0; }
 body.pastel .curated-more .curated-badge { margin: 3px 3px 3px 0; }
+
+/* Queue confirmations must stay readable outside the icon buttons. */
+.pastel #kobo-delivery-status {
+    color: var(--ink) !important;
+    flex-basis: 100%;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.pastel #kobo-delivery-status:empty { display: none; }

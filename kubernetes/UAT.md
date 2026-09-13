@@ -329,3 +329,32 @@ correct catalog counts, and historical book-detail badges show year/category.
 The dev library matches 128 books, up from 18. Goodreads/NYT retain their 2015
 cutoff; out-of-range years return 400. Deployed catalog, matching module, route
 and template hashes match source. Browser authentication stayed in memory.
+
+
+## Send to Kobo (2026-09-13)
+
+PR #18 replaces the detail email action for Kobo-configured users with a private,
+automatically managed Send to Kobo sync shelf. Existing shelves and the device
+protocol remain unchanged. Source: `540fd035cb9e428648ed898d3656310ca088ecd1`.
+GHCR UAT build `34731861666`; image:
+`sha256:421cb724aeee813301e21b9c1817595ae89bf1bc565fa16f44082f56f6925973`.
+
+78 focused theme, early-error rendering, queue, authorization, book visibility
+and Kobo timestamp checks pass. CI smoke/unit, browser security and Hyperion
+policy checks pass; the separate default registry job retains its missing-login
+failure. The dev image build succeeds.
+
+Live dev browser checks pass at 320, 390 and 1440 pixels, including real queue
+POSTs, repeated clicks, readable confirmations, the retained XHR book dialog,
+missing-CSRF rejection (400), and unchanged email actions for non-Kobo users.
+A simulated device GET returned both a direct-send book and a legacy-shelf book;
+repeated sends left one membership. No physical Kobo download was tested.
+The module, route, template, style and early HTTP error template hashes match
+source. The review caught and fixed inherited white confirmation text and an
+existing early-CSRF error-page crash before theme initialization.
+
+Kobo sync is enabled on dev (proxying remains disabled). The temporary dev test
+profile, token, shelves, memberships, sync state and sessions were removed after
+verification. Read-only live inspection confirmed Amy is the sole configured
+Kobo user and uses shelf-only sync. No live profile, shelf, queue or token was
+changed. This deployment is dev only.
