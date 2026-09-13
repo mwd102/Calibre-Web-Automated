@@ -401,7 +401,7 @@
                                             </div>
                                         {% endif %}
 
-                                    {% if g.theme.identifier != 'pastel' and current_user.kindle_mail and entry.email_share_list %}
+                                    {% if not entry.kobo_delivery_enabled and g.theme.identifier != 'pastel' and current_user.kindle_mail and entry.email_share_list %}
                                         {% if current_user.allow_additional_ereader_emails %}
                                             <button id="sendToEReaderBtn" type="button" class="btn btn-primary action-icon-btn" data-toggle="modal" data-target="#emailSelectModal" data-book-id="{{ entry.id }}" title="{{ _('Send to eReader') }}" aria-label="{{ _('Send to eReader') }}">
                                                 <span class="glyphicon glyphicon-send"></span>
@@ -413,7 +413,16 @@
                                         {% endif %}
                                     {% endif %}
                                     {% endif %}
-                                    {% if g.theme.identifier == 'pastel' and current_user.role_download() %}
+                                    {% if entry.kobo_delivery_enabled %}
+                                        <form id="send-to-kobo-form" method="post" action="{{ url_for('web.send_to_kobo', book_id=entry.id) }}" style="display:inline-flex;margin:0">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button id="sendToKoboBtn" type="submit" class="btn btn-primary action-icon-btn" {% if not entry.kobo_delivery_compatible %}disabled{% endif %}
+                                                    title="{{ _('Send to Kobo') if entry.kobo_delivery_compatible else _('EPUB or KEPUB required for Kobo sync') }}" aria-label="{{ _('Send to Kobo') }}">
+                                                <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
+                                            </button>
+                                        </form>
+                                        <span id="kobo-delivery-status" role="status" aria-live="polite"></span>
+                                    {% elif g.theme.identifier == 'pastel' and current_user.role_download() %}
                                         {% if not current_user.kindle_mail %}
                                             <a href="{{ url_for('web.profile') }}" class="btn btn-primary action-icon-btn" title="{{ _('Add an email address in your profile') }}" aria-label="{{ _('Add an email address in your profile') }}"><span class="glyphicon glyphicon-envelope"></span></a>
                                         {% elif entry.email_share_list %}
@@ -894,6 +903,17 @@
                 $toast.fadeOut(200);
             }, 1800);
         }
+        $(document).off("submit.koboDelivery", "#send-to-kobo-form").on("submit.koboDelivery", "#send-to-kobo-form", function (event) {
+            event.preventDefault();
+            var $form = $(this), $button = $form.find("button"), $status = $form.next("#kobo-delivery-status");
+            if ($button.prop("disabled")) return;
+            $button.prop("disabled", true);
+            $status.text("");
+            $.ajax({url: this.action, type: "POST", data: $form.serialize()})
+                .done(function (response) { $status.text(response.message); })
+                .fail(function (xhr) { $status.text((xhr.responseJSON || {}).message || {{ _('Could not queue this book. Please try again.')|tojson }}); })
+                .always(function () { $button.prop("disabled", false); });
+        });
         $("#toggle-read-btn").on("click", function () {
             var $cb = $("#have_read_cb");
             var $form = $("#have_read_form");

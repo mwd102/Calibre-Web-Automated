@@ -2912,6 +2912,33 @@ def read_book(book_id, book_format):
         return redirect(url_for("web.index"))
 
 
+@web.route("/book/<int:book_id>/send-to-kobo", methods=["POST"])
+@user_login_required
+@download_required
+def send_to_kobo(book_id):
+    from . import kobo_delivery
+    if not kobo_delivery.configured(current_user, config.config_kobo_sync):
+        abort(403)
+    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
+    if book is None:
+        abort(404)
+    if not kobo_delivery.compatible(book):
+        return jsonify(message=_("This book needs an EPUB or KEPUB format for Kobo sync.")), 400
+    try:
+        already_synced = kobo_delivery.enqueue(current_user.id, book_id)
+    except ValueError:
+        return jsonify(message=_("Make your Send to Kobo shelf private and enable its Kobo sync, then try again.")), 400
+    except Exception:
+        log.exception("Unable to queue book for Kobo")
+        return jsonify(message=_("Could not queue this book. Please try again.")), 500
+    message = (_("This book is already in your Kobo library. Sync your Kobo to download it.") if already_synced
+               else _("Queued for Kobo. Sync your Kobo to download this book."))
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify(message=message)
+    flash(message, category="success")
+    return redirect(url_for('web.show_book', book_id=book_id))
+
+
 @web.route("/book/<int:book_id>")
 @login_required_if_no_ano
 def show_book(book_id):
@@ -2955,6 +2982,9 @@ def show_book(book_id):
 
         entry.ordered_authors = calibre_db.order_authors([entry])
 
+        from . import kobo_delivery
+        entry.kobo_delivery_enabled = kobo_delivery.configured(current_user, config.config_kobo_sync)
+        entry.kobo_delivery_compatible = kobo_delivery.compatible(entry)
         entry.email_share_list = check_send_to_ereader(entry)
         entry.reader_list = check_read_formats(entry)
 

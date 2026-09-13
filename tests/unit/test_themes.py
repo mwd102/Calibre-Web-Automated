@@ -154,11 +154,12 @@ def test_pastel_is_configurable_and_basic_still_uses_simple():
     assert [theme["id"] for theme in themes.get_available_themes()] == [0, 1, 3]
 
 
+@pytest.mark.parametrize("kobo_enabled", [False, True])
 @pytest.mark.parametrize("mail_settings", [("", False), ("first@example.test,second@example.test", False)])
 @pytest.mark.parametrize("theme_id", [0, 1, 3])
 @pytest.mark.parametrize("is_xhr", [False, True])
 @pytest.mark.parametrize("has_description", [False, True])
-def test_book_description_order_and_actions_survive_theme_inheritance(theme_id, is_xhr, has_description, mail_settings):
+def test_book_description_order_and_actions_survive_theme_inheritance(theme_id, is_xhr, has_description, mail_settings, kobo_enabled):
     from datetime import datetime
     from pathlib import Path
     from unittest.mock import Mock
@@ -200,6 +201,7 @@ def test_book_description_order_and_actions_survive_theme_inheritance(theme_id, 
         languages=[], identifiers=[], tags=[], publishers=[], pubdate=None,
         comments=[SimpleNamespace(text='<p>Garden synopsis</p><script>alert(1)</script>')] if has_description else [],
         read_status=False, is_archived=False,
+        kobo_delivery_enabled=kobo_enabled, kobo_delivery_compatible=True,
         email_share_list=[{'format':'Epub', 'convert':0, 'text':'EPUB'}],
     )
     with app.test_request_context('/'):
@@ -213,7 +215,10 @@ def test_book_description_order_and_actions_survive_theme_inheritance(theme_id, 
     if theme_id == 3:
         assert 'pastel-book-navigation' in rendered
         assert ('Close book' if is_xhr else 'Back to library') in rendered
-        if mail_settings[0]:
+        if kobo_enabled:
+            assert 'id="sendToKoboBtn"' in rendered
+            assert 'id="sendToEReaderBtn"' not in rendered
+        elif mail_settings[0]:
             assert 'id="sendToEReaderBtn"' in rendered
             assert 'id="emailSelectModal"' in rendered
             assert 'data-direct-send="true"' not in rendered
