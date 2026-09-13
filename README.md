@@ -5,7 +5,7 @@ An opinionated take on [Calibre-Web Automated](https://github.com/crocodilestick
 - **A softer interface:** the optional Pastel theme uses a neutral Rose Pine Dawn palette, improved book details, responsive navigation, Discover and infinite scrolling. Standard and CaliBlur remain available.
 - **Better Kobo handling:** send a book directly to a configured Kobo account while keeping existing shelf-based sync and device identity.
 - **Thoughtful library tools:** curated award and bestseller shelves, book badges, and a choice of account email destinations.
-- **Security maintenance:** carries the inherited security fixes and adds regression coverage for book access, delivery permissions and CSRF-sensitive actions. This is an independent fork, not an upstream security guarantee.
+- **Security maintenance:** backports Calibre-Web 0.6.27 trusted-proxy and shared-secret checks, retains inherited fixes, and adds regression coverage for book access, delivery permissions and CSRF-sensitive actions. This is an independent fork, not an upstream security guarantee.
 
 This fork preserves Calibre's library format and credits the Calibre, Calibre-Web and CWA contributors. The upstream documentation follows below; upstream donation and community links support their respective projects.
 

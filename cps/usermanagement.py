@@ -193,6 +193,20 @@ def user_login_required(func):
     return decorated_view
 
 
+def _is_reverse_proxy_authenticated(req):
+    from .reverse_proxy_auth import is_shared_secret_valid, is_trusted_proxy_source
+    # ProxyFix rewrites remote_addr from forwarded headers; trust the socket peer.
+    peer = req.environ.get("werkzeug.proxy_fix.orig", {}).get("REMOTE_ADDR", req.remote_addr)
+    if not is_trusted_proxy_source(peer, config.config_reverse_proxy_trusted_ips or ""):
+        return False
+    if config.config_reverse_proxy_use_shared_secret:
+        header = config.config_reverse_proxy_login_secret_header_name or ""
+        expected = config.config_reverse_proxy_login_header_secret_e or ""
+        if not header or not expected or not is_shared_secret_valid(req.headers.get(header), expected):
+            return False
+    return True
+
+
 def load_user_from_reverse_proxy_header(req):
     """Load user from reverse proxy header, optionally creating new users"""
     rp_header_name = config.config_reverse_proxy_login_header_name
@@ -203,6 +217,9 @@ def load_user_from_reverse_proxy_header(req):
     if not rp_header_username:
         return None
         
+    if not _is_reverse_proxy_authenticated(req):
+        return None
+
     # Clean username (strip whitespace, etc.)
     rp_header_username = rp_header_username.strip()
     if not rp_header_username:
