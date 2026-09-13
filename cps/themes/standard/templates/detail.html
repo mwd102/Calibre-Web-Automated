@@ -358,6 +358,16 @@
 <div class="discover">
 <h2>{{title}}</h2>
 <div class="single book-detail-page">
+    {% if g.theme.identifier == 'pastel' %}
+    <nav class="pastel-book-navigation" aria-label="{{ _('Book navigation') }}">
+        {% if is_xhr %}
+        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="{{ _('Close book') }}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> {{ _('Close') }}</button>
+        {% else %}
+        <a href="{{ url_for('web.index') }}" class="btn btn-default pastel-book-back"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> {{ _('Back to library') }}</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+
     <div class="row book-detail-main">
         <div class="col-sm-3 col-lg-3 col-xs-5 book-detail-cover cover">
             <img id="detailcover" title="{{ entry.title }}"
@@ -365,15 +375,6 @@
         </div>
         <div class="col-sm-9 col-lg-9 book-meta book-detail-meta">
                         <div class="book-detail-actions">
-                            {% if g.theme.identifier == 'pastel' %}
-                            <nav class="pastel-book-navigation" aria-label="{{ _('Book navigation') }}">
-                                {% if is_xhr %}
-                                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="{{ _('Close book') }}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> {{ _('Close') }}</button>
-                                {% else %}
-                                <a href="{{ url_for('web.index') }}" class="btn btn-default pastel-book-back"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> {{ _('Back to library') }}</a>
-                                {% endif %}
-                            </nav>
-                            {% endif %}
                             <div class="book-action-bar" role="toolbar">
                                 <div class="action-group" role="group" aria-label="Primary actions">
                                     {% if current_user.role_download() and entry.data|length %}
@@ -401,7 +402,7 @@
                                             </div>
                                         {% endif %}
 
-                                    {% if not entry.kobo_delivery_enabled and g.theme.identifier != 'pastel' and current_user.kindle_mail and entry.email_share_list %}
+                                    {% if g.theme.identifier != 'pastel' and current_user.kindle_mail and entry.email_share_list %}
                                         {% if current_user.allow_additional_ereader_emails %}
                                             <button id="sendToEReaderBtn" type="button" class="btn btn-primary action-icon-btn" data-toggle="modal" data-target="#emailSelectModal" data-book-id="{{ entry.id }}" title="{{ _('Send to eReader') }}" aria-label="{{ _('Send to eReader') }}">
                                                 <span class="glyphicon glyphicon-send"></span>
@@ -422,13 +423,14 @@
                                             </button>
                                         </form>
                                         <span id="kobo-delivery-status" role="status" aria-live="polite"></span>
-                                    {% elif g.theme.identifier == 'pastel' and current_user.role_download() %}
+                                    {% endif %}
+                                    {% if g.theme.identifier == 'pastel' and current_user.role_download() %}
                                         {% if not current_user.kindle_mail %}
-                                            <a href="{{ url_for('web.profile') }}" class="btn btn-primary action-icon-btn" title="{{ _('Add an email address in your profile') }}" aria-label="{{ _('Add an email address in your profile') }}"><span class="glyphicon glyphicon-envelope"></span></a>
+                                            <a href="{{ url_for('web.profile') }}" class="btn btn-primary action-icon-btn" title="{{ _('Add an email address in your profile') }}" aria-label="{{ _('Add an email address in your profile') }}"><span class="glyphicon glyphicon-send"></span></a>
                                         {% elif entry.email_share_list %}
-                                            <button id="sendToEReaderBtn" type="button" class="btn btn-primary action-icon-btn" data-toggle="modal" data-target="#emailSelectModal" data-book-id="{{ entry.id }}" title="{{ _('Send by email') }}" aria-label="{{ _('Send by email') }}"><span class="glyphicon glyphicon-envelope"></span></button>
+                                            <button id="sendToEReaderBtn" type="button" class="btn btn-primary action-icon-btn" data-toggle="modal" data-target="#emailSelectModal" data-book-id="{{ entry.id }}" title="{{ _('Send by email') }}" aria-label="{{ _('Send by email') }}"><span class="glyphicon glyphicon-send"></span></button>
                                         {% else %}
-                                            <button type="button" class="btn btn-primary action-icon-btn" disabled title="{{ _('No compatible format available for email') }}" aria-label="{{ _('No compatible format available for email') }}"><span class="glyphicon glyphicon-envelope"></span></button>
+                                            <button type="button" class="btn btn-primary action-icon-btn" disabled title="{{ _('No compatible format available for email') }}" aria-label="{{ _('No compatible format available for email') }}"><span class="glyphicon glyphicon-send"></span></button>
                                         {% endif %}
                                     {% endif %}
                                     {% if entry.reader_list and current_user.role_viewer() %}
@@ -539,6 +541,9 @@
                                 {% endif %}
                             {% endfor %}
                         </p>
+                        {% if g.theme.identifier == 'pastel' and (entry.pubdate|string)[:10] != '0101-01-01' %}
+                        <p class="book-publication-date"><span>{{ _('Published') }}</span> <time datetime="{{ (entry.pubdate|string)[:10] }}">{{ entry.pubdate|formatdate }}</time></p>
+                        {% endif %}
                         {% set current_rating = (entry.ratings[0].rating / 2)|int if entry.ratings|length > 0 else 0 %}
                         <div class="rating" id="detail-rating-block">
                             {% if current_user.role_edit() %}
@@ -696,7 +701,7 @@
                                     <a href="{{ url_for('web.books_list', data='publisher', sort_param='stored', book_id=entry.publishers[0].id ) }}" class="meta-pill meta-link">{{ entry.publishers[0].name }}</a>
                                 </div>
                             {% endif %}
-                            {% if (entry.pubdate|string)[:10] != '0101-01-01' %}
+                            {% if g.theme.identifier != 'pastel' and (entry.pubdate|string)[:10] != '0101-01-01' %}
                                 <div class="publishing-date meta-chip">
                                     <span>{{ _('Published') }}:</span>
                                     <span class="meta-value">{{ entry.pubdate|formatdate }}</span>

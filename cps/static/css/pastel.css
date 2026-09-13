@@ -844,3 +844,52 @@ body.pastel .curated-more .curated-badge { margin: 3px 3px 3px 0; }
     line-height: 1.5;
 }
 .pastel #kobo-delivery-status:empty { display: none; }
+
+/* Book detail owns its geometry: never inherit CaliBlur's fixed cover/offsets. */
+body.pastel .book-detail-main > .book-detail-cover,
+body.pastel .book-detail-main > .book-detail-meta {
+    position: static !important;
+    inset: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+    align-self: start;
+}
+body.pastel .book-detail-cover #detailcover {
+    position: static !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    transform: none !important;
+}
+body.pastel .book-detail-page > .pastel-book-navigation { margin: 0 0 18px; }
+body.pastel .book-publication-date { color: var(--muted); font-size: 13px; margin: 4px 0 8px; }
+body.pastel .book-publication-date time { color: var(--ink); }
+body.pastel .curated-icon { margin-right: 5px; }
+@media (max-width: 767px) {
+    body.pastel .book-detail-page { margin-top: 0; }
+    body.pastel .book-detail-main {
+        grid-template-columns: 104px minmax(0, 1fr);
+        gap: 8px 16px;
+        align-items: start;
+    }
+    body.pastel .book-detail-main > .book-detail-cover {
+        grid-column: 1;
+        grid-row: 1 / 5;
+        width: 104px !important;
+    }
+    body.pastel .book-detail-main > .book-detail-meta { display: contents !important; }
+    body.pastel .book-detail-meta > * { grid-column: 1 / -1; min-width: 0; }
+    body.pastel .book-detail-meta > h2#title {
+        grid-column: 2; grid-row: 1; font-size: 24px !important; margin: 0 !important;
+        overflow-wrap: anywhere; padding: 0 !important; min-height: 0 !important; height: auto !important;
+    }
+    body.pastel .book-detail-meta > .author { grid-column: 2; grid-row: 2; margin: 0 !important; font-size: 15px; line-height: 1.45; }
+    body.pastel .book-detail-meta > .book-publication-date { grid-column: 2; grid-row: 3; margin: 0; }
+    body.pastel .book-detail-meta > #detail-rating-block { grid-column: 2; grid-row: 4; margin: 0 !important; }
+    body.pastel #detail-rating-block .rating-container { white-space: nowrap; }
+    body.pastel .book-detail-meta > .book-detail-actions { grid-row: 5; margin: 12px 0 8px; }
+    body.pastel .book-detail-description { margin-top: 8px; }
+}
+
+@media (max-width: 767px) {
+    body.pastel.book .book-detail-page { padding-top: 0 !important; }
+}

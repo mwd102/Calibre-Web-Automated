@@ -1,5 +1,6 @@
+{% from 'curated_icons.html' import collection_icon %}
 {% macro badge_link(badge, to_shelf) -%}
-<a class="curated-badge curated-{{badge.collection}}" href="{% if to_shelf %}{{url_for('web.curated_shelf', collection=badge.collection, year=badge.year)}}{% else %}{{badge.source}}{% endif %}" {% if not to_shelf %}target="_blank" rel="noopener noreferrer"{% endif %} title="{% if badge.collection == 'nyt' %}{{_('Best rank in available weeks for this list; coverage gaps may apply')}}{% else %}{{_('Award winner')}}{% endif %}">{{badge.label}} · {{badge.year}} · {{badge.category}}</a>
+<a class="curated-badge curated-{{badge.collection}}" href="{% if to_shelf %}{{url_for('web.curated_shelf', collection=badge.collection, year=badge.year)}}{% else %}{{badge.source}}{% endif %}" {% if not to_shelf %}target="_blank" rel="noopener noreferrer"{% endif %} title="{% if badge.collection == 'nyt' %}{{_('Best rank in available weeks for this list; coverage gaps may apply')}}{% else %}{{_('Award winner')}}{% endif %}">{{collection_icon(badge.collection)}} {{badge.label}} · {{badge.year}} · {{badge.category}}</a>
 {%- endmacro %}
 {% macro render_badges(items, to_shelf=False) -%}
 <div class="curated-badges" aria-label="{{_('Awards and bestseller appearances')}}">
