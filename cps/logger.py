@@ -9,16 +9,25 @@ import os
 import sys
 import inspect
 import logging
+import re
 from logging import Formatter, StreamHandler
 from logging.handlers import RotatingFileHandler
 
 from .constants import CONFIG_DIR as _CONFIG_DIR
 
 
-ACCESS_FORMATTER_GEVENT  = Formatter("%(message)s")
-ACCESS_FORMATTER_TORNADO = Formatter("[%(asctime)s] %(message)s")
+class KoboRedactingFormatter(Formatter):
+    """Keep device credentials out of application and HTTP access logs."""
 
-FORMATTER           = Formatter("[%(asctime)s] %(levelname)5s {%(name)s:%(lineno)d} %(message)s")
+    def format(self, record):
+        return re.sub(r"(/kobo/)[^/\s?\"']+", r"\1[REDACTED]",
+                      super().format(record), flags=re.IGNORECASE)
+
+
+ACCESS_FORMATTER_GEVENT  = KoboRedactingFormatter("%(message)s")
+ACCESS_FORMATTER_TORNADO = KoboRedactingFormatter("[%(asctime)s] %(message)s")
+
+FORMATTER           = KoboRedactingFormatter("[%(asctime)s] %(levelname)5s {%(name)s:%(lineno)d} %(message)s")
 DEFAULT_LOG_LEVEL   = logging.INFO
 DEFAULT_LOG_FILE    = os.path.join(_CONFIG_DIR, "calibre-web.log")
 DEFAULT_ACCESS_LOG  = os.path.join(_CONFIG_DIR, "access.log")
