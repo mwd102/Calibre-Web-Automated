@@ -161,7 +161,7 @@
 </div>
 {% endif %}
 <div class="discover load-more caliblur-index">
-  <h2 class="{{title}}">
+  <h2 class="{{title}}{% if g.theme.identifier == 'pastel' and page in ['newest', 'root', 'hot', 'download', 'rated', 'read', 'unread', 'discover', 'archived'] %} pastel-redundant-title{% endif %}">
     {{title | safe}}
   </h2>
   {% if page == 'magicshelf' %}

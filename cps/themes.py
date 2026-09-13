@@ -66,6 +66,7 @@ THEMES = (
             "js/libs/compromise.min.js",
             "js/libs/readmore.min.js",
             "js/caliBlur.js",
+            "js/pastel.js",
         ),
         login_extra_buttons=(),
         body_class="blur pastel",

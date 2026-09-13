@@ -247,3 +247,27 @@ Authenticated verification against this image passed at 320, 390, 768, 1024,
 1280, and 1440 pixels: shelf/card bounds, visible heading, and separation from
 list controls. Discover titles open book details; the standalone Discover page
 still shows its random listing without a duplicate discovery shelf.
+
+## Navigation and infinite scrolling (2026-09-13)
+
+PR #14 removes redundant book-list headings and their reserved header strip,
+keeps the selected sidebar entry dark, and restores infinite scrolling using the
+bundled plugin with the central scroll pane. Contextual author/series headings
+remain. Pagination is centered at the bottom for non-infinite views, unavailable
+JavaScript, or a failed page request. Appended books retain cover actions.
+Source: `da9ac4ee88e7bacdcc1ca6ec5f2a63fe4329d615`; GHCR build: `34727061323`.
+Image: `sha256:c35b080a0015bcb688cf3bb4d5500c854c6d64f2eb68ba5873faa3033cafc1ea`.
+Thirty-three theme/browser tests pass, including no duplicate pages, last-page
+termination, and updated recovery links after a simulated HTTP 503.
+Live verification passed at 320, 390, 768, 1024, 1280, and 1440 pixels, with
+60-to-120 book appends on mobile and desktop and no duplicate book links. Sorted
+appends, centered recovery controls after HTTP 503, and mobile pagination with
+JavaScript disabled pass. Author and series context headings remain visible.
+Deployed CSS, JavaScript, and index-template hashes match source. CI smoke/unit,
+browser security, and Hyperion policy checks pass; the independent default Docker
+registry build retains its existing authentication failure.
+
+Repeated browsing verification exceeded the dev container's 2 GiB memory limit
+(OOMKilled/137). With Bressia at approximately 40% memory usage, the dev-only
+limit is raised to 3 GiB; the 512 MiB request is unchanged. This adds review
+headroom and does not establish a root-cause fix for application memory growth.

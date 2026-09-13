@@ -295,8 +295,9 @@
               <li class="nav-head hidden-xs">{{_('Browse')}}</li>
               {% for element in sidebar %}
                 {% if current_user.check_visibility(element['visibility']) and element['public'] %}
-                    <li id="nav_{{element['id']}}" {% if page == element['page'] %}class="active"{% endif %} style="{% if element['id'] == 'duplicates' %}position: relative;{% endif %}">
-                      <a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}">
+                    {% set nav_selected = page == element['page'] or (g.theme.identifier == 'pastel' and {'newest': 'root', 'authorlist': 'author', 'catlist': 'category', 'serieslist': 'series', 'langlist': 'language', 'publisherlist': 'publisher', 'book_table': 'list'}.get(page) == element['page']) %}
+                    <li id="nav_{{element['id']}}" {% if nav_selected %}class="active"{% endif %} style="{% if element['id'] == 'duplicates' %}position: relative;{% endif %}">
+                      <a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}"{% if nav_selected %} aria-current="page"{% endif %}>
                         <span class="glyphicon {{element['glyph']}}"></span> {{_(element['text'])}}
                         {% if element['id'] == 'duplicates' %}
                           {% set dup_count = duplicate_notification.count if duplicate_notification is defined else 0 %}
@@ -339,7 +340,7 @@
           {% if pagination and (pagination.has_next or pagination.has_prev) %}
             <div class="pagination">
               {% if pagination.has_prev %}
-              <li class="page-item page-previous"><a class="page-link" aria-label="next page" href="{{ (pagination.page - 1)|url_for_other_page
+              <li class="page-item page-previous"><a class="page-link" aria-label="previous page" href="{{ (pagination.page - 1)|url_for_other_page
                 }}">&laquo; {{_('Previous')}}</a></li>
               {% endif %}
             {% for page in pagination.iter_pages() %}
