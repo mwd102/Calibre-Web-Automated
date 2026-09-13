@@ -374,6 +374,7 @@
                  src="{{ url_for('web.get_cover', book_id=entry.id, resolution='og', c=entry|last_modified) }}"/>
         </div>
         <div class="col-sm-9 col-lg-9 book-meta book-detail-meta">
+                        {% set book_actions %}
                         <div class="book-detail-actions">
                             <div class="book-action-bar" role="toolbar">
                                 <div class="action-group" role="group" aria-label="Primary actions">
@@ -532,6 +533,9 @@
                             </div>
                         </div>
 
+                        {% endset %}
+                        {% if g.theme.identifier != 'pastel' %}{{ book_actions }}{% endif %}
+                        {% if g.theme.identifier == 'pastel' %}<div class="book-detail-heading">{% endif %}
                         <h2 id="title">{{ entry.title }}</h2>
                         <p class="author">
                             {% for author in entry.ordered_authors %}
@@ -568,6 +572,7 @@
                                 </p>
                             {% endif %}
                         </div>
+                        {% if g.theme.identifier == 'pastel' %}</div>{{ book_actions }}{% endif %}
                         {% if entry.series|length > 0 %}
                             <p id="book_of">{{ _("Book %(index)s of %(range)s", index=entry.series_index|formatfloat(2), range=(url_for('web.books_list', data='series', sort_param='stored', book_id=entry.series[0].id)|escapedlink(entry.series[0].name))|safe) }}</p>
                         {% endif %}

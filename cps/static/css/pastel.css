@@ -864,32 +864,45 @@ body.pastel .book-detail-page > .pastel-book-navigation { margin: 0 0 18px; }
 body.pastel .book-publication-date { color: var(--muted); font-size: 13px; margin: 4px 0 8px; }
 body.pastel .book-publication-date time { color: var(--ink); }
 body.pastel .curated-icon { margin-right: 5px; }
-@media (max-width: 767px) {
-    body.pastel .book-detail-page { margin-top: 0; }
-    body.pastel .book-detail-main {
-        grid-template-columns: 104px minmax(0, 1fr);
-        gap: 8px 16px;
-        align-items: start;
-    }
-    body.pastel .book-detail-main > .book-detail-cover {
-        grid-column: 1;
-        grid-row: 1 / 5;
-        width: 104px !important;
-    }
-    body.pastel .book-detail-main > .book-detail-meta { display: contents !important; }
-    body.pastel .book-detail-meta > * { grid-column: 1 / -1; min-width: 0; }
-    body.pastel .book-detail-meta > h2#title {
-        grid-column: 2; grid-row: 1; font-size: 24px !important; margin: 0 !important;
-        overflow-wrap: anywhere; padding: 0 !important; min-height: 0 !important; height: auto !important;
-    }
-    body.pastel .book-detail-meta > .author { grid-column: 2; grid-row: 2; margin: 0 !important; font-size: 15px; line-height: 1.45; }
-    body.pastel .book-detail-meta > .book-publication-date { grid-column: 2; grid-row: 3; margin: 0; }
-    body.pastel .book-detail-meta > #detail-rating-block { grid-column: 2; grid-row: 4; margin: 0 !important; }
-    body.pastel #detail-rating-block .rating-container { white-space: nowrap; }
-    body.pastel .book-detail-meta > .book-detail-actions { grid-row: 5; margin: 12px 0 8px; }
-    body.pastel .book-detail-description { margin-top: 8px; }
+/* Keep heading flow independent of grid track sizing and inherited button rules. */
+body.pastel .book-detail-heading { min-width: 0; }
+body.pastel .book-detail-heading .author { padding: 0 !important; }
+body.pastel #book_of { color: var(--muted) !important; }
+body.pastel .book-action-bar .action-icon-btn {
+    width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex: 0 0 40px;
+    vertical-align: middle;
 }
-
+body.pastel .book-action-bar .action-group { align-items: center; gap: 8px; }
+body.pastel .book-action-bar .btn-group { height: auto !important; min-height: 40px; }
 @media (max-width: 767px) {
-    body.pastel.book .book-detail-page { padding-top: 0 !important; }
+    body.pastel.book .book-detail-page { padding-top: 0 !important; margin-top: 0; }
+    body.pastel .book-detail-main { display: flow-root !important; }
+    body.pastel .book-detail-main > .book-detail-cover {
+        float: left !important;
+        width: 104px !important;
+        margin: 0 16px 0 0 !important;
+    }
+    body.pastel .book-detail-main > .book-detail-meta { display: block !important; }
+    body.pastel .book-detail-heading { margin-left: 120px; }
+    body.pastel .book-detail-heading > h2#title {
+        font-size: 24px !important; line-height: 1.2 !important;
+        margin: 0 0 8px !important; padding: 0 !important;
+        min-height: 0 !important; height: auto !important;
+        overflow-wrap: anywhere;
+    }
+    body.pastel .book-detail-heading > .author {
+        margin: 0 0 8px !important; font-size: 15px; line-height: 1.45;
+    }
+    body.pastel .book-publication-date { margin: 0 0 8px; }
+    body.pastel #detail-rating-block { margin: 0 !important; }
+    body.pastel #detail-rating-block .rating-container { white-space: nowrap; }
+    body.pastel .book-detail-meta > .book-detail-actions {
+        clear: both; padding-top: 20px; margin: 0 0 16px;
+    }
+    body.pastel .book-detail-description { margin-top: 8px; }
 }
