@@ -906,3 +906,39 @@ body.pastel .book-action-bar .btn-group { height: auto !important; min-height: 4
     }
     body.pastel .book-detail-description { margin-top: 8px; }
 }
+
+/* Browse lists share CaliBlur's mobile rows; their text must use light-theme ink. */
+body.pastel a[id^="list_"] { color: var(--accent) !important; }
+body.pastel a[id^="list_"]:is(:hover, :focus) { color: #493661 !important; }
+body.pastel [id$="_row"] .badge { color: #493661 !important; background: var(--lavender) !important; }
+body.pastel [id$="_row"] > .col-xs-10::after { color: var(--accent) !important; }
+body.pastel:is(.catlist, .authorlist, .serieslist, .langlist, .ratingslist, .formatslist) > .container-fluid > .row-fluid > .col-sm-10::before,
+body.pastel .container:has(a[id^="list_"])::before { color: var(--muted) !important; }
+
+/* Readable labels and help text on shared navigation/settings surfaces. */
+body.pastel #main-nav :is(a, span),
+body.pastel #main-nav li::before,
+body.pastel .profileDrop + span,
+body.pastel .discover::before { color: var(--muted) !important; }
+body.pastel :is(.settings-disclaimer, .settings-disclaimer strong, .form-text.text-muted, .form-text.text-muted span) {
+    color: var(--muted) !important;
+}
+body.pastel .opds-order-drag-handle { opacity: 1; }
+body.pastel .settings-container [style*="background: #202c34"],
+body.pastel #magic-shelf-form .form-group[style*="background"],
+body.pastel :is(.icon-picker-grid, .icon-option, .query-builder .rules-group-container, .query-builder .rule-container) {
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border-color: var(--line) !important;
+}
+body.pastel .icon-option:is(:hover, .selected) { background: var(--lavender) !important; border-color: var(--accent) !important; }
+body.pastel .discover:has(#magic-shelf-form) > h2 { background: var(--peach) !important; color: var(--ink) !important; }
+body.pastel .meta-pill:is(.tag-pill, .shelf-pill)::after { color: var(--muted) !important; }
+body.pastel .navigation a > span:not(.glyphicon),
+body.pastel #magic-shelf-form .text-muted,
+body.pastel #magic-shelf-form .text-muted span { color: var(--muted) !important; }
+body.pastel #magic-shelf-form .form-control,
+body.pastel #magic-shelf-form .query-builder {
+    background: var(--surface) !important; color: var(--ink) !important; border-color: var(--line) !important;
+}
+body.pastel .discover > h2 { color: var(--ink) !important; }
