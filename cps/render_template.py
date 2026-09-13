@@ -71,6 +71,8 @@ def _duplicate_setup_notice_dismissed():
 
 
 def duplicate_index_setup_notification(settings, cwa_db=None):
+    if os.environ.get("CWA_DISABLE_AUTOMATION", "").lower() in ("true", "1", "yes", "on"):
+        return False
     notice_file = f"/config/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
     if os.path.isfile(notice_file):
         return False
