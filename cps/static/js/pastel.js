@@ -1,6 +1,12 @@
 /* global $ */
 /* Use the bundled Infinite Scroll and Isotope with caliBlur's scrolling pane. */
 $(function () {
+    $(document).on("click", ".pastel-book-back", function (event) {
+        if (document.referrer && new URL(document.referrer).origin === window.location.origin && window.history.length > 1) {
+            event.preventDefault();
+            window.history.back();
+        }
+    });
     var $grid = $(".caliblur-index.load-more > .row");
     var $pagination = $(".col-sm-10 > .pagination");
     var $pane = $grid.closest(".col-sm-10");

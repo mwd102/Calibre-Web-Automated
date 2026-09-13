@@ -777,3 +777,38 @@ body.pastel .pagination > :is(.page-next, .page-previous) > a {
     border-radius: 8px;
 }
 body.pastel .pagination > :is(.page-next, .page-previous) > a::before { display: none !important; }
+
+/* Give book actions a clear way out and a readable recipient picker. */
+.pastel .pastel-book-navigation { margin-bottom: 16px; }
+.pastel .pastel-book-navigation .btn { display: inline-flex; align-items: center; gap: 8px; }
+body.pastel #sendToEReaderBtn > .glyphicon { height: auto !important; line-height: 1 !important; }
+body.pastel #emailSelectModal { z-index: 1070; }
+body.pastel #emailSelectModal .modal-dialog { width: min(560px, calc(100% - 24px)); margin: 24px auto; }
+body.pastel #emailSelectModal .modal-content { max-height: calc(100dvh - 48px); display: flex; flex-direction: column; }
+body.pastel #emailSelectModal .modal-body { overflow-y: auto; min-height: 0; }
+body.pastel #emailSelectModal .modal-header,
+body.pastel #emailSelectModal .modal-footer { flex: none; }
+body.pastel #emailSelectModal :is(legend, label, .help-block) { color: var(--ink) !important; }
+body.pastel #emailSelectModal legend { font-size: 16px; border-color: var(--line); }
+body.pastel #emailSelectModal .checkbox label { overflow-wrap: anywhere; }
+
+/* Stable category colors make metadata easier to scan; labels carry meaning. */
+body.pastel .book-metadata :is(.book-uuid, .identifiers) .meta-pill {
+    background: #e2eaf3 !important; color: #3c5672 !important; border-color: #c5d4e4 !important;
+}
+body.pastel .book-metadata .formats .meta-pill {
+    background: #f5e7cd !important; color: #725524 !important; border-color: #e6d3af !important;
+}
+body.pastel .book-metadata .languages .meta-pill {
+    background: #dcebe7 !important; color: #3d6259 !important; border-color: #c1d9d2 !important;
+}
+body.pastel .book-metadata .tags .meta-pill {
+    background: #f2dedc !important; color: #7a4947 !important; border-color: #e4c3c0 !important;
+}
+body.pastel .book-metadata .shelves .meta-pill {
+    background: #e7def0 !important; color: #655085 !important; border-color: #d4c5e2 !important;
+}
+body.pastel .book-metadata .publishers .meta-pill {
+    background: #eee5db !important; color: #6b5948 !important; border-color: #dccdbd !important;
+}
+body.pastel #emailSelectModal .modal-card { display: flex; flex-direction: column; min-height: 0; padding: 0; overflow: hidden; }

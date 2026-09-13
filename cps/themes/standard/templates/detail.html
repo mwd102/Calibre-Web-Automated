@@ -365,6 +365,15 @@
         </div>
         <div class="col-sm-9 col-lg-9 book-meta book-detail-meta">
                         <div class="book-detail-actions">
+                            {% if g.theme.identifier == 'pastel' %}
+                            <nav class="pastel-book-navigation" aria-label="{{ _('Book navigation') }}">
+                                {% if is_xhr %}
+                                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="{{ _('Close book') }}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> {{ _('Close') }}</button>
+                                {% else %}
+                                <a href="{{ url_for('web.index') }}" class="btn btn-default pastel-book-back"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> {{ _('Back to library') }}</a>
+                                {% endif %}
+                            </nav>
+                            {% endif %}
                             <div class="book-action-bar" role="toolbar">
                                 <div class="action-group" role="group" aria-label="Primary actions">
                                     {% if current_user.role_download() and entry.data|length %}
@@ -392,7 +401,7 @@
                                             </div>
                                         {% endif %}
 
-                                    {% if current_user.kindle_mail and entry.email_share_list %}
+                                    {% if g.theme.identifier != 'pastel' and current_user.kindle_mail and entry.email_share_list %}
                                         {% if current_user.allow_additional_ereader_emails %}
                                             <button id="sendToEReaderBtn" type="button" class="btn btn-primary action-icon-btn" data-toggle="modal" data-target="#emailSelectModal" data-book-id="{{ entry.id }}" title="{{ _('Send to eReader') }}" aria-label="{{ _('Send to eReader') }}">
                                                 <span class="glyphicon glyphicon-send"></span>
@@ -403,6 +412,15 @@
                                             </button>
                                         {% endif %}
                                     {% endif %}
+                                    {% endif %}
+                                    {% if g.theme.identifier == 'pastel' and current_user.role_download() %}
+                                        {% if not current_user.kindle_mail %}
+                                            <a href="{{ url_for('web.profile') }}" class="btn btn-primary action-icon-btn" title="{{ _('Add an email address in your profile') }}" aria-label="{{ _('Add an email address in your profile') }}"><span class="glyphicon glyphicon-envelope"></span></a>
+                                        {% elif entry.email_share_list %}
+                                            <button id="sendToEReaderBtn" type="button" class="btn btn-primary action-icon-btn" data-toggle="modal" data-target="#emailSelectModal" data-book-id="{{ entry.id }}" title="{{ _('Send by email') }}" aria-label="{{ _('Send by email') }}"><span class="glyphicon glyphicon-envelope"></span></button>
+                                        {% else %}
+                                            <button type="button" class="btn btn-primary action-icon-btn" disabled title="{{ _('No compatible format available for email') }}" aria-label="{{ _('No compatible format available for email') }}"><span class="glyphicon glyphicon-envelope"></span></button>
+                                        {% endif %}
                                     {% endif %}
                                     {% if entry.reader_list and current_user.role_viewer() %}
                                         <a target="_blank"
@@ -751,7 +769,7 @@
                 {% endblock %}
                 <div id="shelf-action-errors" class="pull-left" role="alert"></div>
         <div id="action-toast" class="action-toast" role="status" aria-live="polite"></div>
-        {% if current_user.kindle_mail and entry.email_share_list and current_user.allow_additional_ereader_emails %}
+        {% if current_user.kindle_mail and entry.email_share_list and (current_user.allow_additional_ereader_emails or g.theme.identifier == 'pastel') %}
             <div class="modal fade" id="emailSelectModal" data-book-id="{{ entry.id }}" tabindex="-1" role="dialog" aria-labelledby="emailSelectModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -777,7 +795,7 @@
                                         {% if ',' in current_user.kindle_mail %}
                                             <div class="checkbox">
                                                 <label for="selectAllEmails">
-                                                    <input type="checkbox" id="selectAllEmails" checked>
+                                                    <input type="checkbox" id="selectAllEmails"{% if g.theme.identifier != 'pastel' %} checked{% endif %}>
                                                     <strong>{{ _('Select All') }}</strong>
                                                 </label>
                                             </div>
@@ -786,7 +804,7 @@
                                         {% for email in current_user.kindle_mail.split(',') %}
                                             <div class="checkbox">
                                                 <label for="email-{{ loop.index }}">
-                                                    <input type="checkbox" id="email-{{ loop.index }}" name="selected_emails" value="{{ email.strip() }}" checked>
+                                                    <input type="checkbox" id="email-{{ loop.index }}" name="selected_emails" value="{{ email.strip() }}"{% if g.theme.identifier != 'pastel' or ',' not in current_user.kindle_mail %} checked{% endif %}>
                                                     {{ email.strip() }}
                                                 </label>
                                             </div>

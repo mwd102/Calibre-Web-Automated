@@ -271,3 +271,16 @@ Repeated browsing verification exceeded the dev container's 2 GiB memory limit
 (OOMKilled/137). With Bressia at approximately 40% memory usage, the dev-only
 limit is raised to 3 GiB; the 512 MiB request is unchanged. This adds review
 headroom and does not establish a root-cause fix for application memory growth.
+
+## Book actions (2026-09-13)
+
+PR #15 adds recipient selection, Back/Close navigation, and metadata category
+colors to Pastel book details. Source: `e93419c6cdc2b25644bda496a1202137a3ad8b74`.
+GHCR build `34728089588`; image
+`sha256:e97ead5f6d911f667ebfd9467118fb1bcc032d0458d5f6b96ec5d36cbdac7504`.
+49 theme/browser tests pass, including intercepted single-recipient requests
+and empty-selection prevention in mobile/desktop and nested dialogs. Live
+checks on the deployed image pass at 320, 390, and 1440 pixels, including
+back navigation, visible email action, and distinct metadata colors. No email
+was delivered. CI unit, browser security, and policy checks pass; the independent
+default registry build retains its authentication failure.
