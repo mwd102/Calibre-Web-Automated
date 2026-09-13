@@ -32,6 +32,8 @@ def test_pastel_lists_and_settings_contrast(engine, width):
         <form id="magic-shelf-form"><div class="form-group" style="background: #21252b"><label>Sync to Kobo</label></div>
         <small class="form-text text-muted">Help text</small><div class="icon-option">★</div></form>
         </div></div></div></body>''')
+        # Measure settled colors, not transitions triggered by injecting CSS files.
+        page.add_style_tag(content='*, *::before, *::after { transition: none !important; animation: none !important; }')
         for name in ('libs/bootstrap.min.css', 'style.css', 'caliBlur.css', 'caliBlur_override.css', 'pastel.css', 'cwa.css'):
             page.add_style_tag(path=str(ROOT / 'cps/static/css' / name))
         template = (ROOT / 'cps/templates/magic_shelf_edit.html').read_text()
