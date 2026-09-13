@@ -880,7 +880,7 @@ body.pastel .curated-icon { margin-right: 5px; }
     body.pastel .book-detail-meta > * { grid-column: 1 / -1; min-width: 0; }
     body.pastel .book-detail-meta > h2#title {
         grid-column: 2; grid-row: 1; font-size: 24px !important; margin: 0 !important;
-        overflow-wrap: anywhere; padding: 0 !important;
+        overflow-wrap: anywhere; padding: 0 !important; min-height: 0 !important; height: auto !important;
     }
     body.pastel .book-detail-meta > .author { grid-column: 2; grid-row: 2; margin: 0 !important; font-size: 15px; line-height: 1.45; }
     body.pastel .book-detail-meta > .book-publication-date { grid-column: 2; grid-row: 3; margin: 0; }
@@ -891,5 +891,5 @@ body.pastel .curated-icon { margin-right: 5px; }
 }
 
 @media (max-width: 767px) {
-    body.pastel.book > .container-fluid > .row-fluid > .col-sm-10 { padding-top: 16px !important; }
+    body.pastel.book .book-detail-page { padding-top: 16px !important; }
 }
