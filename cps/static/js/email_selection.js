@@ -5,6 +5,25 @@
 
 $(document).ready(function() {
     var currentBookId = null;
+    // A book fragment can contain this dialog inside the book-details modal.
+    // Keep just the current book's picker at the top level for Bootstrap stacking.
+    if ($("body").hasClass("pastel")) {
+        var $nestedPicker = $("#bookDetailsModal #emailSelectModal");
+        if ($nestedPicker.length) {
+            $("body > #emailSelectModal").remove();
+            $nestedPicker.appendTo(document.body);
+            $("#bookDetailsModal").off("hidden.bs.modal.pastelEmail").on("hidden.bs.modal.pastelEmail", function (event) {
+                if (event.target === this) {
+                    $nestedPicker.modal("hide").remove();
+                }
+            });
+        }
+        $("#emailSelectModal").on("hidden.bs.modal.pastelEmail", function () {
+            if ($("#bookDetailsModal").hasClass("in")) {
+                $("body").addClass("modal-open");
+            }
+        });
+    }
 
     // Email validation function
     function isValidEmail(email) {
