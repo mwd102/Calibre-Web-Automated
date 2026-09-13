@@ -237,3 +237,17 @@ def test_book_description_order_and_actions_survive_theme_inheritance(theme_id, 
         assert (description < metadata) == (theme_id == 3)
     else:
         assert 'id="decription"' not in rendered
+
+
+def test_http_error_before_theme_initialization():
+    from pathlib import Path
+    from flask import render_template
+    app = Flask(__name__, template_folder=str(Path(__file__).parents[2] / 'cps/templates'))
+    app.jinja_env.globals['_'] = lambda value: value
+    app.jinja_env.globals['url_for'] = lambda *args, **kwargs: '/home'
+    with app.test_request_context('/'):
+        assert not hasattr(g, 'theme')
+        rendered = render_template('http_error.html', instance='Library', error_code='Error 400',
+                                   error_name='Bad Request', issue=False, unconfigured=False)
+    assert 'Error 400' in rendered
+    assert 'Bad Request' in rendered
