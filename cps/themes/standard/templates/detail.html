@@ -560,6 +560,10 @@
 
                         {% block book_overview %}{% endblock %}
 
+                        {% if curated_badges %}
+                        {% from 'curated_badges.html' import render_badges %}
+                        {{render_badges(curated_badges, True)}}
+                        {% endif %}
                         <div class="book-metadata">
                             <div class="book-id meta-chip">
                                 <span>{{ _('ID') }}:</span>

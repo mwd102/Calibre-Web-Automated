@@ -7,16 +7,18 @@ $(function () {
             window.history.back();
         }
     });
-    var $grid = $(".caliblur-index.load-more > .row");
-    var $pagination = $(".col-sm-10 > .pagination");
+    var curated = $(".curated-grid").length > 0;
+    var paginationSelector = curated ? ".curated-pagination" : ".pagination";
+    var $grid = $(curated ? ".curated-grid" : ".caliblur-index.load-more > .row");
+    var $pagination = $(".col-sm-10 > " + paginationSelector);
     var $pane = $grid.closest(".col-sm-10");
     if (!$grid.length || !$pagination.find(".next").length || !$.fn.infiniteScroll) {
         return;
     }
 
     $grid.infiniteScroll({
-        path: ".pagination .next",
-        append: ".load-more .book",
+        path: paginationSelector + " .next",
+        append: curated ? ".curated-card" : ".load-more .book",
         elementScroll: $pane[0],
         outlayer: $grid.data("isotope"),
         history: false,
@@ -25,7 +27,7 @@ $(function () {
     $pagination.addClass("pastel-infinite-active");
     $grid.on("append.infiniteScroll", function (event, response, path, items) {
         // Keep real navigation up to date for recovery after a network error.
-        $pagination.html($(response).find(".pagination").html() || "");
+        $pagination.html($(response).find(paginationSelector).html() || "");
         $(items).find("a[data-toggle='modal']").removeAttr("data-toggle");
         $(document).trigger("pastel:books-appended");
     });

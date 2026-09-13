@@ -882,6 +882,37 @@ def render_archived_books(page, sort_param):
                                  title=name, page=page_name, order=sort_param[1])
 
 
+@web.route("/curated/<collection>")
+@user_login_required
+def curated_shelf(collection):
+    from . import curated_shelves
+    from .pagination import Pagination
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+    if collection not in curated_shelves.COLLECTIONS:
+        abort(404)
+    try:
+        year = curated_shelves.selected_year(request.args.get('year'), collection)
+        page_number = int(request.args.get('page', 1))
+        if page_number < 1:
+            raise ValueError()
+    except (ValueError, TypeError):
+        abort(400)
+    cdb = db.CalibreDB(init=True)
+    annotations = curated_shelves.library_matches(cdb, collection, year)
+    query = cdb.session.query(db.Books).filter(db.Books.id.in_(list(annotations)), cdb.common_filters())
+    per_page = config.config_books_per_page or 60
+    books = query.order_by(db.Books.sort, db.Books.id).offset((page_number - 1) * per_page).limit(per_page).all()
+    data = curated_shelves.catalog(collection)
+    records = [r for r in data['records'] if year is None or r['year'] == year]
+    return render_title_template('curated_shelf.html',
+                                 title=data['name'], page='curated', collection=collection,
+                                 catalog=data, selected_year=year, years=range(datetime.now(timezone.utc).year, 2014, -1),
+                                 record_count=len(records), annotations=annotations,
+                                 entries=[SimpleNamespace(Books=b) for b in books],
+                                 pagination=Pagination(page_number, per_page, len(annotations)))
+
+
 @web.route("/magicshelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>/<int:page>")
@@ -2949,7 +2980,10 @@ def show_book(book_id):
         cwa_db = CWA_DB()
         cwa_settings = cwa_db.cwa_settings
 
+        from .curated_shelves import badges
         return render_title_template('detail.html',
+                                     curated_badges=badges(entry.title, [a.name for a in entry.authors],
+                                                           isbns=[i.val for i in entry.identifiers if i.type == 'isbn']),
                                      entry=entry,
                                      cc=cc,
                                      is_xhr=request.headers.get('X-Requested-With') == 'XMLHttpRequest',

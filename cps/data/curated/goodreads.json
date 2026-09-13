@@ -1,0 +1,1809 @@
+{
+  "name": "Goodreads Choice",
+  "source": "https://www.kaggle.com/datasets/krisbruurs/goodreads-choice-awards-2011-2024-books",
+  "note": "Category winners, 2015–2025. Historical winners are selected by the highest recorded vote count per category in the public archive. 2026 winners have not been announced.",
+  "records": [
+    {
+      "year": 2015,
+      "category": "Debut Goodreads Author",
+      "title": "Red Queen",
+      "authors": [
+        "Victoria Aveyard"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Fantasy",
+      "title": "Trigger Warning: Short Fictions and Disturbances",
+      "authors": [
+        "Neil Gaiman"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Fiction",
+      "title": "Go Set a Watchman",
+      "authors": [
+        "Harper Lee"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Food & Cookbooks",
+      "title": "The Pioneer Woman Cooks: Dinnertime: Comfort Classics, Freezer Food, 16-Minute Meals, and Other Delicious Ways to Solve Supper!",
+      "authors": [
+        "Ree Drummond"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Graphic Novels & Comics",
+      "title": "Saga, Volume 4",
+      "authors": [
+        "Brian K. Vaughan"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Historical Fiction",
+      "title": "The Nightingale",
+      "authors": [
+        "Kristin Hannah"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "History & Biography",
+      "title": "Dead Wake: The Last Crossing of the Lusitania",
+      "authors": [
+        "Erik Larson"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Horror",
+      "title": "Saint Odd",
+      "authors": [
+        "Dean Koontz"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Humor",
+      "title": "Why Not Me?",
+      "authors": [
+        "Mindy Kaling"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Memoir & Autobiography",
+      "title": "A Work in Progress",
+      "authors": [
+        "Connor Franta"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Middle Grade & Children's",
+      "title": "The Sword of Summer",
+      "authors": [
+        "Rick Riordan"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Mystery & Thriller",
+      "title": "The Girl on the Train",
+      "authors": [
+        "Paula Hawkins"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Nonfiction",
+      "title": "Modern Romance",
+      "authors": [
+        "Aziz Ansari"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Picture Books",
+      "title": "The Day the Crayons Came Home",
+      "authors": [
+        "Drew Daywalt"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Poetry",
+      "title": "The Dogs I Have Kissed",
+      "authors": [
+        "Trista Mateer"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Romance",
+      "title": "Confess",
+      "authors": [
+        "Colleen Hoover"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Science & Technology",
+      "title": "Beneath the Surface: Killer Whales, SeaWorld, and the Truth Beyond Blackfish",
+      "authors": [
+        "John Hargrove"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Science Fiction",
+      "title": "Golden Son",
+      "authors": [
+        "Pierce Brown"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Young Adult Fantasy",
+      "title": "Queen of Shadows",
+      "authors": [
+        "Sarah J. Maas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2015,
+      "category": "Young Adult Fiction",
+      "title": "All the Bright Places",
+      "authors": [
+        "Jennifer Niven"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2015"
+    },
+    {
+      "year": 2016,
+      "category": "Debut Goodreads Author",
+      "title": "Rebel of the Sands",
+      "authors": [
+        "Alwyn Hamilton"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Fantasy",
+      "title": "Harry Potter and the Cursed Child: Parts One and Two",
+      "authors": [
+        "John Tiffany"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Fiction",
+      "title": "Truly Madly Guilty",
+      "authors": [
+        "Liane Moriarty"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Food & Cookbooks",
+      "title": "Cravings: Recipes for All the Food You Want to Eat",
+      "authors": [
+        "Chrissy Teigen"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Graphic Novels & Comics",
+      "title": "Adulthood Is a Myth",
+      "authors": [
+        "Sarah Andersen"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Historical Fiction",
+      "title": "The Underground Railroad",
+      "authors": [
+        "Colson Whitehead"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "History & Biography",
+      "title": "Leonard: My Fifty-Year Friendship with a Remarkable Man",
+      "authors": [
+        "William Shatner"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Horror",
+      "title": "The Fireman",
+      "authors": [
+        "Joe Hill"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Humor",
+      "title": "The Girl with the Lower Back Tattoo",
+      "authors": [
+        "Amy Schumer"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Memoir & Autobiography",
+      "title": "When Breath Becomes Air",
+      "authors": [
+        "Paul Kalanithi"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Middle Grade & Children's",
+      "title": "The Hidden Oracle",
+      "authors": [
+        "Rick Riordan"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Mystery & Thriller",
+      "title": "End of Watch",
+      "authors": [
+        "Stephen        King"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Nonfiction",
+      "title": "Hamilton: The Revolution",
+      "authors": [
+        "Lin-Manuel Miranda"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Picture Books",
+      "title": "The Thank You Book",
+      "authors": [
+        "Mo Willems"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Poetry",
+      "title": "The Princess Saves Herself in This One",
+      "authors": [
+        "Amanda Lovelace"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Romance",
+      "title": "It Ends with Us",
+      "authors": [
+        "Colleen Hoover"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Science & Technology",
+      "title": "Are We Smart Enough to Know How Smart Animals Are?",
+      "authors": [
+        "Frans de Waal"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Science Fiction",
+      "title": "Morning Star",
+      "authors": [
+        "Pierce Brown"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Young Adult Fantasy",
+      "title": "A Court of Mist and Fury",
+      "authors": [
+        "Sarah J. Maas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2016,
+      "category": "Young Adult Fiction",
+      "title": "Salt to the Sea",
+      "authors": [
+        "Ruta Sepetys"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2016"
+    },
+    {
+      "year": 2017,
+      "category": "Debut Goodreads Author",
+      "title": "The Hate U Give",
+      "authors": [
+        "Angie Thomas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Fantasy",
+      "title": "Fantastic Beasts and Where to Find Them: The Original Screenplay",
+      "authors": [
+        "J.K. Rowling"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Fiction",
+      "title": "Little Fires Everywhere",
+      "authors": [
+        "Celeste Ng"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Food & Cookbooks",
+      "title": "The Pioneer Woman Cooks: Come and Get It! Simple, Scrumptious Recipes for Crazy Busy Lives",
+      "authors": [
+        "Ree Drummond"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Graphic Novels & Comics",
+      "title": "Big Mushy Happy Lump",
+      "authors": [
+        "Sarah Andersen"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Historical Fiction",
+      "title": "Before We Were Yours",
+      "authors": [
+        "Lisa Wingate"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "History & Biography",
+      "title": "The Radium Girls: The Dark Story of America’s Shining Women",
+      "authors": [
+        "Kate  Moore"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Horror",
+      "title": "Sleeping Beauties",
+      "authors": [
+        "Stephen        King"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Humor",
+      "title": "Talking as Fast as I Can: From Gilmore Girls to Gilmore Girls, and Everything in Between",
+      "authors": [
+        "Lauren Graham"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Memoir & Autobiography",
+      "title": "What Happened",
+      "authors": [
+        "Hillary Rodham Clinton"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Middle Grade & Children's",
+      "title": "The Ship of the Dead",
+      "authors": [
+        "Rick Riordan"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Mystery & Thriller",
+      "title": "Into the Water",
+      "authors": [
+        "Paula Hawkins"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Nonfiction",
+      "title": "How to Be a Bawse: A Guide to Conquering Life",
+      "authors": [
+        "Lilly Singh"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Picture Books",
+      "title": "We're All Wonders",
+      "authors": [
+        "R.J. Palacio"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Poetry",
+      "title": "The Sun and Her Flowers",
+      "authors": [
+        "Rupi Kaur"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Romance",
+      "title": "Without Merit",
+      "authors": [
+        "Colleen Hoover"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Science & Technology",
+      "title": "Astrophysics for People in a Hurry",
+      "authors": [
+        "Neil deGrasse Tyson"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Science Fiction",
+      "title": "Artemis",
+      "authors": [
+        "Andy Weir"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Young Adult Fantasy",
+      "title": "A Court of Wings and Ruin",
+      "authors": [
+        "Sarah J. Maas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2017,
+      "category": "Young Adult Fiction",
+      "title": "The Hate U Give",
+      "authors": [
+        "Angie Thomas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2017"
+    },
+    {
+      "year": 2018,
+      "category": "Best of the Best",
+      "title": "The Hate U Give",
+      "authors": [
+        "Angie Thomas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Debut Author",
+      "title": "Children of Blood and Bone",
+      "authors": [
+        "Tomi Adeyemi"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Fantasy",
+      "title": "Circe",
+      "authors": [
+        "Madeline Miller"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Fiction",
+      "title": "Still Me",
+      "authors": [
+        "Jojo Moyes"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Food & Cookbooks",
+      "title": "Cravings: Hungry for More",
+      "authors": [
+        "Chrissy Teigen"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Graphic Novels & Comics",
+      "title": "Herding Cats",
+      "authors": [
+        "Sarah Andersen"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Historical Fiction",
+      "title": "The Great Alone",
+      "authors": [
+        "Kristin Hannah"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "History & Biography",
+      "title": "The Good Neighbor: The Life and Work of Fred Rogers",
+      "authors": [
+        "Maxwell King"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Horror",
+      "title": "Elevation",
+      "authors": [
+        "Stephen        King"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Humor",
+      "title": "The Last Black Unicorn",
+      "authors": [
+        "Tiffany Haddish"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Memoir & Autobiography",
+      "title": "Educated",
+      "authors": [
+        "Tara Westover"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Middle Grade & Children's",
+      "title": "The Burning Maze",
+      "authors": [
+        "Rick Riordan"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Mystery & Thriller",
+      "title": "The Outsider",
+      "authors": [
+        "Stephen        King"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Nonfiction",
+      "title": "I'll Be Gone in the Dark",
+      "authors": [
+        "Michelle McNamara"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Picture Books",
+      "title": "I Am Enough",
+      "authors": [
+        "Grace Byers"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Poetry",
+      "title": "The Witch Doesn't Burn in This One",
+      "authors": [
+        "Amanda Lovelace"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Romance",
+      "title": "The Kiss Quotient",
+      "authors": [
+        "Helen Hoang"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Science & Technology",
+      "title": "The Rise and Fall of the Dinosaurs: A New History of a Lost World",
+      "authors": [
+        "Steve Brusatte"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Science Fiction",
+      "title": "Vengeful",
+      "authors": [
+        "Victoria E. Schwab"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Young Adult Fantasy",
+      "title": "Kingdom of Ash",
+      "authors": [
+        "Sarah J. Maas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2018,
+      "category": "Young Adult Fiction",
+      "title": "Leah on the Offbeat",
+      "authors": [
+        "Becky Albertalli"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2018"
+    },
+    {
+      "year": 2019,
+      "category": "Debut Novel",
+      "title": "Red, White & Royal Blue",
+      "authors": [
+        "Casey McQuiston"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Fantasy",
+      "title": "Ninth House",
+      "authors": [
+        "Leigh Bardugo"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Fiction",
+      "title": "The Testaments",
+      "authors": [
+        "Margaret Atwood"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Food & Cookbooks",
+      "title": "Antoni in the Kitchen",
+      "authors": [
+        "Antoni Porowski"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Graphic Novels & Comics",
+      "title": "Pumpkinheads",
+      "authors": [
+        "Rainbow Rowell"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Historical Fiction",
+      "title": "Daisy Jones & The Six",
+      "authors": [
+        "Taylor Jenkins Reid"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "History & Biography",
+      "title": "The Five: The Untold Lives of the Women Killed by Jack the Ripper",
+      "authors": [
+        "Hallie Rubenhold"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Horror",
+      "title": "The Institute",
+      "authors": [
+        "Stephen        King"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Humor",
+      "title": "Dear Girls: Intimate Tales, Untold Secrets, & Advice for Living Your Best Life",
+      "authors": [
+        "Ali Wong"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Memoir & Autobiography",
+      "title": "Over the Top: A Raw Journey to Self-Love",
+      "authors": [
+        "Jonathan Van Ness"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Middle Grade & Children's",
+      "title": "The Tyrant's Tomb",
+      "authors": [
+        "Rick Riordan"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Mystery & Thriller",
+      "title": "The Silent Patient",
+      "authors": [
+        "Alex Michaelides"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Nonfiction",
+      "title": "Girl, Stop Apologizing: A Shame-Free Plan for Embracing and Achieving Your Goals",
+      "authors": [
+        "Rachel Hollis"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Picture Books",
+      "title": "A Beautiful Day in the Neighborhood: The Poetry of Mister Rogers",
+      "authors": [
+        "Fred Rogers"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Poetry",
+      "title": "Shout",
+      "authors": [
+        "Laurie Halse Anderson"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Romance",
+      "title": "Red, White & Royal Blue",
+      "authors": [
+        "Casey McQuiston"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Science & Technology",
+      "title": "Will My Cat Eat My Eyeballs? Big Questions from Tiny Mortals About Death",
+      "authors": [
+        "Caitlin Doughty"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Science Fiction",
+      "title": "Recursion",
+      "authors": [
+        "Blake Crouch"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Young Adult Fantasy",
+      "title": "The Wicked King",
+      "authors": [
+        "Holly Black"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2019,
+      "category": "Young Adult Fiction",
+      "title": "Five Feet Apart",
+      "authors": [
+        "Rachael Lippincott"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2019"
+    },
+    {
+      "year": 2020,
+      "category": "Debut Novel",
+      "title": "Such a Fun Age",
+      "authors": [
+        "Kiley Reid"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Fantasy",
+      "title": "House of Earth and Blood",
+      "authors": [
+        "Sarah J. Maas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Fiction",
+      "title": "The Midnight Library",
+      "authors": [
+        "Matt Haig"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Food & Cookbooks",
+      "title": "Modern Comfort Food: A Barefoot Contessa Cookbook",
+      "authors": [
+        "Ina Garten"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Graphic Novels & Comics",
+      "title": "Heartstopper: Volume Three",
+      "authors": [
+        "Alice Oseman"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Historical Fiction",
+      "title": "The Vanishing Half",
+      "authors": [
+        "Brit Bennett"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "History & Biography",
+      "title": "Caste: The Origins of Our Discontents",
+      "authors": [
+        "Isabel Wilkerson"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Horror",
+      "title": "Mexican Gothic",
+      "authors": [
+        "Silvia Moreno-Garcia"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Humor",
+      "title": "Strange Planet",
+      "authors": [
+        "Nathan W. Pyle"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Memoir & Autobiography",
+      "title": "A Promised Land",
+      "authors": [
+        "Barack Obama"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Middle Grade & Children's",
+      "title": "The Tower of Nero",
+      "authors": [
+        "Rick Riordan"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Mystery & Thriller",
+      "title": "The Guest List",
+      "authors": [
+        "Lucy Foley"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Nonfiction",
+      "title": "Stamped: Racism, Antiracism, and You",
+      "authors": [
+        "Jason Reynolds"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Picture Books",
+      "title": "Antiracist Baby",
+      "authors": [
+        "Ibram X. Kendi"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Poetry",
+      "title": "Dearly",
+      "authors": [
+        "Margaret Atwood"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Romance",
+      "title": "From Blood and Ash",
+      "authors": [
+        "Jennifer L. Armentrout"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Science & Technology",
+      "title": "How to Argue With a Racist: What Our Genes Do (and Don't) Say About Human Difference",
+      "authors": [
+        "Adam Rutherford"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Science Fiction",
+      "title": "To Sleep in a Sea of Stars",
+      "authors": [
+        "Christopher Paolini"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Young Adult Fantasy",
+      "title": "The Queen of Nothing",
+      "authors": [
+        "Holly Black"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2020,
+      "category": "Young Adult Fiction",
+      "title": "Clap When You Land",
+      "authors": [
+        "Elizabeth Acevedo"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2020"
+    },
+    {
+      "year": 2021,
+      "category": "Debut Novel",
+      "title": "The Spanish Love Deception",
+      "authors": [
+        "Elena  Armas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Fantasy",
+      "title": "A ​Court of Silver Flames",
+      "authors": [
+        "Sarah J. Maas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Fiction",
+      "title": "Beautiful World, Where Are You",
+      "authors": [
+        "Sally Rooney"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Graphic Novels & Comics",
+      "title": "Lore Olympus: Volume One",
+      "authors": [
+        "Rachel  Smythe"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Historical Fiction",
+      "title": "Malibu Rising",
+      "authors": [
+        "Taylor Jenkins Reid"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "History & Biography",
+      "title": "Empire of Pain: The Secret History of the Sackler Dynasty",
+      "authors": [
+        "Patrick Radden Keefe"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Horror",
+      "title": "The Final Girl Support Group",
+      "authors": [
+        "Grady Hendrix"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Humor",
+      "title": "Broken",
+      "authors": [
+        "Jenny  Lawson"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Memoir & Autobiography",
+      "title": "Crying in H Mart",
+      "authors": [
+        "Michelle Zauner"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Middle Grade & Children's",
+      "title": "Daughter of the Deep",
+      "authors": [
+        "Rick Riordan"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Mystery & Thriller",
+      "title": "The Last Thing He Told Me",
+      "authors": [
+        "Laura Dave"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Nonfiction",
+      "title": "The Anthropocene Reviewed: Essays on a Human-Centered Planet",
+      "authors": [
+        "John Green"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Poetry",
+      "title": "The Hill We Climb: An Inaugural Poem for the Country",
+      "authors": [
+        "Amanda Gorman"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Romance",
+      "title": "People We Meet on Vacation",
+      "authors": [
+        "Emily Henry"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Science Fiction",
+      "title": "Project Hail Mary",
+      "authors": [
+        "Andy Weir"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Young Adult Fantasy",
+      "title": "Rule of Wolves",
+      "authors": [
+        "Leigh Bardugo"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2021,
+      "category": "Young Adult Fiction",
+      "title": "Firekeeper's Daughter",
+      "authors": [
+        "Angeline Boulley"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2021"
+    },
+    {
+      "year": 2022,
+      "category": "Debut Novel",
+      "title": "Lessons in Chemistry",
+      "authors": [
+        "Bonnie Garmus"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Fantasy",
+      "title": "House of Sky and Breath",
+      "authors": [
+        "Sarah J. Maas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Fiction",
+      "title": "Tomorrow, and Tomorrow, and Tomorrow",
+      "authors": [
+        "Gabrielle Zevin"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Graphic Novels & Comics",
+      "title": "Heartstopper: Volume Four",
+      "authors": [
+        "Alice Oseman"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Historical Fiction",
+      "title": "Carrie Soto Is Back",
+      "authors": [
+        "Taylor Jenkins Reid"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "History & Biography",
+      "title": "Bad Gays: A Homosexual History",
+      "authors": [
+        "Huw Lemmey"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Horror",
+      "title": "Hidden Pictures",
+      "authors": [
+        "Jason Rekulak"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Humor",
+      "title": "The Office BFFs: Tales of The Office from Two Best Friends Who Were There",
+      "authors": [
+        "Jenna Fischer"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Memoir & Autobiography",
+      "title": "I’m Glad My Mom Died",
+      "authors": [
+        "Jennette McCurdy"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Middle Grade & Children's",
+      "title": "I Am Quiet: A Story for the Introvert in All of Us",
+      "authors": [
+        "Andie Powers"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Mystery & Thriller",
+      "title": "The Maid",
+      "authors": [
+        "Nita Prose"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Nonfiction",
+      "title": "Atlas of the Heart: Mapping Meaningful Connection and the Language of Human Experience",
+      "authors": [
+        "Brené Brown"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Poetry",
+      "title": "Call Us What We Carry",
+      "authors": [
+        "Amanda Gorman"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Romance",
+      "title": "Book Lovers",
+      "authors": [
+        "Emily Henry"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Science Fiction",
+      "title": "Sea of Tranquility",
+      "authors": [
+        "Emily St. John Mandel"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Young Adult Fantasy",
+      "title": "Gallant",
+      "authors": [
+        "Victoria E. Schwab"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2022,
+      "category": "Young Adult Fiction",
+      "title": "The Final Gambit",
+      "authors": [
+        "Jennifer Lynn Barnes"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2022"
+    },
+    {
+      "year": 2023,
+      "category": "Debut Novel",
+      "title": "Weyward",
+      "authors": [
+        "Emilia Hart"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Fantasy",
+      "title": "Hell Bent",
+      "authors": [
+        "Leigh Bardugo"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Fiction",
+      "title": "Yellowface",
+      "authors": [
+        "R.F. Kuang"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Historical Fiction",
+      "title": "Weyward",
+      "authors": [
+        "Emilia Hart"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "History & Biography",
+      "title": "The Wager: A Tale of Shipwreck, Mutiny and Murder",
+      "authors": [
+        "David Grann"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Horror",
+      "title": "Holly",
+      "authors": [
+        "Stephen        King"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Humor",
+      "title": "Being Henry: The Fonz . . . and Beyond",
+      "authors": [
+        "Henry Winkler"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Memoir & Autobiography",
+      "title": "The Woman in Me",
+      "authors": [
+        "Britney Spears"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Mystery & Thriller",
+      "title": "The Housemaid's Secret",
+      "authors": [
+        "Freida McFadden"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Nonfiction",
+      "title": "Poverty, by America",
+      "authors": [
+        "Matthew Desmond"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Romance",
+      "title": "Happy Place",
+      "authors": [
+        "Emily Henry"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Romantasy",
+      "title": "Fourth Wing",
+      "authors": [
+        "Rebecca Yarros"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Science Fiction",
+      "title": "In the Lives of Puppets",
+      "authors": [
+        "T.J. Klune"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Young Adult Fantasy",
+      "title": "Divine Rivals",
+      "authors": [
+        "Rebecca   Ross"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2023,
+      "category": "Young Adult Fiction",
+      "title": "Check & Mate",
+      "authors": [
+        "Ali Hazelwood"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2023"
+    },
+    {
+      "year": 2024,
+      "category": "Audiobook",
+      "title": "Funny Story",
+      "authors": [
+        "Emily Henry"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Debut Novel",
+      "title": "How to End a Love Story",
+      "authors": [
+        "Yulin Kuang"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Fantasy",
+      "title": "Somewhere Beyond the Sea",
+      "authors": [
+        "T.J. Klune"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Fiction",
+      "title": "The Wedding People",
+      "authors": [
+        "Alison Espach"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Historical Fiction",
+      "title": "The Women",
+      "authors": [
+        "Kristin Hannah"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "History & Biography",
+      "title": "The Bookshop: A History of the American Bookstore",
+      "authors": [
+        "Evan Friss"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Horror",
+      "title": "You Like It Darker",
+      "authors": [
+        "Stephen        King"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Memoir",
+      "title": "The Third Gilmore Girl",
+      "authors": [
+        "Kelly  Bishop"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Mystery & Thriller",
+      "title": "The God of the Woods",
+      "authors": [
+        "Liz    Moore"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Nonfiction",
+      "title": "The Anxious Generation: How the Great Rewiring of Childhood Caused an Epidemic of Mental Illness",
+      "authors": [
+        "Jonathan Haidt"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Romance",
+      "title": "Funny Story",
+      "authors": [
+        "Emily Henry"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Romantasy",
+      "title": "House of Flame and Shadow",
+      "authors": [
+        "Sarah J. Maas"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Science Fiction",
+      "title": "The Ministry of Time",
+      "authors": [
+        "Kaliane Bradley"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Young Adult Fantasy",
+      "title": "Ruthless Vows",
+      "authors": [
+        "Rebecca   Ross"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2024,
+      "category": "Young Adult Fiction",
+      "title": "Heartstopper: Volume Five",
+      "authors": [
+        "Alice Oseman"
+      ],
+      "source": "https://www.goodreads.com/choiceawards/best-books-2024"
+    },
+    {
+      "year": 2025,
+      "category": "Fiction",
+      "title": "My Friends",
+      "authors": [
+        "Fredrik Backman"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Historical Fiction",
+      "title": "Atmosphere",
+      "authors": [
+        "Taylor Jenkins Reid"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Mystery & Thriller",
+      "title": "Not Quite Dead Yet",
+      "authors": [
+        "Holly Jackson"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Romance",
+      "title": "Great Big Beautiful Life",
+      "authors": [
+        "Emily Henry"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Romantasy",
+      "title": "Onyx Storm",
+      "authors": [
+        "Rebecca Yarros"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Fantasy",
+      "title": "Bury Our Bones in the Midnight Soil",
+      "authors": [
+        "V. E. Schwab"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Science Fiction",
+      "title": "The Compound",
+      "authors": [
+        "Aisling Rawle"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Horror",
+      "title": "Witchcraft for Wayward Girls",
+      "authors": [
+        "Grady Hendrix"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Debut Novel",
+      "title": "Alchemised",
+      "authors": [
+        "SenLinYu"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Audiobook",
+      "title": "Onyx Storm",
+      "authors": [
+        "Rebecca Yarros"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Young Adult Fantasy & Sci-Fi",
+      "title": "Sunrise on the Reaping",
+      "authors": [
+        "Suzanne Collins"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Young Adult Fiction",
+      "title": "Fake Skating",
+      "authors": [
+        "Lynn Painter"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Nonfiction",
+      "title": "Everything Is Tuberculosis",
+      "authors": [
+        "John Green"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "Memoir",
+      "title": "The House of My Mother",
+      "authors": [
+        "Shari Franke"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    },
+    {
+      "year": 2025,
+      "category": "History & Biography",
+      "title": "How to Kill a Witch",
+      "authors": [
+        "Claire Mitchell",
+        "Zoe Venditozzi"
+      ],
+      "source": "https://www.goodreads.com/blog/show/3030-meet-the-winners-of-the-2025-goodreads-choice-awards"
+    }
+  ],
+  "coverage": []
+}

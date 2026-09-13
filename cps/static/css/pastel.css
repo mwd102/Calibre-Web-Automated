@@ -812,3 +812,26 @@ body.pastel .book-metadata .publishers .meta-pill {
     background: #eee5db !important; color: #6b5948 !important; border-color: #dccdbd !important;
 }
 body.pastel #emailSelectModal .modal-card { display: flex; flex-direction: column; min-height: 0; padding: 0; overflow: hidden; }
+
+/* Award provenance stays distinct from editable library metadata. */
+body.pastel .curated-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+body.pastel .curated-badge { border-radius: 12px; padding: 5px 9px; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+body.pastel .curated-pulitzer { background: #f5e7cd; color: #725524; }
+body.pastel .curated-goodreads { background: #f2dedc; color: #7a4947; }
+body.pastel .curated-nyt { background: #e7def0; color: #655085; }
+body.pastel > .container-fluid > .row-fluid > .col-sm-10:has(> .curated-intro) {
+    top: 0 !important;
+    height: 100% !important;
+    padding: 24px 32px !important;
+}
+body.pastel > .container-fluid > .row-fluid > .col-sm-10:has(> .curated-intro)::after { display: none !important; }
+body.pastel .curated-cover img { box-shadow: 0 5px 16px rgba(68, 48, 77, .12); }
+body.pastel .curated-intro { margin-top: 0; }
+@media (max-width: 767px) {
+    body.pastel > .container-fluid:has(.curated-intro) { top: 48px !important; height: calc(100% - 48px) !important; }
+    body.pastel > .container-fluid > .row-fluid > .col-sm-10:has(> .curated-intro) { padding: 22px 16px !important; }
+}
+
+body.pastel .curated-more { flex-basis: 100%; }
+body.pastel .curated-more summary { cursor: pointer; font-size: 12px; padding: 4px 0; }
+body.pastel .curated-more .curated-badge { margin: 3px 3px 3px 0; }
