@@ -945,4 +945,4 @@ body.pastel .discover > h2 { color: var(--ink) !important; }
 body.pastel .pastel-brand-name { color: var(--ink) !important; }
 body.pastel .close,
 body.pastel .close span { color: var(--ink) !important; opacity: 1 !important; text-shadow: none !important; }
-body.pastel.admin > .container-fluid > .row-fluid > .col-sm-10 > .discover > h2 { color: var(--ink) !important; }
+body.pastel:is(.admin, .uiconfig) > .container-fluid > .row-fluid > .col-sm-10 > .discover > h2 { color: var(--ink) !important; }
