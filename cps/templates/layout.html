@@ -20,7 +20,7 @@
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/upload.css') }}" rel="stylesheet" media="screen">
     {% for css_file in g.theme.css_files %}
-      <link href="{{ url_for('static', filename=css_file, v='contrast-20260913' if css_file == 'css/pastel.css' else None) }}" rel="stylesheet" media="screen">
+      <link href="{{ url_for('static', filename=css_file, v='contrast-complete-20260913' if css_file == 'css/pastel.css' else None) }}" rel="stylesheet" media="screen">
     {% endfor %}
     <link href="{{ url_for('static', filename='css/cwa.css') }}" rel="stylesheet" media="screen">
     {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
