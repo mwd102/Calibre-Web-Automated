@@ -60,6 +60,16 @@ kobo_auth.register_url_value_preprocessor(kobo)
 log = logger.create()
 
 
+@kobo.after_request
+def log_kobo_request(response):
+    if config.config_access_log:
+        # Route templates contain no credentials, query strings, or book IDs.
+        log.info("Kobo request: user_id=%s method=%s endpoint=%s status=%s",
+                 current_user.id if current_user.is_authenticated else "anonymous",
+                 request.method, request.endpoint, response.status_code)
+    return response
+
+
 def get_store_url_for_current_request():
     # Programmatically modify the current url to point to the official Kobo store
     __, __, request_path_with_auth_token = request.full_path.rpartition("/kobo/")
