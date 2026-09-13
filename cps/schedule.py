@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import datetime
+import os
 
 from . import config, constants, helper
 from .services.background_scheduler import BackgroundScheduler, CronTrigger, IntervalTrigger, use_APScheduler, DateTrigger
@@ -50,6 +51,8 @@ def end_scheduled_tasks():
 
 
 def register_scheduled_tasks(reconnect=True):
+    if os.environ.get("CWA_DISABLE_AUTOMATION", "").lower() in ("true", "1", "yes", "on"):
+        return
     scheduler = BackgroundScheduler()
 
     if scheduler:
@@ -78,6 +81,8 @@ def register_scheduled_tasks(reconnect=True):
 
 
 def register_startup_tasks():
+    if os.environ.get("CWA_DISABLE_AUTOMATION", "").lower() in ("true", "1", "yes", "on"):
+        return
     scheduler = BackgroundScheduler()
 
     if scheduler:

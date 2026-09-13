@@ -1,5 +1,13 @@
 #!/usr/bin/with-contenv bash
 
+# Keep the existing external importer as the automation owner.
+case "${CWA_DISABLE_AUTOMATION,,}" in
+  true|1|yes|on)
+    echo "[cwa-auto-zipper] Background automation disabled by CWA_DISABLE_AUTOMATION"
+    exec sleep infinity
+    ;;
+esac
+
 echo "[cwa-auto-zipper] Starting CWA-Auto-Zipper service..."
 echo "[cwa-auto-zipper] Matching internal localtime & timezone with the one provided..."
 
