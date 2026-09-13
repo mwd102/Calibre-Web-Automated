@@ -16,15 +16,18 @@
   {% if collection == 'nyt' %}<p class="curated-coverage-notice">{{_('Public archive + NYT API · coverage varies by year and list')}}</p>{% endif %}
   <details class="curated-coverage">
     <summary>{{_('Sources and coverage')}}</summary>
+    {% if collection != 'nyt' %}
     <p>{{catalog.note}} <a href="{{catalog.source}}" target="_blank" rel="noopener noreferrer">{{_('Public archive')}}</a></p>
+    {% endif %}
     {% if collection == 'nyt' %}
     {% if catalog.api_coverage %}
     <p><strong>{{_('NYT API coverage')}}</strong> · {{_('Updated')}} {{catalog.api_updated}}. {{_('Only the dates listed here are verified by the API; other dates retain public archive coverage where available.')}}</p>
     <ul>{% for coverage in catalog.api_coverage if selected_year is none or coverage.year == selected_year %}
-      <li>{{coverage.year}} · {{coverage.dates|length}} {{_('verified dates')}}: {{coverage.dates|join(', ')}}</li>
+      <li>{{coverage.year}} · {{coverage.dates|length}}/{{coverage.expected_weeks}} {{_('verified weekly dates')}}: {{coverage.dates|join(', ')}}</li>
     {% endfor %}</ul>
     {% endif %}
     <p><strong>{{_('Public archive coverage')}}</strong></p>
+    <p>{{catalog.note}} <a href="{{catalog.source}}" target="_blank" rel="noopener noreferrer">{{_('Public archive')}}</a></p>
     <ul>{% for coverage in catalog.coverage if selected_year is none or coverage.year == selected_year %}
       <li>{{coverage.year}} · {{coverage.category}}: {{coverage.weeks}}/{{coverage.expected_weeks}} {{_('weekly dates')}} ({{coverage.first_date}} – {{coverage.last_date}}) · {{coverage.rejected_rows}} {{_('unusable rows excluded')}}{% if coverage.missing_dates %}. {{_('Missing')}}: {{coverage.missing_dates|join(', ')}}{% endif %}</li>
     {% endfor %}</ul>

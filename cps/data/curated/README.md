@@ -15,10 +15,11 @@ These virtual Magic Shelves do not modify Calibre metadata or user-created rules
   2015 winners were cross-checked against the official year page. Historical
   archive vote counts are not independently verified for every category.
 * NYT: Bryant Reese's [1931–2024 public archive](https://www.kaggle.com/datasets/bryantreese/nyt-bestsellers-1931-2024-fictionnon-fiction),
-  offered under MIT. 15,717 raw weekly entries from 2015 onward become 3,810
+  offered under MIT. 15,717 raw weekly entries from 2015 onward become 3,805
   year/category/title/author records after excluding 154 malformed rows with
   missing authors or implausible ranks (outside 1–25). Exclusion counts remain
-  visible per year/category. Each retains minimum observed rank and
+  visible per year/category. Parenthetical publisher/description artifacts in
+  author fields are removed before matching. Each retains minimum observed rank and
   first/last recorded list dates. No rank threshold excludes lower-ranked books.
   The archive does not identify list format; it cannot establish coverage of all
   NYT lists (including paperback, children's and specialist lists).
@@ -80,3 +81,9 @@ only in process memory. No credential is projected into the application or
 stored in snapshots, URLs in logs, Git, or ordinary temporary files. Transport
 failures expose only HTTP status. Rotate in Infisical; the next import reads the
 replacement. No credential copy or rotation was performed for this feature.
+
+The initial API snapshot contains all 52 weekly dates in 2025 and all 37
+weekly dates in 2026 through September 13, plus the five missing public-archive
+dates (2023-01-15 and the last four Sundays of 2024). There are 94 verified
+weekly snapshots in total. Earlier public-archive list/entry limitations remain
+visible; complete dated API coverage before 2025 is not claimed.

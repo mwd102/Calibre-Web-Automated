@@ -52,7 +52,8 @@ def test_unknown_collection_cannot_read_files():
         curated.catalog('../config')
 
 
-def test_library_matching_obeys_visibility_and_sees_new_books(monkeypatch):
+@pytest.mark.parametrize('collection, year', [('pulitzer', 2025), ('nyt', 2024)])
+def test_library_matching_obeys_visibility_and_sees_new_books(monkeypatch, collection, year):
     from sqlalchemy import Column, Integer, String, Table, ForeignKey, create_engine
     from sqlalchemy.orm import declarative_base, Session
     from types import SimpleNamespace
@@ -69,12 +70,20 @@ def test_library_matching_obeys_visibility_and_sees_new_books(monkeypatch):
         id = Column(Integer, primary_key=True)
         name = Column(String)
 
+    class Identifier(base):
+        __tablename__ = 'identifiers'
+        id = Column(Integer, primary_key=True)
+        book = Column(Integer, ForeignKey('books.id'))
+        type = Column(String)
+        val = Column(String)
+
     link = Table('books_authors_link', base.metadata,
                  Column('book', ForeignKey('books.id')), Column('author', ForeignKey('authors.id')))
     engine = create_engine('sqlite://')
     base.metadata.create_all(engine)
     monkeypatch.setattr(db, 'Books', Book)
     monkeypatch.setattr(db, 'Authors', Author)
+    monkeypatch.setattr(db, 'Identifiers', Identifier)
     monkeypatch.setattr(db, 'books_authors_link', link)
     with Session(engine) as session:
         session.add_all([Book(id=1, title='James'), Book(id=2, title='James'),
@@ -82,11 +91,11 @@ def test_library_matching_obeys_visibility_and_sees_new_books(monkeypatch):
         session.flush()
         session.execute(link.insert(), [{'book': 1, 'author': 1}, {'book': 2, 'author': 1}])
         cdb = SimpleNamespace(session=session, common_filters=lambda: Book.id != 2)
-        assert set(curated.library_matches(cdb, 'pulitzer', 2025)) == {1}
+        assert set(curated.library_matches(cdb, collection, year)) == {1}
         session.add(Book(id=3, title='James: A Novel'))
         session.flush()
         session.execute(link.insert(), [{'book': 3, 'author': 1}])
-        assert set(curated.library_matches(cdb, 'pulitzer', 2025)) == {1, 3}
+        assert set(curated.library_matches(cdb, collection, year)) == {1, 3}
     engine.dispose()
 
 
@@ -103,6 +112,7 @@ def test_nyt_api_date_validation_and_all_ranked_entries():
             {'title': 'Unknown Author', 'author': '', 'rank': 8},
         ]}]}}
     snapshot = sync.extract_snapshot(payload, '2025-01-05')
+    assert json.loads(sync.serialize_snapshots({'snapshots': [snapshot]})) == {'snapshots': [snapshot]}
     assert [r['rank'] for r in snapshot['records']] == [1, 15, 8]
     assert all(r['category'] == 'Hardcover Fiction' for r in snapshot['records'])
     assert all('api-key' not in r['source'] for r in snapshot['records'])
@@ -133,3 +143,25 @@ def test_missing_source_author_needs_matching_isbn_and_title(monkeypatch):
     assert not curated.matching_records('The Book of Bill', ['Alex Hirsch'], 'nyt', isbns=['0000000000000'])
     assert curated.matching_records('The Book of Bill', ['Alex Hirsch'], 'nyt', isbns=['978-1-368-09220-3'])
     assert not curated.matching_records('Different Book', ['Alex Hirsch'], 'nyt', isbns=['9781368092203'])
+
+
+def test_named_coauthor_can_match_without_fuzzy_surnames(monkeypatch):
+    record = {'title': 'Collaboration', 'authors': ['Douglas Preston and Lincoln Child'], 'year': 2024}
+    monkeypatch.setattr(curated, 'record_index', lambda key: {'collaboration': [record]})
+    assert curated.matching_records('Collaboration', ['Lincoln Child'], 'nyt')
+    assert not curated.matching_records('Collaboration', ['Julia Child'], 'nyt')
+
+
+def test_weekly_coverage_denominator_counts_all_sundays():
+    assert len(curated.weekly_dates(2023)) == 53
+    assert len(curated.weekly_dates(2025)) == 52
+
+
+def test_rank_badge_links_to_the_best_recorded_week(monkeypatch):
+    base = {'title': 'Collaboration', 'authors': ['Douglas Preston'], 'year': 2024, 'category': 'Hardcover Fiction'}
+    records = [dict(base, rank=12, source='https://example.test/week-one'),
+               dict(base, rank=2, source='https://example.test/week-two')]
+    monkeypatch.setattr(curated, 'record_index', lambda key: {'collaboration': records})
+    badge = curated.badges('Collaboration', ['Douglas Preston'], 'nyt')[0]
+    assert badge['label'] == 'NYT · Best recorded #2'
+    assert badge['source'] == 'https://example.test/week-two'

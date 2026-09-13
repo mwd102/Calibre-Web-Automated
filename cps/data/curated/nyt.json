@@ -15122,7 +15122,7 @@
       "category": "Fiction",
       "title": "EMPIRE OF THE DAMNED",
       "authors": [
-        "Jay Kristoff (St. Martin ’s.) The second book of the"
+        "Jay Kristoff"
       ],
       "rank": 4,
       "first_date": "2024-03-31",
@@ -16904,10 +16904,10 @@
       "category": "Fiction",
       "title": "CRIME SCENE",
       "authors": [
-        "Jonathan Kellerman and Jesse Kel lerman, (Ballantine.) Clay"
+        "Jonathan Kellerman and Jesse Kel lerman"
       ],
-      "rank": 15,
-      "first_date": "2017-08-27",
+      "rank": 9,
+      "first_date": "2017-08-20",
       "last_date": "2017-08-27"
     },
     {
@@ -17542,11 +17542,11 @@
       "category": "Fiction",
       "title": "THE LOST ORDER",
       "authors": [
-        "Steve Berry, (Minotaur.) In th e 12th Cotton Malone thriller,"
+        "Steve Berry"
       ],
       "rank": 4,
       "first_date": "2017-04-23",
-      "last_date": "2017-04-30"
+      "last_date": "2017-05-07"
     },
     {
       "year": 2017,
@@ -17965,17 +17965,6 @@
       "rank": 15,
       "first_date": "2017-06-25",
       "last_date": "2017-07-02"
-    },
-    {
-      "year": 2017,
-      "category": "Fiction",
-      "title": "CRIME SCENE",
-      "authors": [
-        "Jonathan Kellerman and Jesse Kell erman"
-      ],
-      "rank": 9,
-      "first_date": "2017-08-20",
-      "last_date": "2017-08-20"
     },
     {
       "year": 2017,
@@ -19872,17 +19861,6 @@
     {
       "year": 2019,
       "category": "Fiction",
-      "title": "WHERE THE CRAWDADS SING",
-      "authors": [
-        "Delia Owens, (Putnam. ) A woman who"
-      ],
-      "rank": 1,
-      "first_date": "2019-02-10",
-      "last_date": "2019-02-10"
-    },
-    {
-      "year": 2019,
-      "category": "Fiction",
       "title": "CRUCIBLE",
       "authors": [
         "James Rollins"
@@ -20444,17 +20422,6 @@
     {
       "year": 2017,
       "category": "Fiction",
-      "title": "THE LOST ORDER",
-      "authors": [
-        "Steve Berry"
-      ],
-      "rank": 13,
-      "first_date": "2017-05-07",
-      "last_date": "2017-05-07"
-    },
-    {
-      "year": 2017,
-      "category": "Fiction",
       "title": "FALLOUT",
       "authors": [
         "Sara Paretsky"
@@ -20867,17 +20834,6 @@
         "Tess Gerritsen"
       ],
       "rank": 8,
-      "first_date": "2017-09-03",
-      "last_date": "2017-09-03"
-    },
-    {
-      "year": 2017,
-      "category": "Fiction",
-      "title": "INTO THE WATER",
-      "authors": [
-        "Paula Hawkins, (Riverhead.) I n this psychological thriller"
-      ],
-      "rank": 14,
       "first_date": "2017-09-03",
       "last_date": "2017-09-03"
     },
@@ -25066,7 +25022,7 @@
       "category": "Non-fiction",
       "title": "A WARNING",
       "authors": [
-        "Anonymous (Miles Taylor)"
+        "Anonymous"
       ],
       "rank": 1,
       "first_date": "2019-12-08",
@@ -30170,7 +30126,7 @@
       "category": "Non-fiction",
       "title": "A WARNING",
       "authors": [
-        "Anonymous (Miles Taylor)"
+        "Anonymous"
       ],
       "rank": 7,
       "first_date": "2020-01-05",
@@ -32051,7 +32007,7 @@
       "category": "Non-fiction",
       "title": "THE BLACK CHURCH",
       "authors": [
-        "Henry Louis Gates, Jr., (Pe nguin Press.) The"
+        "Henry Louis Gates, Jr."
       ],
       "rank": 13,
       "first_date": "2021-03-07",
@@ -39362,17 +39318,6 @@
       "last_date": "2023-12-24"
     },
     {
-      "year": 2016,
-      "category": "Non-fiction",
-      "title": "SHOE DOG",
-      "authors": [
-        "Phil Knight, (Scribner.) A memoir by  the founder of Nike. 10 9"
-      ],
-      "rank": 9,
-      "first_date": "2016-07-10",
-      "last_date": "2016-07-10"
-    },
-    {
       "year": 2023,
       "category": "Non-fiction",
       "title": "A FEVER IN THE HEARTLAND",
@@ -40675,7 +40620,7 @@
       "category": "Non-fiction",
       "title": "WHEN MCKINSEY COMES TO TOWN",
       "authors": [
-        "Walt Bogdanich a nd Michael Forsythe,"
+        "Walt Bogdanich a nd Michael Forsythe"
       ],
       "rank": 14,
       "first_date": "2022-10-23",
@@ -41874,7 +41819,7 @@
       "category": "Non-fiction",
       "title": "FORGET THE ALAMO",
       "authors": [
-        "Bryan Burrough, Chris Tomli nson and Jason Stanford,"
+        "Bryan Burrough, Chris Tomli nson and Jason Stanford"
       ],
       "rank": 11,
       "first_date": "2021-07-25",

@@ -3,7 +3,7 @@ import json
 import re
 import unicodedata
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
 
@@ -29,6 +29,18 @@ def author_keys(value):
     return ''.join(sorted(normalize(part) for part in value.split()))
 
 
+def author_variants(value):
+    names = [value] + re.split(r'\s+(?:and|with)\s+', value, flags=re.I)
+    return {author_keys(name) for name in names if name.strip()}
+
+
+def weekly_dates(year):
+    start = date(year, 1, 1)
+    end = min(date(year, 12, 31), datetime.now(timezone.utc).date())
+    return [start + timedelta(days=i) for i in range((end - start).days + 1)
+            if (start + timedelta(days=i)).weekday() == 6]
+
+
 @lru_cache(maxsize=3)
 def catalog(collection):
     if collection not in COLLECTIONS:
@@ -48,7 +60,8 @@ def catalog(collection):
                 if previous is None or record['rank'] < previous['rank']:
                     grouped[identity] = dict(record)
         data['records'].extend(grouped.values())
-        data['api_coverage'] = [{'year': year, 'dates': sorted(set(dates))}
+        data['api_coverage'] = [{'year': year, 'dates': sorted(set(dates)),
+                                 'expected_weeks': len(weekly_dates(year))}
                                 for year, dates in sorted(coverage.items(), reverse=True)]
         data['api_updated'] = api['updated']
     return data
@@ -63,11 +76,11 @@ def record_index(collection):
 
 
 def matching_records(title, authors, collection, year=None, isbns=()):
-    keys = {author_keys(a) for a in authors if a.strip()}
+    keys = set().union(*(author_variants(a) for a in authors))
     isbn_keys = {normalize(i) for i in isbns if i}
     return [r for r in record_index(collection).get(title_key(title), [])
             if (year is None or r['year'] == year)
-            and (keys.intersection(author_keys(a) for a in r['authors'])
+            and (keys.intersection(set().union(*(author_variants(a) for a in r['authors'])))
                  or (r.get('isbn') and normalize(r['isbn']) in isbn_keys))]
 
 
@@ -80,8 +93,11 @@ def badges(title, authors, collection=None, year=None, isbns=()):
             if identity in seen:
                 continue
             seen.add(identity)
-            rank = min(r['rank'] for r in matching_records(title, authors, key, record['year'], isbns)
-                       if r['category'] == record['category']) if key == 'nyt' else None
+            rank = None
+            if key == 'nyt':
+                record = min((r for r in matching_records(title, authors, key, record['year'], isbns)
+                              if r['category'] == record['category']), key=lambda r: r['rank'])
+                rank = record['rank']
             label = ('NYT · Best recorded #%s' % rank) if rank else ('Pulitzer' if key == 'pulitzer' else 'Goodreads winner')
             result.append(dict(collection=key, year=record['year'], category=record['category'],
                                label=label, source=record.get('source', catalog(key)['source'])))
@@ -92,7 +108,7 @@ def selected_year(raw, collection):
     if raw in (None, '', 'all'):
         return None
     year = int(raw)
-    if not 2015 <= year <= date.today().year:
+    if not 2015 <= year <= datetime.now(timezone.utc).date().year:
         raise ValueError('Invalid collection year')
     return year
 

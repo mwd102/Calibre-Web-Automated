@@ -18,6 +18,7 @@ for row in csv.DictReader(io.TextIOWrapper(z.open('merged_genres.csv'))):
         rs.append(row)
 group={};dates=collections.defaultdict(set);rejected=collections.Counter()
 for r in rs:
+ r['Author']=re.split(r',?\s+\(',r['Author'],maxsplit=1)[0].strip().rstrip(',')
  y=int(r['date'][:4]);cat=r['Genre'];key=(y,cat,norm(r['Title']),norm(r['Author']));rank=int(r['Rank'])
  dates[(y,cat)].add(r['date'])
  if not r['Author'].strip() or not r['Title'].strip() or not 1<=rank<=25:

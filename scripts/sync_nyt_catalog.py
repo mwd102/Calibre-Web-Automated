@@ -5,7 +5,7 @@ No key, token, request URL, response body or exception text is logged. The app
 reads the resulting catalog without receiving Infisical or NYT credentials.
 """
 import argparse
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 import json
 from pathlib import Path
 import stat
@@ -74,6 +74,17 @@ def extract_snapshot(payload, requested):
     return {'date': published, 'lists': lists, 'records': records}
 
 
+def serialize_snapshots(document):
+    """Keep one factual book record per line so generated diffs stay reviewable."""
+    blocks = []
+    for snapshot in document['snapshots']:
+        header = json.dumps({k: v for k, v in snapshot.items() if k != 'records'}, ensure_ascii=False)
+        records = ',\n'.join(json.dumps(record, ensure_ascii=False) for record in snapshot['records'])
+        blocks.append(header[:-1] + (', ' if header != '{}' else '') + '"records": [\n' + records + '\n]}')
+    header = json.dumps({k: v for k, v in document.items() if k != 'snapshots'}, ensure_ascii=False)
+    return header[:-1] + (', ' if header != '{}' else '') + '"snapshots": [\n' + ',\n'.join(blocks) + '\n]}\n'
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--credential-dir', type=Path, default=Path.home() / '.config/hyperion/infisical')
@@ -86,7 +97,7 @@ def main():
     key = read_key(args.credential_dir)
     saved = json.loads(args.output.read_text()) if args.output.exists() else {'snapshots': []}
     snapshots = {s['date']: s for s in saved['snapshots']}
-    latest = date.today() + timedelta(days=(6 - date.today().weekday()) % 7)
+    latest = datetime.now(timezone.utc).date() + timedelta(days=(6 - datetime.now(timezone.utc).date().weekday()) % 7)
     # Fill known holes first, then work backwards. Existing weeks are resumable.
     priority = [latest] + [date(2024, 12, d) for d in (8, 15, 22, 29)] + [date(2023, 1, 15)]
     days = priority + [latest - timedelta(weeks=i) for i in range((latest - date(2015, 1, 4)).days // 7 + 1)]
@@ -107,9 +118,9 @@ def main():
             print('NYT request stopped at %s (%s); saved coverage is unchanged for this date.' % (stamp, reason), flush=True)
             break
         saved = {'source': 'https://developer.nytimes.com/docs/books-product/1/overview',
-                 'updated': date.today().isoformat(), 'snapshots': sorted(snapshots.values(), key=lambda s: s['date'])}
+                 'updated': datetime.now(timezone.utc).date().isoformat(), 'snapshots': sorted(snapshots.values(), key=lambda s: s['date'])}
         temporary = args.output.with_suffix('.json.new')
-        temporary.write_text(json.dumps(saved, ensure_ascii=False, indent=2) + '\n')
+        temporary.write_text(serialize_snapshots(saved), encoding='utf-8')
         temporary.replace(args.output)
         count += 1
         print('Saved NYT %s: %s lists, %s entries' % (stamp, len(snapshots[stamp]['lists']), len(snapshots[stamp]['records'])), flush=True)
