@@ -321,6 +321,9 @@
               {% endif %}
               {% if current_user.is_authenticated and magic_shelf_routes.render %}
                 <li class="nav-head hidden-xs" style="margin-top: 1rem;">{{_('Magic Shelves ✨')}}</li>
+                  {% for key, name in [('pulitzer', 'Pulitzer Winners'), ('goodreads', 'Goodreads Choice'), ('nyt', 'NYT Bestsellers')] %}
+                  <li {% if page == 'curated' and collection == key %}class="active"{% endif %}><a href="{{url_for('web.curated_shelf', collection=key)}}"{% if page == 'curated' and collection == key %} aria-current="page"{% endif %}><span class="glyphicon glyphicon-certificate"></span> {{_(name)}}</a></li>
+                  {% endfor %}
                   {% for shelf in g.magic_shelves_access %}
                     <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{shelf.book_count}})"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.book_count}})</span></a></li>
                   {% endfor %}

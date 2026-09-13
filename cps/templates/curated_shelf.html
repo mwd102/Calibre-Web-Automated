@@ -1,0 +1,76 @@
+{% extends theme('layout.html') %}
+{% import theme('image.html') as image %}
+{% from 'curated_badges.html' import render_badges %}
+{% block body %}
+<section class="curated-intro">
+  <h1>{{title}}</h1>
+  <form method="get" class="curated-year-filter">
+    <label for="curated-year">{{_('Year')}}</label>
+    <select id="curated-year" name="year" class="form-control">
+      <option value="all">{{_('All years · 2015 onward')}}</option>
+      {% for year in years %}<option value="{{year}}" {% if selected_year == year %}selected{% endif %}>{{year}}</option>{% endfor %}
+    </select>
+    <button class="btn btn-default" type="submit">{{_('Show')}}</button>
+  </form>
+  <p>{{pagination.total_count}} {{_('books in your library')}} · {{record_count}} {{_('catalog entries')}}</p>
+  {% if collection == 'nyt' %}<p class="curated-coverage-notice">{{_('Public archive + NYT API · coverage varies by year and list')}}</p>{% endif %}
+  <details class="curated-coverage">
+    <summary>{{_('Sources and coverage')}}</summary>
+    <p>{{catalog.note}} <a href="{{catalog.source}}" target="_blank" rel="noopener noreferrer">{{_('Public archive')}}</a></p>
+    {% if collection == 'nyt' %}
+    {% if catalog.api_coverage %}
+    <p><strong>{{_('NYT API coverage')}}</strong> · {{_('Updated')}} {{catalog.api_updated}}. {{_('Only the dates listed here are verified by the API; other dates retain public archive coverage where available.')}}</p>
+    <ul>{% for coverage in catalog.api_coverage if selected_year is none or coverage.year == selected_year %}
+      <li>{{coverage.year}} · {{coverage.dates|length}} {{_('verified dates')}}: {{coverage.dates|join(', ')}}</li>
+    {% endfor %}</ul>
+    {% endif %}
+    <p><strong>{{_('Public archive coverage')}}</strong></p>
+    <ul>{% for coverage in catalog.coverage if selected_year is none or coverage.year == selected_year %}
+      <li>{{coverage.year}} · {{coverage.category}}: {{coverage.weeks}}/{{coverage.expected_weeks}} {{_('weekly dates')}} ({{coverage.first_date}} – {{coverage.last_date}}) · {{coverage.rejected_rows}} {{_('unusable rows excluded')}}{% if coverage.missing_dates %}. {{_('Missing')}}: {{coverage.missing_dates|join(', ')}}{% endif %}</li>
+    {% endfor %}</ul>
+    {% endif %}
+    <p>{{_('Only matching library books appear below. Unmatched catalog entries are retained and checked again whenever this shelf is opened. Matching uses title with author or ISBN; alternate titles or incomplete metadata can prevent a match.')}}</p>
+  </details>
+</section>
+<div class="curated-grid">
+  {% for entry in entries %}
+  <article class="curated-card">
+    <a class="curated-cover" href="{{url_for('web.show_book', book_id=entry.Books.id)}}">{{image.book_cover(entry.Books)}}</a>
+    <h2><a href="{{url_for('web.show_book', book_id=entry.Books.id)}}">{{entry.Books.title}}</a></h2>
+    <p>{{entry.Books.authors|map(attribute='name')|join(', ')}}</p>
+    {{render_badges(annotations[entry.Books.id])}}
+  </article>
+  {% else %}<p>{{_('No matching books for this selection. Check the source coverage above or choose another year.')}}</p>{% endfor %}
+</div>
+<nav class="curated-pagination" aria-label="{{_('Shelf pages')}}">
+ {% if pagination.has_prev %}<a class="btn btn-default" href="{{url_for('web.curated_shelf', collection=collection, year=selected_year or 'all', page=pagination.page-1)}}">{{_('Previous')}}</a>{% endif %}
+ {% if pagination.pages %}<span>{{pagination.page}} / {{pagination.pages}}</span>{% endif %}
+ {% if pagination.has_next %}<a class="btn btn-default next" href="{{url_for('web.curated_shelf', collection=collection, year=selected_year or 'all', page=pagination.page+1)}}">{{_('Next')}}</a>{% endif %}
+</nav>
+{% endblock %}
+{% block header %}
+<style>
+.curated-intro { margin: 24px 0; }
+.curated-intro h1 { font: inherit; font-size: 26px; font-weight: 650; margin: 0 0 20px; }
+.curated-year-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.curated-year-filter .form-control { width: auto; max-width: 100%; }
+.curated-coverage { padding: 14px 18px; border-radius: 16px; background: rgba(139,116,170,.09); }
+.curated-coverage summary { cursor: pointer; font-weight: 600; }
+.curated-coverage p, .curated-coverage ul { margin: 10px 0; }
+.curated-coverage ul { max-height: 140px; overflow: auto; }
+.curated-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(155px,1fr)); gap: 28px 24px; }
+.curated-card { min-width: 0; }
+.curated-cover { display: block; height: 220px; }
+.curated-cover img { width: 100%; height: 100%; object-fit: contain; border-radius: 12px; }
+.curated-card h2 { font: inherit; font-weight: 650; font-size: 15px; margin: 12px 0 6px; }
+.curated-card p { font-size: 13px; opacity: .8; }
+.curated-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.curated-badge { display: inline-block; border-radius: 12px; padding: 5px 9px; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.curated-pulitzer { background: #f5e7cd; color: #725524; }
+.curated-goodreads { background: #f2dedc; color: #7a4947; }
+.curated-nyt { background: #e7def0; color: #655085; }
+.curated-pagination.pastel-infinite-active { display: none; }
+.curated-pagination { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 28px 0; }
+@media(max-width:480px) { .curated-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px 14px; } .curated-cover { height: 170px; } }
+</style>
+{% endblock %}
