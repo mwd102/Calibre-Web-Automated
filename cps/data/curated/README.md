@@ -6,7 +6,12 @@ These virtual Magic Shelves do not modify Calibre metadata or user-created rules
 
 * Pulitzer: official [Fiction](https://www.pulitzer.org/prize-winners-by-category/219)
   and [General Nonfiction](https://www.pulitzer.org/prize-winners-by-category/223),
-  2015–2026. 26 award records including joint winners. Short titles are used where
+  all years through 2026: 100 Fiction winners including the former
+  [Novel](https://www.pulitzer.org/prize-winners-by-category/261) prize (1918–1947),
+  and 69 General Nonfiction winners (1962 onward), including joint winners.
+  Novel entries retain their original category in the catalog and display as Fiction.
+  Fiction/Novel had no winner in 1920, 1941, 1946, 1954, 1957, 1964, 1971, 1974,
+  1977 and 2012; these are not missing data. Short titles are used where
   editions have differing subtitles.
 * Goodreads: Kris Bruurs' [2011–2024 public archive](https://www.kaggle.com/datasets/krisbruurs/goodreads-choice-awards-2011-2024-books),
   offered under CC0. Select the highest vote count per award year/category,
@@ -36,6 +41,10 @@ Download the public archive ZIPs via their source pages. Run:
 ```sh
 python3 scripts/import_curated_archives.py --nyt /path/nyt.zip --goodreads /path/goodreads.zip
 ```
+
+Pulitzer is maintained independently in `pulitzer.json` against the three official
+category archives above; this rebuild leaves it unchanged. Include winner headings
+only, preserve joint winners, and do not import finalists or empty award years.
 
 This script uses only the standard library and local files. It never fetches data
 at application startup. Review source changes and coverage before committing a

@@ -7,7 +7,7 @@
   <form method="get" class="curated-year-filter">
     <label for="curated-year">{{_('Year')}}</label>
     <select id="curated-year" name="year" class="form-control">
-      <option value="all">{{_('All years · 2015 onward')}}</option>
+      <option value="all">{{_('All time') if collection == 'pulitzer' else _('All years · 2015 onward')}}</option>
       {% for year in years %}<option value="{{year}}" {% if selected_year == year %}selected{% endif %}>{{year}}</option>{% endfor %}
     </select>
     <button class="btn btn-default" type="submit">{{_('Show')}}</button>

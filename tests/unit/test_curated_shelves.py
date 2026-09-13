@@ -37,7 +37,13 @@ def test_archive_dates_are_honest_and_award_years_complete():
     assert next(c for c in coverage if c['year'] == 2023)['missing_dates'] == ['2023-01-15']
     assert next(c for c in coverage if c['year'] == 2024)['last_date'] == '2024-12-01'
     assert {r['year'] for r in curated.catalog('goodreads')['records']} == set(range(2015, 2026))
-    assert {r['year'] for r in curated.catalog('pulitzer')['records']} == set(range(2015, 2027))
+    records = curated.catalog('pulitzer')['records']
+    fiction = [r for r in records if r['category'] == 'Fiction']
+    nonfiction = [r for r in records if r['category'] == 'General Nonfiction']
+    assert len(fiction) == 100
+    assert len(nonfiction) == 69
+    assert {r['year'] for r in fiction} == set(range(1918, 2027)) - {1920, 1941, 1946, 1954, 1957, 1964, 1971, 1974, 1977, 2012}
+    assert {r['year'] for r in nonfiction} == set(range(1962, 2027))
     assert all(r['authors'] and r['title'] for k in curated.COLLECTIONS for r in curated.catalog(k)['records'])
 
 
@@ -165,3 +171,20 @@ def test_rank_badge_links_to_the_best_recorded_week(monkeypatch):
     badge = curated.badges('Collaboration', ['Douglas Preston'], 'nyt')[0]
     assert badge['label'] == 'NYT · Best recorded #2'
     assert badge['source'] == 'https://example.test/week-two'
+
+
+def test_all_time_pulitzer_filter_and_first_winners():
+    assert curated.selected_year('1918', 'pulitzer') == 1918
+    assert curated.selected_year('all', 'pulitzer') is None
+    with pytest.raises(ValueError):
+        curated.selected_year('1917', 'pulitzer')
+    with pytest.raises(ValueError):
+        curated.selected_year('1918', 'goodreads')
+    first = curated.matching_records('His Family', ['Ernest Poole'], 'pulitzer', 1918)
+    assert first[0]['original_category'] == 'Novel'
+    assert curated.matching_records('The Making of the President 1960', ['Theodore H. White'], 'pulitzer', 1962)
+    assert curated.matching_records('To Kill a Mockingbird', ['Harper Lee'], 'pulitzer', 1961)
+    assert not curated.matching_records('The Pale King', ['David Foster Wallace'], 'pulitzer', 2012)
+    for year in (1969, 1973, 1986, 2020):
+        assert len([r for r in curated.catalog('pulitzer')['records']
+                    if r['year'] == year and r['category'] == 'General Nonfiction']) == 2
