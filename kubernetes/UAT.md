@@ -310,3 +310,22 @@ show 52/52 for 2025 and 37/37 for 2026. Infinite scrolling appended 60 to 120
 unique books while preserving the selected year. Anonymous users are redirected
 to login and invalid pages/years are rejected. Dev matches: 18 Pulitzer books,
 130 Goodreads winners, and 904 NYT titles.
+
+
+## All-time Pulitzer shelf (2026-09-13)
+
+PR #17 extends the unified Pulitzer shelf to 100 Fiction/Novel winners from
+1918 and 69 General Nonfiction winners from 1962, through 2026. Source:
+`57de325c9221c0a81d31cf10384c726801eecb1d`; GHCR UAT build `34730932393`.
+Image: `sha256:2eb9324aa92e03994f2fd71ca0d802fd2d10d8ab3416590adb693c0b4b7282c7`.
+
+53 focused matching and theme tests pass. CI smoke/unit, browser security and
+Hyperion policy checks pass. The independent default registry build still fails
+with “Username and password required”; the GHCR UAT build succeeds.
+
+Live checks passed at 320, 390 and 1440 pixels: All time is the default, year
+options extend to 1918, 1918/1961/1962 filters retain the selected year and
+correct catalog counts, and historical book-detail badges show year/category.
+The dev library matches 128 books, up from 18. Goodreads/NYT retain their 2015
+cutoff; out-of-range years return 400. Deployed catalog, matching module, route
+and template hashes match source. Browser authentication stayed in memory.
