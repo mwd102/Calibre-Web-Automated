@@ -20,7 +20,7 @@
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/upload.css') }}" rel="stylesheet" media="screen">
     {% for css_file in g.theme.css_files %}
-      <link href="{{ url_for('static', filename=css_file) }}" rel="stylesheet" media="screen">
+      <link href="{{ url_for('static', filename=css_file, v='book-header-20260913' if css_file == 'css/pastel.css' else None) }}" rel="stylesheet" media="screen">
     {% endfor %}
     <link href="{{ url_for('static', filename='css/cwa.css') }}" rel="stylesheet" media="screen">
     {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}
@@ -321,8 +321,9 @@
               {% endif %}
               {% if current_user.is_authenticated and magic_shelf_routes.render %}
                 <li class="nav-head hidden-xs" style="margin-top: 1rem;">{{_('Magic Shelves ✨')}}</li>
+                  {% from 'curated_icons.html' import collection_icon %}
                   {% for key, name in [('pulitzer', 'Pulitzer Winners'), ('goodreads', 'Goodreads Choice'), ('nyt', 'NYT Bestsellers')] %}
-                  <li {% if page == 'curated' and collection == key %}class="active"{% endif %}><a href="{{url_for('web.curated_shelf', collection=key)}}"{% if page == 'curated' and collection == key %} aria-current="page"{% endif %}><span class="glyphicon glyphicon-certificate"></span> {{_(name)}}</a></li>
+                  <li {% if page == 'curated' and collection == key %}class="active"{% endif %}><a href="{{url_for('web.curated_shelf', collection=key)}}"{% if page == 'curated' and collection == key %} aria-current="page"{% endif %}>{{collection_icon(key)}} {{_(name)}}</a></li>
                   {% endfor %}
                   {% for shelf in g.magic_shelves_access %}
                     <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{shelf.book_count}})"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.book_count}})</span></a></li>

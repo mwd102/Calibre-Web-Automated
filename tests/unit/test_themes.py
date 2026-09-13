@@ -198,7 +198,7 @@ def test_book_description_order_and_actions_survive_theme_inheritance(theme_id, 
         id=42, title='A Quiet Garden', ordered_authors=[], ratings=[], series=[],
         uuid='test-uuid', timestamp=datetime(2026, 1, 1), last_modified=datetime(2026, 1, 1),
         data=[SimpleNamespace(format='EPUB', uncompressed_size=1024)],
-        languages=[], identifiers=[], tags=[], publishers=[], pubdate=None,
+        languages=[], identifiers=[], tags=[], publishers=[], pubdate=datetime(2020, 5, 1),
         comments=[SimpleNamespace(text='<p>Garden synopsis</p><script>alert(1)</script>')] if has_description else [],
         read_status=False, is_archived=False,
         kobo_delivery_enabled=kobo_enabled, kobo_delivery_compatible=True,
@@ -212,13 +212,20 @@ def test_book_description_order_and_actions_survive_theme_inheritance(theme_id, 
             'detail.html', entry=entry, title='Book Details', is_xhr=is_xhr,
             cc=[], books_shelfs=[], audioentries=[], reader_list=['epub'],
         )
+    if kobo_enabled:
+        assert 'id="sendToKoboBtn"' in rendered
+    if mail_settings[0]:
+        assert 'id="sendToEReaderBtn"' in rendered
     if theme_id == 3:
         assert 'pastel-book-navigation' in rendered
+        assert rendered.index('pastel-book-navigation') < rendered.index('book-detail-main', rendered.index('<div class="single'))
+        assert rendered.index('book-publication-date') < rendered.index('id="detail-rating-block"')
+        assert 'publishing-date meta-chip' not in rendered
+        assert 'glyphicon-envelope' not in rendered
         assert ('Close book' if is_xhr else 'Back to library') in rendered
         if kobo_enabled:
             assert 'id="sendToKoboBtn"' in rendered
-            assert 'id="sendToEReaderBtn"' not in rendered
-        elif mail_settings[0]:
+        if mail_settings[0]:
             assert 'id="sendToEReaderBtn"' in rendered
             assert 'id="emailSelectModal"' in rendered
             assert 'data-direct-send="true"' not in rendered
