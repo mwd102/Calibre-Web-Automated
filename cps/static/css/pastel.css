@@ -891,5 +891,5 @@ body.pastel .curated-icon { margin-right: 5px; }
 }
 
 @media (max-width: 767px) {
-    body.pastel.book .book-detail-page { padding-top: 16px !important; }
+    body.pastel.book .book-detail-page { padding-top: 0 !important; }
 }
