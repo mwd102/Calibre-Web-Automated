@@ -284,3 +284,29 @@ checks on the deployed image pass at 320, 390, and 1440 pixels, including
 back navigation, visible email action, and distinct metadata colors. No email
 was delivered. CI unit, browser security, and policy checks pass; the independent
 default registry build retains its authentication failure.
+
+## Curated award shelves (2026-09-13)
+
+PR #16 adds Pulitzer and Goodreads winners from 2015 onward and NYT shelves
+with year/list-specific best-recorded-rank badges. Source:
+`3208df81658517aa3841d19b12deac7d9f731851`; GHCR UAT build: `34730156157`.
+Image: `sha256:506d4ad396b7447b6c417be7a4d0b6d683f91b7210b0c8e95d06205cbf897f79`.
+
+The API importer used the user-authorized Infisical project/path documented in
+`cps/data/curated/README.md`, with credentials only in process memory. No NYT or
+Infisical credential is delivered to the app. The bundled API snapshot contains
+94 weekly dates / 21,852 ranked entries: all 52 weeks of 2025, all 37 weeks of
+2026 through September 13, and the five absent public-archive dates. Earlier
+archive list-format and malformed-row limitations remain visible. Imports are
+manual and resumable; library matching happens on each shelf visit.
+
+68 focused theme, matching, visibility, API validation/redaction, layout, email
+and scrolling checks pass. CI smoke/unit, browser security and policy checks
+pass; the independent default registry build retains its authentication failure.
+The deployed module, route, template, style, script and API-catalog hashes match
+source. Live checks passed at 320, 390 and 1440 pixels, with active navigation,
+year filtering, bounded cards and book-detail badges. The API coverage counters
+show 52/52 for 2025 and 37/37 for 2026. Infinite scrolling appended 60 to 120
+unique books while preserving the selected year. Anonymous users are redirected
+to login and invalid pages/years are rejected. Dev matches: 18 Pulitzer books,
+130 Goodreads winners, and 904 NYT titles.
