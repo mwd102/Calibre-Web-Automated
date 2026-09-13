@@ -109,3 +109,252 @@ The next application task is a UI refresh, not a production data cutover.
 To resume UAT deliberately, scale `books-cwa-dev` to one replica with the
 explicit kubeconfig above and recreate a private review route; do not assume
 the old Tailnet route is still active.
+
+## Pastel UI review (2026-09-12)
+
+UAT is resumed for the Pastel UI from source commit
+`968dbc21f3aec991b769102c6a25b1fefdfaad5f` (application PR #7).
+The GHCR-only build is GitHub Actions run `34720104372`; `uat.yaml` pins its
+immutable image digest. Deploy with the DevSpace command above to reuse the
+retained config and catalog PVCs.
+
+The private review address is `https://shell-01.tailcff11.ts.net:18083/`.
+Sign in with the existing UAT account and select **Pastel Theme**, or use
+**Switch Theme** to cycle Standard → caliBlur → Pastel. Catalog-only limitations
+from the prior review still apply.
+
+The forwarding process runs as a transient user service on shell-01; it survives
+the agent session and retries if the pod restarts. Recreate it after a host reboot:
+
+```sh
+systemd-run --user --unit=cwa-uat-portforward \
+  --description='CWA dev review port forward' \
+  --property=Restart=always --property=RestartSec=5 \
+  /usr/local/bin/kubectl \
+  --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig \
+  -n books port-forward --address=127.0.0.1 svc/books-cwa-dev 18083:8083
+sudo -n tailscale serve --bg --https=18083 http://127.0.0.1:18083
+```
+
+To pause the review while retaining the test data:
+
+```sh
+sudo -n tailscale serve --https=18083 off
+systemctl --user stop cwa-uat-portforward.service
+kubectl --kubeconfig /home/homelab/Repos/Hyperion/.state/kubeconfig \
+  -n books scale deployment/books-cwa-dev --replicas=0
+```
+
+Verification: dev and production were both 1/1 ready; the private login URL
+returned HTTP 200; served `pastel.css` matched the source SHA-256. The retained
+UAT catalog contained 5,608 entries and SQLite `quick_check` returned `ok`.
+
+## Pastel layout and palette follow-up (2026-09-12)
+
+PR #9 updates the review to source
+`4ca9fb24eacac196cae068a674928826a5e83289`, built by GHCR-only run
+`34722711967`. The palette now uses sage navigation, cream pages, peach reading
+panels, and lilac controls. `uat.yaml` records the immutable image.
+
+Authenticated Chromium review covers home and full book details at 320, 390,
+768, and 1440 pixels; real XHR popup loading, scrolling, and closing at phone
+and desktop widths; mobile menu and focused search; profile, admin, advanced
+search, regular search, and metadata edit navigation. Checks include viewport
+bounds and description-before-metadata ordering. The focused suite has 35
+passing tests; browser checks were rerun after the palette update.
+
+The wider review reproduced a search freeze while cover thumbnails were being
+scanned. Thread stacks identified a worker registering SQLite UDFs on the same
+connection used by search. Cover scans now read a snapshot through a separate,
+read-only SQLite connection. Repeat navigation/search checks confirm the app
+stays responsive. Temporary diagnostic edits are discarded by image rollout.
+
+The retained catalog still has no production book files or covers. Reader,
+download, mail, provider integrations, and destructive admin actions are not
+validated by this UI review. The legacy Docker Hub/ARM push workflow still has
+its separate credentials/runner failures; this deployment uses the successful
+GHCR-only workflow.
+
+Final deployment verification: dev rolled out 1/1 ready with digest
+`sha256:1dabdf02c74a0a60005f03445d2b90265a41c29b02ea165c8145ca62e144f67b`.
+The container's stylesheet and thumbnail module hashes match source. The live
+layout/popup and desktop/phone search sequence passed against this image;
+login health checks remained HTTP 200. Production remained 1/1 ready.
+
+## Rosé Pine Dawn palette refinement (2026-09-12)
+
+PR #10 separates the navigation surfaces using tints of Rosé Pine Dawn's Rose
+(`#d7827e`) and Iris (`#907aa9`) over Base (`#faf4ed`), with Dawn Surface
+(`#fffaf3`) for controls. Source palette: https://rosepinetheme.com/palette/ingredients/.
+The top bar uses Rose, the left menu uses Iris, and the sort strip uses warm
+neutrals with a lilac selected state. Gentle gradients and low-opacity shadows
+soften the boundaries. The peach/purple book detail treatment is retained.
+
+Source commit: `cbdda6c505eb7beb4ec3512071b999aba0bfe829`.
+GHCR-only build: `34723606171`. Eight responsive Chromium tests pass.
+The deployed image is
+`sha256:d265a14ee09cd7eb12fe0dd2c522f0ce8ada4812ce1b1b42b33cf4f967b9dd17`.
+The deployed stylesheet hash matches the source. CI smoke/unit, browser security,
+and Hyperion policy checks pass. The legacy Docker Hub/ARM workflow remains
+separate from this successful GHCR-only build.
+Final live checks passed for home/book pages at 390, 768, and 1440 pixels,
+including distinct header/sidebar gradients, no horizontal overflow, and the
+description above metadata. Real XHR details and login health returned HTTP 200.
+
+## Header and interaction polish (2026-09-12)
+
+PR #11 moves the library name into the top bar and reserves responsive space
+for search/actions. The sidebar starts below the header. Directional gradients,
+soft shadows, inset highlights, and short hover transitions add depth; reduced
+motion disables movement. Source: `892f628dba9dda3ebbce641a7de9c24cf2b4daad`;
+GHCR-only build: `34724331244`.
+
+Eight browser regressions pass. Authenticated checks cover header alignment,
+brand/search separation, and overflow at 320, 390, 768, 1024, 1280, and 1440px,
+plus book description ordering and reduced-motion behavior.
+Final deployed image:
+`sha256:c3832db598ebe98000d560a2a3d840ac22fa0b423e8e6869d45fd603aa5b2a85`.
+The stylesheet hash matches source. All six live viewport checks and the book/
+reduced-motion checks passed against this image. CI smoke/unit, browser security,
+and policy checks pass.
+
+## Typography and brand mark (2026-09-12)
+
+PR #12 unifies Pastel heading/control typography and pairs the existing bundled
+Calibre-Web C mark with a compact wordmark. Other themes retain their branding;
+custom instance names retain their text and accessible label. No new font or
+image dependency is introduced. Source: `15447a9dedb3b4f1d853578e4e24ee9eba6a4eeb`;
+GHCR-only build: `34725173014`. Thirty-one theme/browser regressions pass.
+
+Deployed image: `sha256:894be5b11b140255e3c31cd825ab60b2b20896c7ffbfb4ca0b00a9d98bcd349c`.
+Authenticated checks against the deployed image pass at 320, 390, 768, 1024,
+1280, and 1440 pixels, including logo loading, header bounds, matching wordmark/
+book-title font families, description ordering, and reduced motion. CI smoke/unit,
+browser security, and Hyperion policy checks pass. The separate default Docker
+build still fails its existing registry authentication; the GHCR UAT build passed.
+
+## Discover shelf (2026-09-12)
+
+PR #13 restores Standard's random-book shelf in Pastel by overriding caliBlur's
+hidden section and fixed heading rules. The existing random selection, profile
+visibility preference, and standalone Discover page behavior are preserved.
+Source: `1db4752dd1abeb073d57d2159564a92d44bbf6f9`; GHCR UAT build: `34725992797`.
+Image: `sha256:71f040bc680c91a5421b8c2b394a37af3b6f10b40441c4f5cb97edb120441042`.
+The deployed stylesheet hash matches source. Thirty-one theme/browser tests pass;
+CI smoke/unit, browser security, and Hyperion policy checks pass. The independent
+default Docker registry build retains its existing authentication failure.
+Authenticated verification against this image passed at 320, 390, 768, 1024,
+1280, and 1440 pixels: shelf/card bounds, visible heading, and separation from
+list controls. Discover titles open book details; the standalone Discover page
+still shows its random listing without a duplicate discovery shelf.
+
+## Navigation and infinite scrolling (2026-09-13)
+
+PR #14 removes redundant book-list headings and their reserved header strip,
+keeps the selected sidebar entry dark, and restores infinite scrolling using the
+bundled plugin with the central scroll pane. Contextual author/series headings
+remain. Pagination is centered at the bottom for non-infinite views, unavailable
+JavaScript, or a failed page request. Appended books retain cover actions.
+Source: `da9ac4ee88e7bacdcc1ca6ec5f2a63fe4329d615`; GHCR build: `34727061323`.
+Image: `sha256:c35b080a0015bcb688cf3bb4d5500c854c6d64f2eb68ba5873faa3033cafc1ea`.
+Thirty-three theme/browser tests pass, including no duplicate pages, last-page
+termination, and updated recovery links after a simulated HTTP 503.
+Live verification passed at 320, 390, 768, 1024, 1280, and 1440 pixels, with
+60-to-120 book appends on mobile and desktop and no duplicate book links. Sorted
+appends, centered recovery controls after HTTP 503, and mobile pagination with
+JavaScript disabled pass. Author and series context headings remain visible.
+Deployed CSS, JavaScript, and index-template hashes match source. CI smoke/unit,
+browser security, and Hyperion policy checks pass; the independent default Docker
+registry build retains its existing authentication failure.
+
+Repeated browsing verification exceeded the dev container's 2 GiB memory limit
+(OOMKilled/137). With Bressia at approximately 40% memory usage, the dev-only
+limit is raised to 3 GiB; the 512 MiB request is unchanged. This adds review
+headroom and does not establish a root-cause fix for application memory growth.
+
+## Book actions (2026-09-13)
+
+PR #15 adds recipient selection, Back/Close navigation, and metadata category
+colors to Pastel book details. Source: `e93419c6cdc2b25644bda496a1202137a3ad8b74`.
+GHCR build `34728089588`; image
+`sha256:e97ead5f6d911f667ebfd9467118fb1bcc032d0458d5f6b96ec5d36cbdac7504`.
+49 theme/browser tests pass, including intercepted single-recipient requests
+and empty-selection prevention in mobile/desktop and nested dialogs. Live
+checks on the deployed image pass at 320, 390, and 1440 pixels, including
+back navigation, visible email action, and distinct metadata colors. No email
+was delivered. CI unit, browser security, and policy checks pass; the independent
+default registry build retains its authentication failure.
+
+## Curated award shelves (2026-09-13)
+
+PR #16 adds Pulitzer and Goodreads winners from 2015 onward and NYT shelves
+with year/list-specific best-recorded-rank badges. Source:
+`3208df81658517aa3841d19b12deac7d9f731851`; GHCR UAT build: `34730156157`.
+Image: `sha256:506d4ad396b7447b6c417be7a4d0b6d683f91b7210b0c8e95d06205cbf897f79`.
+
+The API importer used the user-authorized Infisical project/path documented in
+`cps/data/curated/README.md`, with credentials only in process memory. No NYT or
+Infisical credential is delivered to the app. The bundled API snapshot contains
+94 weekly dates / 21,852 ranked entries: all 52 weeks of 2025, all 37 weeks of
+2026 through September 13, and the five absent public-archive dates. Earlier
+archive list-format and malformed-row limitations remain visible. Imports are
+manual and resumable; library matching happens on each shelf visit.
+
+68 focused theme, matching, visibility, API validation/redaction, layout, email
+and scrolling checks pass. CI smoke/unit, browser security and policy checks
+pass; the independent default registry build retains its authentication failure.
+The deployed module, route, template, style, script and API-catalog hashes match
+source. Live checks passed at 320, 390 and 1440 pixels, with active navigation,
+year filtering, bounded cards and book-detail badges. The API coverage counters
+show 52/52 for 2025 and 37/37 for 2026. Infinite scrolling appended 60 to 120
+unique books while preserving the selected year. Anonymous users are redirected
+to login and invalid pages/years are rejected. Dev matches: 18 Pulitzer books,
+130 Goodreads winners, and 904 NYT titles.
+
+
+## All-time Pulitzer shelf (2026-09-13)
+
+PR #17 extends the unified Pulitzer shelf to 100 Fiction/Novel winners from
+1918 and 69 General Nonfiction winners from 1962, through 2026. Source:
+`57de325c9221c0a81d31cf10384c726801eecb1d`; GHCR UAT build `34730932393`.
+Image: `sha256:2eb9324aa92e03994f2fd71ca0d802fd2d10d8ab3416590adb693c0b4b7282c7`.
+
+53 focused matching and theme tests pass. CI smoke/unit, browser security and
+Hyperion policy checks pass. The independent default registry build still fails
+with “Username and password required”; the GHCR UAT build succeeds.
+
+Live checks passed at 320, 390 and 1440 pixels: All time is the default, year
+options extend to 1918, 1918/1961/1962 filters retain the selected year and
+correct catalog counts, and historical book-detail badges show year/category.
+The dev library matches 128 books, up from 18. Goodreads/NYT retain their 2015
+cutoff; out-of-range years return 400. Deployed catalog, matching module, route
+and template hashes match source. Browser authentication stayed in memory.
+
+
+## Send to Kobo (2026-09-13)
+
+PR #18 replaces the detail email action for Kobo-configured users with a private,
+automatically managed Send to Kobo sync shelf. Existing shelves and the device
+protocol remain unchanged. Source: `540fd035cb9e428648ed898d3656310ca088ecd1`.
+GHCR UAT build `34731861666`; image:
+`sha256:421cb724aeee813301e21b9c1817595ae89bf1bc565fa16f44082f56f6925973`.
+
+78 focused theme, early-error rendering, queue, authorization, book visibility
+and Kobo timestamp checks pass. CI smoke/unit, browser security and Hyperion
+policy checks pass; the separate default registry job retains its missing-login
+failure. The dev image build succeeds.
+
+Live dev browser checks pass at 320, 390 and 1440 pixels, including real queue
+POSTs, repeated clicks, readable confirmations, the retained XHR book dialog,
+missing-CSRF rejection (400), and unchanged email actions for non-Kobo users.
+A simulated device GET returned both a direct-send book and a legacy-shelf book;
+repeated sends left one membership. No physical Kobo download was tested.
+The module, route, template, style and early HTTP error template hashes match
+source. The review caught and fixed inherited white confirmation text and an
+existing early-CSRF error-page crash before theme initialization.
+
+Kobo sync is enabled on dev (proxying remains disabled). The temporary dev test
+profile, token, shelves, memberships, sync state and sessions were removed after
+verification. Read-only live inspection confirmed Amy is the sole configured
+Kobo user and uses shelf-only sync. No live profile, shelf, queue or token was
+changed. This deployment is dev only.

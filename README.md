@@ -1,3 +1,22 @@
+# Calibre-Web Automated — Hyperion edition
+
+An opinionated take on [Calibre-Web Automated](https://github.com/crocodilestick/Calibre-Web-Automated), built for a calmer library and easier reading.
+
+- **A softer interface:** the optional Pastel theme uses a neutral Rose Pine Dawn palette, improved book details, responsive navigation, Discover and infinite scrolling. Standard and CaliBlur remain available.
+- **Better Kobo handling:** send a book directly to a configured Kobo account while keeping existing shelf-based sync and device identity.
+- **Thoughtful library tools:** curated award and bestseller shelves, book badges, and a choice of account email destinations.
+- **Security maintenance:** carries the inherited security fixes and adds regression coverage for book access, delivery permissions and CSRF-sensitive actions. This is an independent fork, not an upstream security guarantee.
+
+This fork preserves Calibre's library format and credits the Calibre, Calibre-Web and CWA contributors. The upstream documentation follows below; upstream donation and community links support their respective projects.
+
+### Deploying with an existing importer
+
+Set `CWA_DISABLE_AUTOMATION=true` to disable CWA's ingest watcher, metadata enforcement watcher, checksum backfill, process recovery, auto-zipper, and scheduled/startup jobs (including automatic cleanup and sending). Explicit user actions and application database migrations still run. This is not a read-only mode.
+
+Also set `DISABLE_LIBRARY_AUTOMOUNT=true` to preserve existing configured library paths. Keep configuration and metadata on reliable local SQLite storage, and retain the existing importer as the only automated library writer. Back up and rehearse the migration before using an existing Calibre-Web configuration.
+
+---
+
 # Calibre-Web Automated _(formerly Calibre-Web Automator)_
 
 ![Calibre-Web Automated](README_images/CWA-banner.png "Calibre-Web Automated")

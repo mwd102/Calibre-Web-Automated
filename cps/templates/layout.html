@@ -101,7 +101,19 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{{url_for('web.index')}}">{{instance}}</a>
+          <a class="navbar-brand" href="{{url_for('web.index')}}"{% if g.theme.identifier == 'pastel' %} aria-label="{{instance}}" title="{{instance}}"{% endif %}>
+            {% if g.theme.identifier == 'pastel' %}
+              <img class="pastel-brand-mark" src="{{url_for('static', filename='favicon.ico')}}" width="32" height="32" alt="">
+              <span class="pastel-brand-wordmark">
+                {% if instance == 'Calibre-Web Automated' %}
+                  <span class="pastel-brand-name">Calibre-Web</span>
+                  <span class="pastel-brand-edition">Automated</span>
+                {% else %}
+                  <span class="pastel-brand-name">{{instance}}</span>
+                {% endif %}
+              </span>
+            {% else %}{{instance}}{% endif %}
+          </a>
         </div>
         {% if g.theme.show_home_shortcuts %}
             <div class="home-btn"><a class="home-btn-tooltip" href="{{url_for("web.index",page=1)}}" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Home"></a></div>
@@ -283,8 +295,9 @@
               <li class="nav-head hidden-xs">{{_('Browse')}}</li>
               {% for element in sidebar %}
                 {% if current_user.check_visibility(element['visibility']) and element['public'] %}
-                    <li id="nav_{{element['id']}}" {% if page == element['page'] %}class="active"{% endif %} style="{% if element['id'] == 'duplicates' %}position: relative;{% endif %}">
-                      <a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}">
+                    {% set nav_selected = page == element['page'] or (g.theme.identifier == 'pastel' and {'newest': 'root', 'authorlist': 'author', 'catlist': 'category', 'serieslist': 'series', 'langlist': 'language', 'publisherlist': 'publisher', 'book_table': 'list'}.get(page) == element['page']) %}
+                    <li id="nav_{{element['id']}}" {% if nav_selected %}class="active"{% endif %} style="{% if element['id'] == 'duplicates' %}position: relative;{% endif %}">
+                      <a href="{{url_for(element['link'], data=element['page'], sort_param='stored')}}"{% if nav_selected %} aria-current="page"{% endif %}>
                         <span class="glyphicon {{element['glyph']}}"></span> {{_(element['text'])}}
                         {% if element['id'] == 'duplicates' %}
                           {% set dup_count = duplicate_notification.count if duplicate_notification is defined else 0 %}
@@ -308,6 +321,9 @@
               {% endif %}
               {% if current_user.is_authenticated and magic_shelf_routes.render %}
                 <li class="nav-head hidden-xs" style="margin-top: 1rem;">{{_('Magic Shelves ✨')}}</li>
+                  {% for key, name in [('pulitzer', 'Pulitzer Winners'), ('goodreads', 'Goodreads Choice'), ('nyt', 'NYT Bestsellers')] %}
+                  <li {% if page == 'curated' and collection == key %}class="active"{% endif %}><a href="{{url_for('web.curated_shelf', collection=key)}}"{% if page == 'curated' and collection == key %} aria-current="page"{% endif %}><span class="glyphicon glyphicon-certificate"></span> {{_(name)}}</a></li>
+                  {% endfor %}
                   {% for shelf in g.magic_shelves_access %}
                     <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{shelf.book_count}})"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.book_count}})</span></a></li>
                   {% endfor %}
@@ -327,7 +343,7 @@
           {% if pagination and (pagination.has_next or pagination.has_prev) %}
             <div class="pagination">
               {% if pagination.has_prev %}
-              <li class="page-item page-previous"><a class="page-link" aria-label="next page" href="{{ (pagination.page - 1)|url_for_other_page
+              <li class="page-item page-previous"><a class="page-link" aria-label="previous page" href="{{ (pagination.page - 1)|url_for_other_page
                 }}">&laquo; {{_('Previous')}}</a></li>
               {% endif %}
             {% for page in pagination.iter_pages() %}

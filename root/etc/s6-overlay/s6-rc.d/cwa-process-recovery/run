@@ -1,5 +1,13 @@
 #!/usr/bin/with-contenv bash
 
+# Keep the existing external importer as the automation owner.
+case "${CWA_DISABLE_AUTOMATION,,}" in
+  true|1|yes|on)
+    echo "[cwa-process-recovery] Background automation disabled by CWA_DISABLE_AUTOMATION"
+    exit 0
+    ;;
+esac
+
 echo "[cwa-process-recovery] Starting process recovery and cleanup..."
 
 # Function to check if a process is running

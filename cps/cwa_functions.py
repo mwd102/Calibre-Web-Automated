@@ -161,9 +161,10 @@ def validate_and_cleanup_provider_enabled_map(enabled_map, available_provider_id
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
 @login_required_if_no_ano
 def cwa_switch_theme():
-    # Keep the quick switch limited to the two public, configurable themes.
+    # Cycle through public themes; internal views such as Simple stay excluded.
     current_theme = themes.normalize_theme_id(getattr(current_user, 'theme', None))
-    new_theme = 0 if current_theme == 1 else 1
+    available_ids = [theme["id"] for theme in themes.get_available_themes()]
+    new_theme = available_ids[(available_ids.index(current_theme) + 1) % len(available_ids)]
     try:
         current_user.theme = new_theme
         ub.session_commit()

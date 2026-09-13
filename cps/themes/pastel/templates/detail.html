@@ -1,0 +1,14 @@
+{# Keep the complete CWA detail contract, including XHR, forms and modal hooks. #}
+{% extends "standard/templates/detail.html" %}
+
+{% block book_overview %}
+    {% if entry.comments|length > 0 and entry.comments[0].text|length > 0 %}
+        <section class="book-detail-description" aria-labelledby="decription">
+            <h3 id="decription">{{ _('Description:') }}</h3>
+            {{ entry.comments[0].text|clean_string|safe }}
+        </section>
+    {% endif %}
+{% endblock %}
+
+{# The description is already rendered above metadata, in DOM reading order. #}
+{% block book_description %}{% endblock %}

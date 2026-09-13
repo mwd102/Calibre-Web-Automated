@@ -15,7 +15,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/libs/bootstrap.min.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">
-    {% for css_file in g.theme.css_files %}
+    {% for css_file in (g.theme.css_files if g.theme is defined else []) %}
        <link href="{{ url_for('static', filename=css_file) }}" rel="stylesheet" media="screen">
     {% endfor %}
   </head>

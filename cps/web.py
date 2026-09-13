@@ -882,6 +882,37 @@ def render_archived_books(page, sort_param):
                                  title=name, page=page_name, order=sort_param[1])
 
 
+@web.route("/curated/<collection>")
+@user_login_required
+def curated_shelf(collection):
+    from . import curated_shelves
+    from .pagination import Pagination
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+    if collection not in curated_shelves.COLLECTIONS:
+        abort(404)
+    try:
+        year = curated_shelves.selected_year(request.args.get('year'), collection)
+        page_number = int(request.args.get('page', 1))
+        if page_number < 1:
+            raise ValueError()
+    except (ValueError, TypeError):
+        abort(400)
+    cdb = db.CalibreDB(init=True)
+    annotations = curated_shelves.library_matches(cdb, collection, year)
+    query = cdb.session.query(db.Books).filter(db.Books.id.in_(list(annotations)), cdb.common_filters())
+    per_page = config.config_books_per_page or 60
+    books = query.order_by(db.Books.sort, db.Books.id).offset((page_number - 1) * per_page).limit(per_page).all()
+    data = curated_shelves.catalog(collection)
+    records = [r for r in data['records'] if year is None or r['year'] == year]
+    return render_title_template('curated_shelf.html',
+                                 title=data['name'], page='curated', collection=collection,
+                                 catalog=data, selected_year=year, years=range(datetime.now(timezone.utc).year, curated_shelves.first_year(collection) - 1, -1),
+                                 record_count=len(records), annotations=annotations,
+                                 entries=[SimpleNamespace(Books=b) for b in books],
+                                 pagination=Pagination(page_number, per_page, len(annotations)))
+
+
 @web.route("/magicshelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>/<int:page>")
@@ -2881,6 +2912,33 @@ def read_book(book_id, book_format):
         return redirect(url_for("web.index"))
 
 
+@web.route("/book/<int:book_id>/send-to-kobo", methods=["POST"])
+@user_login_required
+@download_required
+def send_to_kobo(book_id):
+    from . import kobo_delivery
+    if not kobo_delivery.configured(current_user, config.config_kobo_sync):
+        abort(403)
+    book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
+    if book is None:
+        abort(404)
+    if not kobo_delivery.compatible(book):
+        return jsonify(message=_("This book needs an EPUB or KEPUB format for Kobo sync.")), 400
+    try:
+        already_synced = kobo_delivery.enqueue(current_user.id, book_id)
+    except ValueError:
+        return jsonify(message=_("Make your Send to Kobo shelf private and enable its Kobo sync, then try again.")), 400
+    except Exception:
+        log.exception("Unable to queue book for Kobo")
+        return jsonify(message=_("Could not queue this book. Please try again.")), 500
+    message = (_("This book is already in your Kobo library. Sync your Kobo to download it.") if already_synced
+               else _("Queued for Kobo. Sync your Kobo to download this book."))
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify(message=message)
+    flash(message, category="success")
+    return redirect(url_for('web.show_book', book_id=book_id))
+
+
 @web.route("/book/<int:book_id>")
 @login_required_if_no_ano
 def show_book(book_id):
@@ -2924,6 +2982,9 @@ def show_book(book_id):
 
         entry.ordered_authors = calibre_db.order_authors([entry])
 
+        from . import kobo_delivery
+        entry.kobo_delivery_enabled = kobo_delivery.configured(current_user, config.config_kobo_sync)
+        entry.kobo_delivery_compatible = kobo_delivery.compatible(entry)
         entry.email_share_list = check_send_to_ereader(entry)
         entry.reader_list = check_read_formats(entry)
 
@@ -2949,7 +3010,10 @@ def show_book(book_id):
         cwa_db = CWA_DB()
         cwa_settings = cwa_db.cwa_settings
 
+        from .curated_shelves import badges
         return render_title_template('detail.html',
+                                     curated_badges=badges(entry.title, [a.name for a in entry.authors],
+                                                           isbns=[i.val for i in entry.identifiers if i.type == 'isbn']),
                                      entry=entry,
                                      cc=cc,
                                      is_xhr=request.headers.get('X-Requested-With') == 'XMLHttpRequest',

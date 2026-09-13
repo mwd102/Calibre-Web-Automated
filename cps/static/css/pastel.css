@@ -1,0 +1,846 @@
+/* Pastel adapts caliBlur's Bootstrap shell. Keep overrides scoped to this theme.
+ * !important is used where upstream uses important rules or high specificity. */
+body.pastel {
+    /* Rosé Pine Dawn: https://rosepinetheme.com/palette/ingredients/
+     * Navigation uses light tints of Rose and Iris over Dawn Base. */
+    --paper: #faf4ed;
+    --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --rose: #d7827e;
+    --iris: #907aa9;
+    --topbar: color-mix(in srgb, var(--rose) 28%, var(--paper));
+    --sidebar: color-mix(in srgb, var(--iris) 18%, var(--paper));
+    --nav-hover: color-mix(in srgb, var(--iris) 28%, var(--paper));
+    --surface: #fffaf3;
+    --lavender: #e7def0;
+    --sage: #d9e7dc;
+    --peach: #f3ded2;
+    --ink: #353244;
+    --muted: #666173;
+    --line: #907aa926;
+    --accent: #655085;
+    --color-background: var(--paper);
+    --color-background-mobile: var(--paper);
+    --color-primary: var(--accent);
+    --color-secondary: var(--accent);
+    --color-secondary-hover: #51406e;
+    background: var(--paper) !important;
+    color: var(--ink) !important;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    scrollbar-color: #bcb1cc var(--paper);
+    color-scheme: light;
+}
+body.pastel::before, body.pastel::after,
+.pastel .blur-wrapper, .pastel .bg-blur,
+.pastel .navbar::before, .pastel .navbar::after,
+.pastel #main-nav + .col-sm-2::after {
+    display: none !important;
+}
+.pastel a { color: var(--accent); }
+.pastel a:hover { color: #493661; }
+.pastel :is(h1, h2, h3, h4, h5, label, .book .title, .book .author, .text-muted, .help-block) {
+    color: var(--ink) !important;
+    text-shadow: none !important;
+}
+.pastel :is(h1, h2, h3) {
+    font-family: var(--font-ui) !important;
+    text-transform: none !important;
+    letter-spacing: -.02em;
+}
+.pastel :is(.navbar, .navbar-default, .navbar-collapse) {
+    background: var(--surface) !important;
+    border-color: var(--line) !important;
+    box-shadow: none !important;
+}
+.pastel .navbar-brand {
+    display: block !important;
+    color: var(--ink) !important;
+    font-family: var(--font-ui) !important;
+    font-size: 21px !important;
+    text-shadow: none !important;
+}
+.pastel .navbar :is(a, .glyphicon) { color: var(--ink) !important; }
+.pastel .navbar .navbar-header { min-width: 0; }
+.pastel .navigation, .pastel #main-nav + .col-sm-2 {
+    background: var(--lavender) !important;
+    border-right: 1px solid var(--line);
+}
+.pastel .navigation :is(a, .glyphicon), .pastel .nav :is(a, .glyphicon) {
+    color: var(--ink) !important;
+    text-shadow: none !important;
+}
+.pastel .navigation :is(.active > a, a:hover, a:focus),
+.pastel .nav > li > a:hover, .pastel .nav > li > a:focus {
+    background: #ddd3ed !important;
+    border-radius: 8px;
+}
+.pastel :is(.well, .panel, .panel-heading, .modal-content, .modal-card, .dropdown-menu, .list-group-item) {
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border-color: var(--line) !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 28px #3532440a;
+}
+.pastel .dropdown-menu > li > a { color: var(--ink) !important; }
+.pastel .dropdown-menu > li > a:is(:hover, :focus) { background: var(--lavender) !important; }
+.pastel :is(input.form-control, select.form-control, textarea.form-control, .input-group-addon) {
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 8px;
+    box-shadow: none !important;
+}
+.pastel input::placeholder { color: var(--muted) !important; }
+.pastel input[type=checkbox] { accent-color: var(--accent); }
+.pastel :is(.btn-default, .btn-primary, .btn-info, .filterheader .btn, .book-action-bar .action-icon-btn) {
+    background: var(--lavender) !important;
+    color: #493661 !important;
+    border: 1px solid #d8cce8 !important;
+    border-radius: 8px;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+.pastel .btn-success { background: var(--sage) !important; color: #345b42 !important; border-color: #bfd5c5 !important; }
+.pastel .btn-danger { background: #f7e3e4 !important; color: #893e48 !important; border-color: #e6bdc2 !important; }
+.pastel .btn-warning { background: #f5ead4 !important; color: #71531e !important; border-color: #e2d0ab !important; }
+.pastel .btn .glyphicon { color: inherit !important; }
+.pastel .btn:is(:hover, :focus) { filter: brightness(.96); }
+.pastel :is(a, button, input, select, textarea, summary):focus-visible {
+    outline: 3px solid var(--accent) !important;
+    outline-offset: 3px;
+}
+.pastel .table { color: var(--ink); background: var(--surface); }
+.pastel .table > :is(thead, tbody, tfoot) > tr > :is(th, td) { border-color: var(--line); }
+.pastel .table-striped > tbody > tr:nth-of-type(odd),
+.pastel .table-hover > tbody > tr:hover { background: #f0ecf5 !important; }
+.pastel .pagination > li > a { background: var(--surface); color: var(--accent); border-color: var(--line); }
+.pastel .pagination > .active > a { background: var(--accent); color: #fff; }
+.pastel .caliblur-index > h2::after { background: var(--rose); height: 4px; border-radius: 2px; }
+.pastel .book .cover img { border-radius: 7px; box-shadow: 0 6px 14px #35324420; }
+.pastel .cover .badge { background: var(--sage); color: #345b42; box-shadow: none; }
+.pastel .rating .glyphicon-star { color: #8a6528 !important; }
+.pastel .rating .glyphicon-star-empty { color: #81748e !important; }
+
+/* A readable book overview beside the cover, followed by compact facts. */
+.pastel .book-detail-page { max-width: 1180px; margin: 24px auto; }
+.pastel .book-detail-main {
+    display: grid !important;
+    grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
+    gap: 36px;
+    margin: 0 !important;
+}
+.pastel .book-detail-main::before, .pastel .book-detail-main::after { display: none; }
+.pastel .book-detail-cover, .pastel .book-detail-meta {
+    width: auto !important;
+    float: none !important;
+    padding: 0 !important;
+    min-width: 0;
+    max-width: none !important;
+}
+.pastel .book-detail-cover img {
+    width: 100% !important;
+    max-width: 220px;
+    border-radius: 10px;
+    box-shadow: 0 12px 28px #35324426;
+}
+.pastel .book-detail-meta { display: flex; flex-direction: column; color: var(--ink); }
+.pastel .book-detail-meta h2#title {
+    font-size: clamp(28px, 3vw, 42px) !important;
+    line-height: 1.15;
+    padding: 0;
+    margin: 0 0 10px;
+    overflow-wrap: anywhere;
+}
+.pastel .book-detail-meta .author { margin: 0 0 10px; font-size: 17px; opacity: 1; }
+.pastel .book-detail-actions { margin-bottom: 20px; }
+.pastel .book-action-bar, .pastel .book-action-bar .action-group { gap: 8px; flex-wrap: wrap; }
+.pastel .book-detail-description {
+    padding: 22px 26px;
+    margin: 20px 0 24px;
+    background: var(--peach);
+    border: 1px solid #e3cbbd;
+    border-radius: 16px;
+    font-size: 16px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+.pastel .book-detail-description h3 { margin: 0 0 14px; font-size: 23px; }
+.pastel .book-detail-description p:last-child { margin-bottom: 0; }
+.pastel .book-detail-description img { max-width: 100%; height: auto; }
+.pastel .book-detail-description table { display: block; max-width: 100%; overflow-x: auto; }
+.pastel .book-metadata {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 22px;
+    margin: 0;
+    padding: 0;
+}
+.pastel .meta-chip {
+    display: flex !important;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    padding: 9px 0;
+    margin: 0;
+    width: 100%;
+    min-width: 0;
+    background: transparent !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--line) !important;
+    border-radius: 0;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+.pastel .meta-chip > span:first-child { color: var(--muted); font-weight: 500; }
+.pastel .meta-chip .meta-value { margin: 0; gap: 4px; color: var(--ink); opacity: 1; min-width: 0; }
+.pastel .meta-pill { background: var(--sage) !important; color: #345b42 !important; border: 0; border-radius: 6px; padding: 2px 7px; white-space: normal; }
+.pastel .book-detail-meta .meta-actions { margin-top: 12px; }
+@media (max-width: 767px) {
+    .pastel .book-detail-main { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+    .pastel .book-detail-cover { justify-self: center; width: 150px !important; }
+    .pastel .book-detail-description { padding: 18px; }
+    .pastel .book-metadata { grid-template-columns: minmax(0, 1fr); }
+    .pastel .book-detail-page { margin-top: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pastel *, .pastel *::before, .pastel *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Replace caliBlur's fixed charcoal chrome, including its mobile pseudo-labels. */
+body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+    color: var(--ink) !important;
+    background: var(--sidebar) !important;
+}
+body.pastel > .container-fluid > .row-fluid > .col-sm-2 {
+    background: var(--lavender) !important;
+}
+body.pastel > .container-fluid > .row-fluid > .col-sm-2::after {
+    background: var(--paper) !important;
+    border-bottom: 0;
+}
+body.pastel > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h2,
+.pastel .navigation li.nav-head {
+    color: var(--muted) !important;
+}
+.pastel .book-detail-meta > .author::before,
+.pastel .book-detail-meta > .author > a::before { content: none !important; }
+.pastel .navbar > .container-fluid > .navbar-header > button.navbar-toggle::before {
+    color: var(--ink) !important;
+}
+.pastel .alert-info { background: #e7edf7 !important; color: #354e70 !important; border-color: #c3d1e5; }
+.pastel .alert-success { background: var(--sage) !important; color: #345b42 !important; }
+.pastel .alert-warning { background: #f5ead4 !important; color: #71531e !important; }
+.pastel .alert-danger { background: #f7e3e4 !important; color: #893e48 !important; }
+.pastel .shelf-actions { background: var(--lavender); border-radius: 12px; }
+@media (max-width: 767px) {
+    .pastel .navbar > .container-fluid > .navbar-header > button.navbar-toggle {
+        right: 50px;
+        padding: 9px;
+    }
+    .pastel .navbar > .container-fluid > .navbar-header > button.navbar-toggle::before { display: none; }
+    .pastel .navbar > .container-fluid > .navbar-header > button.navbar-toggle > span.icon-bar {
+        display: block;
+        background: var(--ink);
+    }
+    .pastel .book-action-bar .action-icon-btn { min-width: 40px; min-height: 40px; }
+}
+body.pastel > div.navbar.navbar-default.navbar-static-top > div > form::before {
+    color: var(--ink) !important;
+}
+@media (max-width: 767px) {
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > form.search-focus > div > #query {
+        background: var(--surface) !important;
+        color: var(--ink) !important;
+    }
+}
+.pastel .book .meta .author a { color: var(--muted) !important; }
+.pastel .nav-head { color: var(--muted) !important; }
+.pastel .profileDrop::before { filter: brightness(.4); }
+.pastel .profileDrop::after { border-top-color: var(--accent) !important; }
+
+/* caliBlur's optional mobile blur has higher specificity than the base reset. */
+body.pastel .blur-wrapper { display: none !important; }
+
+/* Keep controls usable when the signed-in user can upload and edit books. */
+.pastel #form-upload .form-group { width: auto; }
+.pastel #form-upload .form-group .btn-file {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 40px;
+    min-width: 44px;
+    padding: 0;
+    margin: 10px 0;
+    font-size: 0;
+    overflow: hidden;
+}
+.pastel #form-upload .form-group .btn-file::before {
+    position: static;
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    font: 18px/1 "Glyphicons Halflings";
+    content: "\e027";
+    color: var(--accent);
+}
+.pastel #form-upload .form-group .btn-file::after { display: none; }
+.pastel .profileDrop > span::before { filter: brightness(.4); }
+.pastel .pagination .active > :is(a, span),
+.pastel .pagination .active > :is(a, span):hover {
+    background: var(--accent) !important;
+    color: #fff !important;
+    border-color: var(--accent) !important;
+}
+.pastel .book-detail-meta h2#title { max-width: 100%; }
+.pastel .book .series, .pastel .book .series a { color: var(--muted) !important; }
+.pastel .shelf-actions { padding: 12px; }
+
+/* XHR details omit Standard's header block. Supply their structural rules here,
+ * in the theme stylesheet that is present before a book is opened. */
+.pastel .book-action-bar, .pastel .book-action-bar .action-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.pastel .book-action-bar .btn-group { position: relative; float: none; }
+.pastel .book-action-bar .action-icon-btn {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+    line-height: 1;
+}
+.pastel .book-action-bar .action-icon-btn .glyphicon { font-size: 18px; }
+.pastel .book-metadata .meta-value { display: flex; flex-wrap: wrap; }
+.pastel .meta-pill { display: inline-flex; align-items: center; }
+.pastel .meta-pill.tag-pill, .pastel .meta-pill.shelf-pill { position: relative; padding-right: 24px; }
+.pastel .tag-remove, .pastel .shelf-remove {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 22px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: #345b42;
+    display: none;
+}
+.pastel .meta-pill:is(:hover, :focus-within) :is(.tag-remove, .shelf-remove) { display: block; }
+.pastel .action-toast { display: none; position: fixed; z-index: 1060; }
+
+/* Replace the legacy fixed cover/meta panes with one scrollable dialog body. */
+.pastel #bookDetailsModal {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0 !important;
+    background: #35324470;
+    overflow: auto;
+}
+.pastel #bookDetailsModal > .modal-dialog.modal-lg {
+    width: calc(100% - 48px);
+    max-width: 1120px;
+    height: auto;
+    margin: 24px auto;
+}
+.pastel #bookDetailsModal > .modal-dialog > .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+    overflow: hidden;
+}
+.pastel #bookDetailsModal > .modal-dialog > .modal-content > .modal-header {
+    position: static;
+    flex: 0 0 auto;
+    width: auto;
+    height: auto;
+    padding: 16px 22px;
+    background: var(--lavender);
+    border-color: var(--line);
+    line-height: 1.4;
+}
+.pastel #bookDetailsModal > .modal-dialog > .modal-content > .modal-header > h4 {
+    width: auto;
+    max-width: none;
+    height: auto;
+    line-height: 1.4;
+    margin: 0 40px 0 0;
+}
+.pastel #bookDetailsModal .modal-header > .close {
+    display: block;
+    position: static;
+    opacity: 1;
+    color: var(--ink);
+    font: 28px/1 system-ui, sans-serif;
+    text-shadow: none;
+}
+.pastel #bookDetailsModal > .modal-dialog > .modal-content > .modal-body {
+    position: relative;
+    inset: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    height: auto;
+    padding: 24px;
+    overflow: auto;
+}
+.pastel #bookDetailsModal .book-detail-meta { height: auto; overflow: visible; color: var(--ink); }
+.pastel #bookDetailsModal .book-detail-page { margin: 0; }
+.pastel #bookDetailsModal .discover > h2 { display: none; }
+.pastel #bookDetailsModal .modal-footer { display: none; }
+@media (max-width: 767px) {
+    .pastel .navbar > .container-fluid > .navbar-header > button.navbar-toggle > span.icon-bar {
+        position: static;
+        opacity: 1;
+        width: 22px;
+        height: 2px;
+    }
+    .pastel .navbar > .container-fluid > .navbar-header > button.navbar-toggle > span.icon-bar + span.icon-bar { margin-top: 4px; }
+    .pastel .shelf-actions { margin: 12px 0 20px; padding: 10px; }
+    .pastel .shelf-actions .filterheader {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        padding: 0;
+    }
+    .pastel .shelf-actions .filterheader .btn { margin: 0; padding: 6px 2px; }
+    .pastel #bookDetailsModal > .modal-dialog.modal-lg { width: calc(100% - 16px); margin: 8px auto; }
+    .pastel #bookDetailsModal > .modal-dialog > .modal-content { max-height: calc(100dvh - 16px); }
+    .pastel #bookDetailsModal > .modal-dialog > .modal-content > .modal-body { padding: 16px; }
+}
+.pastel #form-upload .form-group .btn-file::before { z-index: auto; }
+@media (min-width: 768px) {
+    .pastel .navbar > .container-fluid > .navbar-header { width: 0; }
+    body.pastel > .navbar > .container-fluid > form[role=search] { margin-left: 20px; }
+    body.pastel > .navbar > .container-fluid > form[role=search] > .form-group {
+        width: min(360px, calc(100vw - 420px));
+    }
+    body.pastel > .navbar > .container-fluid > form[role=search] #query { width: 100% !important; }
+    body.pastel > .navbar > .container-fluid > form[role=search] .input-group-btn { left: auto; right: 0; }
+}
+@media (max-width: 991px) {
+    .pastel .book-detail-main { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+    .pastel .book-detail-cover { justify-self: center; width: 150px !important; }
+    .pastel .book-metadata { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 767px) {
+    .pastel #form-upload > .form-group::before { display: none; }
+    .pastel #form-upload .form-group .btn-file { width: 210px; font-size: 13px; gap: 12px; }
+    .pastel .profileDrop + span.hidden-sm { color: var(--ink); }
+    body.pastel > .container-fluid > .row-fluid > .col-sm-10::after { background: var(--surface) !important; }
+}
+@media (max-width: 767px) {
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+        width: min(240px, calc(100vw - 110px));
+    }
+}
+.pastel #bookDetailsModal > .modal-dialog.modal-lg { transform: none !important; }
+
+/* Settings templates also contain dark inline surfaces. */
+body.pastel :is(.profile-header-container, .settings-container, .opds-order-item) {
+    background: var(--surface) !important;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+body.pastel .profile-header-container { background: var(--peach) !important; }
+body.pastel :is(.profile-subtitle, .settings-explanation, .cwa-settings-disclaimer, .opds-order-toggle) {
+    color: var(--muted) !important;
+}
+body.pastel :is(.opds-order-label, .opds-order-drag-handle) { color: var(--ink) !important; }
+body.pastel .profile-picture:not([style*="background-image"]) { filter: brightness(.45); }
+body.pastel .cwa-settings-tip {
+    background: var(--sage) !important;
+    color: #345b42 !important;
+    border-color: #a9c5b2 !important;
+}
+body.pastel .table { background: var(--surface) !important; }
+body.pastel .table a:not(.btn) { color: var(--accent) !important; }
+body.pastel .btn a { color: inherit !important; }
+@media (max-width: 767px) {
+    body.pastel.me > div.container-fluid > div > div.col-sm-10 > div.discover[name="profile-page"] {
+        margin: 20px 12px !important;
+        width: calc(100% - 24px) !important;
+    }
+    body.pastel .settings-container { padding: 20px 16px; }
+}
+body.pastel .modal-header .close { color: var(--ink) !important; opacity: 1; text-shadow: none; }
+body.pastel .table > :is(thead, tbody, tfoot) > tr > :is(th, td) {
+    background: transparent !important;
+    border-color: var(--line) !important;
+}
+body.pastel .table > tbody > tr { background: var(--surface) !important; }
+body.pastel .table-striped > tbody > tr:nth-of-type(odd) { background: var(--lavender) !important; }
+body.pastel.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row:first-of-type > div.col > h2::before {
+    color: var(--muted) !important;
+    background: var(--surface) !important;
+}
+@media (max-width: 767px) {
+    body.pastel > div.container-fluid > div > div.col-sm-10 > div.discover > :is(h1, h2) {
+        background: var(--surface) !important;
+    }
+}
+
+/* Search can receive focus before caliBlur's focus handler is registered. */
+@media (max-width: 767px) {
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > form[role=search]:focus-within {
+        left: 0; right: 0; width: 100%; z-index: 1100;
+        background: var(--surface) !important;
+    }
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > form[role=search]:focus-within > .form-group { width: 100%; }
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > form[role=search] #query:focus {
+        position: relative; left: 48px; margin: 0 !important;
+        width: calc(100vw - 96px) !important;
+        background: var(--surface) !important; color: var(--ink) !important;
+    }
+    body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > .col-sm-3 > .text-center > #delete {
+        position: static !important; width: auto !important; margin: 12px auto;
+    }
+    body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > .col-sm-3 > .text-center > #delete::before { display: none; }
+}
+body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > .col-sm-9 {
+    background: var(--surface) !important; border: 1px solid var(--line); border-radius: 12px;
+}
+body.pastel.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 > div:nth-child(10) > label::before {
+    color: var(--muted) !important; background: var(--surface) !important;
+}
+/* Bootstrap clearfix pseudo-elements otherwise occupy empty grid cells. */
+body.pastel .row.display-flex::before, body.pastel .row.display-flex::after { display: none; }
+body.pastel .discover > h2::after { background: var(--rose) !important; }
+body.pastel .standard-search-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 24px 16px; height: auto !important; margin: 24px 16px !important;
+}
+body.pastel .standard-search-grid > .standard-search-card {
+    position: static !important; width: auto !important; margin: 0 !important; padding: 0 !important;
+}
+@media (max-width: 767px) {
+    body.pastel .standard-search-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Distinct navigation surfaces, with shading instead of hard seams. */
+body.pastel :is(.navbar, .navbar-default, .navbar-collapse) {
+    background: linear-gradient(110deg, var(--topbar), color-mix(in srgb, var(--rose) 16%, var(--paper))) !important;
+    border: 0 !important;
+    box-shadow: 0 3px 16px #5752790c !important;
+}
+body.pastel .navigation,
+body.pastel #main-nav + .col-sm-2,
+body.pastel > .container-fluid > .row-fluid > .col-sm-2 {
+    background: linear-gradient(180deg, var(--sidebar), color-mix(in srgb, var(--iris) 9%, var(--paper))) !important;
+    border: 0 !important;
+    box-shadow: 6px 0 20px #57527906;
+}
+body.pastel .navigation :is(.active > a, a:hover, a:focus),
+body.pastel .nav > li > a:hover, body.pastel .nav > li > a:focus {
+    background: var(--nav-hover) !important;
+}
+body.pastel :is(.shelf-actions, .filterheader) {
+    background: linear-gradient(120deg, var(--surface), #f2e9e1) !important;
+    border: 0 !important;
+    border-radius: 14px;
+    box-shadow: 0 5px 18px #57527908;
+}
+body.pastel :is(.shelf-actions, .filterheader) .btn {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: var(--ink) !important;
+}
+body.pastel :is(.shelf-actions, .filterheader) .btn:is(.active, :hover, :focus-visible) {
+    background: var(--lavender) !important;
+    box-shadow: 0 2px 7px #57527912 !important;
+}
+body.pastel .meta-pill { background: var(--lavender) !important; color: #57476b !important; }
+body.pastel .settings-container:nth-of-type(even) { background: #eee7f3 !important; }
+body.pastel .settings-container:nth-of-type(odd) { background: #f6e7dc !important; }
+body.pastel .book-detail-description {
+    border-color: transparent;
+    box-shadow: 0 8px 26px #d7827e12;
+}
+body.pastel .pagination > a::before { color: var(--accent) !important; }
+
+@media (max-width: 767px) {
+    body.pastel .navbar-collapse { background: var(--sidebar) !important; }
+}
+
+/* Put the brand back in the header; reserve its space before search. */
+body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+    margin: 0 !important;
+    background: transparent !important;
+    font-weight: 600;
+    letter-spacing: -.035em;
+}
+@media (min-width: 768px) {
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+        position: absolute; top: 0; left: 0; width: 200px;
+        height: 60px; line-height: 60px; font-size: 16px !important;
+    }
+    body.pastel > .navbar > .container-fluid > form[role=search] { margin-left: 216px; }
+    body.pastel > .navbar > .container-fluid > form[role=search] > .form-group {
+        width: clamp(120px, calc(100vw - 640px), 320px);
+    }
+    body.pastel > .container-fluid > div > .col-sm-2 { top: 0 !important; height: 100% !important; }
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+    body.pastel #advanced_search .hidden-sm { display: none !important; }
+}
+@media (min-width: 1200px) {
+    body.pastel > .navbar > .container-fluid > form[role=search] > .form-group {
+        width: min(320px, calc(100vw - 850px));
+    }
+}
+
+@media (min-width: 1200px) {
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a { width: 240px; font-size: 18px !important; }
+    body.pastel > .navbar > .container-fluid > form[role=search] { margin-left: 256px; }
+}
+
+/* Light falling across the surfaces gives the palette a little depth. */
+body.pastel :is(.navbar, .navbar-default, .navbar-collapse) {
+    background: linear-gradient(115deg, color-mix(in srgb, var(--rose) 36%, var(--paper)), var(--topbar) 45%, color-mix(in srgb, var(--iris) 15%, var(--paper))) !important;
+    box-shadow: 0 1px 0 #fffaf380 inset, 0 5px 20px #57527912 !important;
+}
+body.pastel .navigation {
+    background: linear-gradient(160deg, color-mix(in srgb, var(--iris) 24%, var(--paper)), var(--sidebar) 35%, var(--paper) 100%) !important;
+}
+body.pastel > .container-fluid > div > .col-sm-10 {
+    background-image: radial-gradient(ellipse at 0 0, #d7827e0c, transparent 60%), radial-gradient(ellipse at 100% 100%, #907aa910, transparent 65%);
+}
+body.pastel .book-detail-description {
+    background: linear-gradient(135deg, #f7e6d8, var(--peach) 55%, #f1d9d8);
+    box-shadow: 0 1px 0 #fffaf390 inset, 0 10px 30px #907aa915;
+}
+body.pastel :is(.shelf-actions, .filterheader) { box-shadow: 0 1px 0 #ffffff90 inset, 0 8px 24px #5752790c; }
+body.pastel .shelf-actions .filterheader { background: transparent !important; box-shadow: none; }
+body.pastel :is(.btn, .navigation a, .book .cover img, .form-control) {
+    transition: background-color 160ms ease, box-shadow 180ms ease, transform 180ms ease, border-color 160ms ease;
+}
+body.pastel .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px #57527918 !important; }
+body.pastel .btn:active { transform: translateY(0); }
+body.pastel .book .cover:hover img { transform: translateY(-3px); box-shadow: 0 12px 24px #57527928; }
+body.pastel .navbar input.form-control { box-shadow: 0 2px 7px #57527909 inset !important; border-color: #ffffff70 !important; }
+@media (max-width: 767px) {
+    body.pastel .navbar-collapse { background: var(--sidebar) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.pastel .btn:hover, body.pastel .book .cover:hover img { transform: none; }
+}
+@media (min-width: 768px) {
+    body.pastel > .navbar > .container-fluid > form[role=search] { position: relative; }
+    body.pastel > div.navbar.navbar-default.navbar-static-top > div > form::before { left: 14px; top: 12px; }
+    body.pastel .navigation {
+        position: fixed; top: 60px; bottom: 0; left: 0;
+        width: 240px; overflow-y: auto; padding-top: 12px;
+    }
+}
+
+/* One typographic family, with an explicit brand and heading hierarchy. */
+body.pastel :is(h1, h2, h3, h4, h5, .navbar a, .navigation a, .navigation .nav-head, .btn, input, select, textarea, label) {
+    font-family: var(--font-ui) !important;
+}
+body.pastel :is(h1, h2, h3, h4, h5) { font-weight: 600; letter-spacing: -.025em; }
+body.pastel .book-detail-meta h2#title { font-size: clamp(27px, 2.6vw, 36px) !important; line-height: 1.2; }
+body.pastel .book-detail-description h3 { font-size: 20px; line-height: 1.35; }
+body.pastel .book-detail-meta .author { font-weight: 500; }
+body.pastel .navigation .nav-head { font-size: 11px; letter-spacing: .065em; font-weight: 650; }
+body.pastel > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+    display: flex !important; align-items: center; gap: 10px;
+    padding: 0 16px; line-height: 1.15; text-decoration: none;
+}
+body.pastel .pastel-brand-mark {
+    display: block; width: 32px; height: 32px; flex: 0 0 32px;
+    filter: drop-shadow(0 2px 2px #57527915);
+}
+body.pastel .pastel-brand-wordmark { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+body.pastel .pastel-brand-name {
+    font-size: 17px; font-weight: 650; letter-spacing: -.035em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+body.pastel .pastel-brand-edition {
+    font-size: 9px; font-weight: 600; letter-spacing: .17em;
+    text-transform: uppercase; color: var(--muted);
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+    body.pastel .pastel-brand-name { font-size: 16px; }
+}
+body.pastel .navbar-brand .pastel-brand-mark {
+    margin: 0 !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important;
+    box-shadow: none !important; object-fit: contain;
+}
+
+/* Restore Standard's random-book discovery shelf, hidden by caliBlur. */
+body.pastel .random-books { display: block; }
+body.pastel > .container-fluid > .row-fluid > .col-sm-10 > .random-books {
+    width: auto !important;
+    margin: 24px 24px 32px !important;
+    padding: 24px 8px 8px !important;
+    border-radius: 20px;
+    background: linear-gradient(120deg, #eee7f3b3, #f6e7de80);
+    box-shadow: 0 8px 26px #57527908;
+}
+body.pastel > .container-fluid > .row-fluid > .col-sm-10 > .random-books > h2 {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 16px 24px !important;
+    padding: 0 !important;
+    font-size: 22px !important;
+    line-height: 1.3 !important;
+    white-space: normal;
+    background: transparent !important;
+    color: var(--ink) !important;
+}
+body.pastel .random-books > .row.display-flex { margin-top: 0 !important; }
+@media (max-width: 767px) {
+    body.pastel > .container-fluid > .row-fluid > .col-sm-10 > .random-books {
+        margin: 20px 12px 24px !important;
+        padding: 20px 0 4px !important;
+    }
+}
+
+/* Book browsing needs one navigation level, with the current location at left. */
+body.pastel #scnd-nav > li.active > a,
+body.pastel #scnd-nav > li.active > a:is(:hover, :focus) {
+    background: var(--accent) !important;
+    color: var(--surface) !important;
+    border-radius: 9px;
+    font-weight: 650;
+}
+body.pastel #scnd-nav > li.active > a .glyphicon { color: inherit !important; }
+body.pastel > .container-fluid > .row-fluid > .col-sm-10:has(> .caliblur-index.load-more) {
+    top: 0 !important;
+    height: 100% !important;
+}
+body.pastel > .container-fluid > .row-fluid > .col-sm-10:has(> .caliblur-index.load-more)::after { display: none !important; }
+body.pastel .caliblur-index.load-more > h2.pastel-redundant-title { display: none !important; }
+body.pastel > .container-fluid > .row-fluid > .col-sm-10 > .caliblur-index.load-more > h2 {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    line-height: 1.3 !important;
+    white-space: normal;
+    padding: 0 15px !important;
+    margin: 0 0 24px !important;
+    font-size: 22px !important;
+    background: transparent !important;
+}
+body.pastel .col-sm-10 > .pagination {
+    position: static !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    width: auto !important;
+    height: auto !important;
+    margin: 24px 16px 32px !important;
+    padding: 0 !important;
+    line-height: normal !important;
+    float: none !important;
+}
+body.pastel .col-sm-10 > .pagination.pastel-infinite-active { display: none !important; }
+body.pastel .pagination > li { list-style: none; }
+body.pastel .pagination .page-link {
+    position: static !important;
+    height: auto !important;
+    line-height: 1.5 !important;
+}
+body.pastel .pagination .page-jump-menu { top: auto; bottom: 100%; }
+@media (max-width: 767px) {
+    body.pastel > .container-fluid:has(.caliblur-index.load-more) {
+        top: 48px !important;
+        height: calc(100% - 48px) !important;
+    }
+}
+/* Restore readable Previous/Next labels instead of caliBlur's pale arrows. */
+body.pastel .pagination > :is(.page-next, .page-previous) > a {
+    width: auto !important;
+    padding: 6px 12px !important;
+    font-family: var(--font-ui) !important;
+    font-size: 14px !important;
+    color: var(--accent) !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 8px;
+}
+body.pastel .pagination > :is(.page-next, .page-previous) > a::before { display: none !important; }
+
+/* Give book actions a clear way out and a readable recipient picker. */
+.pastel .pastel-book-navigation { margin-bottom: 16px; }
+.pastel .pastel-book-navigation .btn { display: inline-flex; align-items: center; gap: 8px; }
+body.pastel #sendToEReaderBtn > .glyphicon { height: auto !important; line-height: 1 !important; }
+body.pastel #emailSelectModal { z-index: 1070; }
+body.pastel #emailSelectModal .modal-dialog { width: min(560px, calc(100% - 24px)); margin: 24px auto; }
+body.pastel #emailSelectModal .modal-content { max-height: calc(100dvh - 48px); display: flex; flex-direction: column; }
+body.pastel #emailSelectModal .modal-body { overflow-y: auto; min-height: 0; }
+body.pastel #emailSelectModal .modal-header,
+body.pastel #emailSelectModal .modal-footer { flex: none; }
+body.pastel #emailSelectModal :is(legend, label, .help-block) { color: var(--ink) !important; }
+body.pastel #emailSelectModal legend { font-size: 16px; border-color: var(--line); }
+body.pastel #emailSelectModal .checkbox label { overflow-wrap: anywhere; }
+
+/* Stable category colors make metadata easier to scan; labels carry meaning. */
+body.pastel .book-metadata :is(.book-uuid, .identifiers) .meta-pill {
+    background: #e2eaf3 !important; color: #3c5672 !important; border-color: #c5d4e4 !important;
+}
+body.pastel .book-metadata .formats .meta-pill {
+    background: #f5e7cd !important; color: #725524 !important; border-color: #e6d3af !important;
+}
+body.pastel .book-metadata .languages .meta-pill {
+    background: #dcebe7 !important; color: #3d6259 !important; border-color: #c1d9d2 !important;
+}
+body.pastel .book-metadata .tags .meta-pill {
+    background: #f2dedc !important; color: #7a4947 !important; border-color: #e4c3c0 !important;
+}
+body.pastel .book-metadata .shelves .meta-pill {
+    background: #e7def0 !important; color: #655085 !important; border-color: #d4c5e2 !important;
+}
+body.pastel .book-metadata .publishers .meta-pill {
+    background: #eee5db !important; color: #6b5948 !important; border-color: #dccdbd !important;
+}
+body.pastel #emailSelectModal .modal-card { display: flex; flex-direction: column; min-height: 0; padding: 0; overflow: hidden; }
+
+/* Award provenance stays distinct from editable library metadata. */
+body.pastel .curated-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+body.pastel .curated-badge { border-radius: 12px; padding: 5px 9px; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+body.pastel .curated-pulitzer { background: #f5e7cd; color: #725524; }
+body.pastel .curated-goodreads { background: #f2dedc; color: #7a4947; }
+body.pastel .curated-nyt { background: #e7def0; color: #655085; }
+body.pastel > .container-fluid > .row-fluid > .col-sm-10:has(> .curated-intro) {
+    top: 0 !important;
+    height: 100% !important;
+    padding: 24px 32px !important;
+}
+body.pastel > .container-fluid > .row-fluid > .col-sm-10:has(> .curated-intro)::after { display: none !important; }
+body.pastel .curated-cover img { box-shadow: 0 5px 16px rgba(68, 48, 77, .12); }
+body.pastel .curated-intro { margin-top: 0; }
+@media (max-width: 767px) {
+    body.pastel > .container-fluid:has(.curated-intro) { top: 48px !important; height: calc(100% - 48px) !important; }
+    body.pastel > .container-fluid > .row-fluid > .col-sm-10:has(> .curated-intro) { padding: 22px 16px !important; }
+}
+
+body.pastel .curated-more { flex-basis: 100%; }
+body.pastel .curated-more summary { cursor: pointer; font-size: 12px; padding: 4px 0; }
+body.pastel .curated-more .curated-badge { margin: 3px 3px 3px 0; }
+
+/* Queue confirmations must stay readable outside the icon buttons. */
+.pastel #kobo-delivery-status {
+    color: var(--ink) !important;
+    flex-basis: 100%;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.pastel #kobo-delivery-status:empty { display: none; }

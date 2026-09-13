@@ -146,3 +146,108 @@ def test_other_page_url_uses_destination_page_for_path_parameter():
     with app.test_request_context("/basic/2?page=2&query=history"):
         assert url_for_other_page(1) == "/basic/1?query=history"
         assert url_for_other_page(3) == "/basic/3?query=history"
+
+
+def test_pastel_is_configurable_and_basic_still_uses_simple():
+    assert themes.normalize_theme_id("3") == 3
+    assert themes.get_theme_identifier(3, "basic") == "simple"
+    assert [theme["id"] for theme in themes.get_available_themes()] == [0, 1, 3]
+
+
+@pytest.mark.parametrize("kobo_enabled", [False, True])
+@pytest.mark.parametrize("mail_settings", [("", False), ("first@example.test,second@example.test", False)])
+@pytest.mark.parametrize("theme_id", [0, 1, 3])
+@pytest.mark.parametrize("is_xhr", [False, True])
+@pytest.mark.parametrize("has_description", [False, True])
+def test_book_description_order_and_actions_survive_theme_inheritance(theme_id, is_xhr, has_description, mail_settings, kobo_enabled):
+    from datetime import datetime
+    from pathlib import Path
+    from unittest.mock import Mock
+
+    from flask_babel import Babel
+    from jinja2 import ChoiceLoader, DictLoader, FileSystemLoader
+    from cps.jinjia import jinjia
+
+    app = Flask(__name__)
+    Babel(app)
+    app.register_blueprint(jinjia)
+    # Render the production detail body through both full-page and XHR parents.
+    shell = ('{% from theme("modal_dialogs.html") import delete_book %}'
+             '{% block header %}{% endblock %}{% block body %}{% endblock %}')
+    app.jinja_loader = ChoiceLoader([
+        DictLoader({'layout.html': shell}),
+        FileSystemLoader(str(Path(__file__).parents[2] / 'cps/themes')),
+        FileSystemLoader(str(Path(__file__).parents[2] / 'cps/templates')),
+    ])
+    user = Mock()
+    user.is_anonymous = False
+    user.is_authenticated = True
+    user.kindle_mail, user.allow_additional_ereader_emails = mail_settings
+    user.role_download.return_value = True
+    user.role_viewer.return_value = True
+    user.role_edit.return_value = False
+    user.check_visibility.return_value = False
+    user.shelf.all.return_value = []
+    app.jinja_env.globals.update(
+        current_user=user, theme=themes.resolve_template,
+        _=lambda value, **kwargs: value % kwargs if kwargs else value,
+        url_for=lambda endpoint, **kwargs: '/' + endpoint,
+        csrf_token=lambda: 'test-token',
+    )
+    entry = SimpleNamespace(
+        id=42, title='A Quiet Garden', ordered_authors=[], ratings=[], series=[],
+        uuid='test-uuid', timestamp=datetime(2026, 1, 1), last_modified=datetime(2026, 1, 1),
+        data=[SimpleNamespace(format='EPUB', uncompressed_size=1024)],
+        languages=[], identifiers=[], tags=[], publishers=[], pubdate=None,
+        comments=[SimpleNamespace(text='<p>Garden synopsis</p><script>alert(1)</script>')] if has_description else [],
+        read_status=False, is_archived=False,
+        kobo_delivery_enabled=kobo_enabled, kobo_delivery_compatible=True,
+        email_share_list=[{'format':'Epub', 'convert':0, 'text':'EPUB'}],
+    )
+    with app.test_request_context('/'):
+        g.current_theme = theme_id
+        g.theme = themes.get_theme(theme_id)
+        g.shelves_access = []
+        rendered = themed_render(
+            'detail.html', entry=entry, title='Book Details', is_xhr=is_xhr,
+            cc=[], books_shelfs=[], audioentries=[], reader_list=['epub'],
+        )
+    if theme_id == 3:
+        assert 'pastel-book-navigation' in rendered
+        assert ('Close book' if is_xhr else 'Back to library') in rendered
+        if kobo_enabled:
+            assert 'id="sendToKoboBtn"' in rendered
+            assert 'id="sendToEReaderBtn"' not in rendered
+        elif mail_settings[0]:
+            assert 'id="sendToEReaderBtn"' in rendered
+            assert 'id="emailSelectModal"' in rendered
+            assert 'data-direct-send="true"' not in rendered
+            assert 'id="custom_emails"' not in rendered
+            recipients = [line for line in rendered.splitlines() if 'name="selected_emails"' in line]
+            assert len(recipients) == 2 and all('checked' not in line for line in recipients)
+        else:
+            assert '/web.profile' in rendered
+    assert 'web.download_link' in rendered
+    assert 'id="have_read_form"' in rendered
+    assert '<script>alert(1)</script>' not in rendered
+    if has_description:
+        assert rendered.count('id="decription"') == 1
+        description = rendered.index('id="decription"')
+        metadata = rendered.index('class="book-metadata"')
+        assert (description < metadata) == (theme_id == 3)
+    else:
+        assert 'id="decription"' not in rendered
+
+
+def test_http_error_before_theme_initialization():
+    from pathlib import Path
+    from flask import render_template
+    app = Flask(__name__, template_folder=str(Path(__file__).parents[2] / 'cps/templates'))
+    app.jinja_env.globals['_'] = lambda value: value
+    app.jinja_env.globals['url_for'] = lambda *args, **kwargs: '/home'
+    with app.test_request_context('/'):
+        assert not hasattr(g, 'theme')
+        rendered = render_template('http_error.html', instance='Library', error_code='Error 400',
+                                   error_name='Bad Request', issue=False, unconfigured=False)
+    assert 'Error 400' in rendered
+    assert 'Bad Request' in rendered

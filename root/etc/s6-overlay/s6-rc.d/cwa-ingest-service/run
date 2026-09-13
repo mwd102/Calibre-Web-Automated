@@ -1,5 +1,13 @@
 #!/usr/bin/with-contenv bash
 
+# Keep the existing external importer as the automation owner.
+case "${CWA_DISABLE_AUTOMATION,,}" in
+  true|1|yes|on)
+    echo "[cwa-ingest-service] Background automation disabled by CWA_DISABLE_AUTOMATION"
+    exec sleep infinity
+    ;;
+esac
+
 # Drop privileges to abc (LinuxServer PUID/PGID user)
 if [ "$(id -u)" = "0" ]; then
     exec s6-setuidgid abc "$0" "$@"

@@ -63,7 +63,7 @@ jobs:
   # --------------------------------------------------------------------------------
   build-amd64:
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.uat_only != true
+    if: github.repository == 'crocodilestick/Calibre-Web-Automated' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.uat_only != true
     steps:
       - name: Set build ref
         run: |
@@ -158,7 +158,7 @@ jobs:
   build-arm:
     # Use your self-hosted runner labels here
     runs-on: [self-hosted, linux, ARM64]
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.uat_only != true
+    if: github.repository == 'crocodilestick/Calibre-Web-Automated' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.uat_only != true
     steps:
       - name: Set build ref
         run: |
@@ -270,7 +270,7 @@ jobs:
   merge:
     runs-on: ubuntu-latest
     needs: [build-amd64, build-arm]
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.uat_only != true
+    if: github.repository == 'crocodilestick/Calibre-Web-Automated' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && inputs.uat_only != true
     steps:
       # --- 1. Calculate Variables ---
       - name: Set build ref
