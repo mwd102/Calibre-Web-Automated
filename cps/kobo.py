@@ -47,7 +47,7 @@ from .services import SyncToken as SyncToken, hardcover
 from .web import download_required
 from .kobo_auth import requires_kobo_auth, get_auth_token
 
-KOBO_FORMATS = {"KEPUB": ["KEPUB"], "EPUB": ["EPUB3", "EPUB"]}
+KOBO_FORMATS = {"KEPUB": ["KEPUB"], "EPUB": ["EPUB3", "EPUB"], "PDF": ["PDF"]}
 KOBO_STOREAPI_URL = "https://storeapi.kobo.com"
 KOBO_IMAGEHOST_URL = "https://cdn.kobo.com/book-images"
 
@@ -614,6 +614,7 @@ def get_metadata(book):
 
     kepub_data = next((d for d in book.data if d.format == 'KEPUB'), None)
     epub_data  = next((d for d in book.data if d.format == 'EPUB'),  None)
+    pdf_data   = next((d for d in book.data if d.format == 'PDF'),   None)
 
     if kepub_data:
         book_data, dl_format, published_format = kepub_data, 'kepub', 'KEPUB'
@@ -621,15 +622,18 @@ def get_metadata(book):
         book_data, dl_format, published_format = epub_data, 'kepub', 'KEPUB'
     elif epub_data:
         book_data, dl_format, published_format = epub_data, 'epub', 'EPUB3'
+    elif pdf_data:
+        book_data, dl_format, published_format = pdf_data, 'pdf', 'PDF'
     else:
         book_data = None
 
     if book_data:
-        try:
-            if get_epub_layout(book, book_data) == 'pre-paginated':
-                published_format = 'EPUB3FL'
-        except (zipfile.BadZipfile, FileNotFoundError) as e:
-            log.error(e)
+        if published_format != 'PDF':
+            try:
+                if get_epub_layout(book, book_data) == 'pre-paginated':
+                    published_format = 'EPUB3FL'
+            except (zipfile.BadZipfile, FileNotFoundError) as e:
+                log.error(e)
         download_urls.append({
             "Format": published_format,
             "Size": book_data.uncompressed_size,
