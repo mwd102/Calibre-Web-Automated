@@ -99,6 +99,7 @@ class AddrValidator:
             allow_teredo=False,
             allow_6to4=False,
             allow_dns64=False,
+            dns64_prefixes=None,
             # Must be explicitly set to "False" if you don't want to try
             # detecting local interface addresses with netifaces.
             autodetect_local_addresses=True,
@@ -118,6 +119,7 @@ class AddrValidator:
         self.allow_teredo = allow_teredo
         self.allow_6to4 = allow_6to4
         self.allow_dns64 = allow_dns64
+        self.dns64_prefixes = dns64_prefixes or {self._DNS64_WK_PREFIX}
         self.autodetect_local_addresses = autodetect_local_addresses
 
     @add_local_address_arg
@@ -166,15 +168,19 @@ class AddrValidator:
                     return False
                 # Check both the client *and* server IPs
                 v4_nested.extend(addr_ip.teredo)
-            if addr_ip in self._DNS64_WK_PREFIX:
+            dns64_prefix = next((net for net in self.dns64_prefixes if addr_ip in net), None)
+            if dns64_prefix is not None:
                 if not self.allow_dns64:
                     return False
-                # When using the well-known prefix the last 4 bytes
-                # are the IPv4 addr
+                # A /96 DNS64 prefix embeds the translated IPv4 address in the
+                # final four bytes. Validate that address with the same SSRF
+                # rules instead of trusting the translator blindly.
                 v4_nested.append(ipaddress.ip_address(addr_ip.packed[-4:]))
 
             if not all(self.is_ip_allowed(addr_v4) for addr_v4 in v4_nested):
                 return False
+            if dns64_prefix is not None:
+                return True
 
             # fec0::*, apparently deprecated?
             if addr_ip.is_site_local:
