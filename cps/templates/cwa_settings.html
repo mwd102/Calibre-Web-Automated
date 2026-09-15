@@ -737,16 +737,6 @@
     <div class="settings-container">
         <h4 class="settings-section-header">{{_('Web UI Settings')}}</h4>
 
-      {% if cwa_settings['cwa_update_notifications'] %}
-      <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
-      {% else %}
-      <input type="checkbox" id="cwa_update_notifications" name="cwa_update_notifications" value="True" style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
-      {% endif %}
-      <label for="cwa_update_notifications" style="padding-left: 10px;">{{_('Enable CWA Update Notifications')}}</label><br>
-      <p class="cwa-settings-tooltip">
-        {{_('When active, you will receive notifications in the Web UI when a new version of CWA is released')}}
-      </p>
-
       {% if cwa_settings['contribute_translations_notifications'] %}
       <input type="checkbox" id="contribute_translations_notifications" name="contribute_translations_notifications" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Does NOT require restart for changes to take effect">
       {% else %}

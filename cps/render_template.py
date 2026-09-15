@@ -182,61 +182,6 @@ def get_sidebar_config(kwargs=None):
 
     return sidebar, simple
 
-# Checks if an update for CWA is available, returning True if yes
-def cwa_update_available() -> tuple[bool, str, str]:
-    try:
-        current_version = constants.INSTALLED_VERSION
-        tag_name = constants.STABLE_VERSION
-
-        def _normalize_version(value: str) -> str:
-            return (value or "").lstrip("vV")
-
-        current_normalized = _normalize_version(current_version)
-        tag_normalized = _normalize_version(tag_name)
-
-        if current_normalized in ("", "0.0.0") or tag_normalized in ("", "0.0.0"):
-            return False, "0.0.0", "0.0.0"
-
-        return (tag_normalized != current_normalized), current_version, tag_name
-    except Exception as e:
-        print(f"[cwa-update-notification-service] Error checking for CWA updates: {e}", flush=True)
-        return False, "0.0.0", "0.0.0"
-
-# Gets the date the last cwa update notification was displayed
-def get_cwa_last_notification() -> str:
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    if not os.path.isfile('/app/cwa_update_notice'):
-        with open('/app/cwa_update_notice', 'w') as f:
-            f.write(current_date)
-        return "0001-01-01"
-    else:
-        with open('/app/cwa_update_notice', 'r') as f:
-            last_notification = f.read()
-    return last_notification
-
-# Displays a notification to the user that an update for CWA is available, no matter which page they're on
-# Currently set to only display once per calender day
-def cwa_update_notification() -> None:
-    db = CWA_DB()
-    if db.cwa_settings['cwa_update_notifications']:
-        current_date = datetime.now().strftime("%Y-%m-%d")
-        cwa_last_notification = get_cwa_last_notification()
-        
-        if cwa_last_notification == current_date:
-            return
-
-        update_available, current_version, tag_name = cwa_update_available()
-        if update_available:
-            message = _(f"⚡🚨 CWA UPDATE AVAILABLE! 🚨⚡ Current - {current_version} | Newest - {tag_name} | To update, just re-pull the image! This message will only display once per day |")
-            flash(_(message), category="cwa_update")
-            print(f"[cwa-update-notification-service] {message}", flush=True)
-
-        with open('/app/cwa_update_notice', 'w') as f:
-            f.write(current_date)
-        return
-    else:
-        return
-
 # Checks if translations are missing for the current language
 def translations_missing_notification() -> None:
     db = CWA_DB()
@@ -283,11 +228,7 @@ def render_title_template(*args, **kwargs):
         }
     except Exception:
         magic_shelf_routes = {"render": False, "create": False}
-    if current_user.role_admin():
-        try:
-            cwa_update_notification()
-        except Exception as e:
-            print(f"[cwa-update-notification-service] The following error occurred when checking for available updates:\n{e}", flush=True)
+    # Upstream release notifications do not apply to this fork.
     # Notify any user if translations are missing for their language
     try:
         translations_missing_notification()
