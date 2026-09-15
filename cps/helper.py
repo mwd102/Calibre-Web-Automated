@@ -6,6 +6,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import glob
+import ipaddress
 import os
 import random
 import io
@@ -1059,6 +1060,25 @@ def _get_cover_download_limit():
     return max_mb * 1024 * 1024, max_mb
 
 
+def _cover_url_validator():
+    prefix = os.getenv("CWA_ADVOCATE_DNS64_PREFIX", "").strip()
+    if not prefix:
+        return None
+    try:
+        network = ipaddress.ip_network(prefix)
+    except ValueError:
+        log.error("Invalid CWA_ADVOCATE_DNS64_PREFIX: %s", prefix)
+        return None
+    if network.version != 6 or network.prefixlen != 96:
+        log.error("CWA_ADVOCATE_DNS64_PREFIX must be an IPv6 /96: %s", prefix)
+        return None
+    return cw_advocate.AddrValidator(
+        allow_ipv6=True,
+        allow_dns64=True,
+        dns64_prefixes={network},
+    )
+
+
 def save_cover_from_url(url, book_path):
     max_cover_bytes, max_cover_mb = _get_cover_download_limit()
     img = None
@@ -1067,7 +1087,10 @@ def save_cover_from_url(url, book_path):
         if cli_param.allow_localhost:
             img = requests.get(url, timeout=(10, 30), allow_redirects=False, stream=True)  # ToDo: Error Handling
         elif use_advocate:
-            img = cw_advocate.get(url, timeout=(10, 30), allow_redirects=False, stream=True)      # ToDo: Error Handling
+            validator = _cover_url_validator()
+            kwargs = {"validator": validator} if validator else {}
+            img = cw_advocate.get(url, timeout=(10, 30), allow_redirects=False, stream=True,
+                                  **kwargs)      # ToDo: Error Handling
         else:
             log.error("python module advocate is not installed but is needed")
             return False, _("Python module 'advocate' is not installed but is needed for cover uploads")
