@@ -60,6 +60,14 @@ kobo_auth.register_url_value_preprocessor(kobo)
 log = logger.create()
 
 
+def _store_proxy_settings():
+    """Return an explicit proxy used only for server-side Kobo Store calls."""
+    proxy_url = os.getenv("CWA_KOBO_STORE_PROXY", "").strip()
+    if not proxy_url:
+        return None
+    return {"http": proxy_url, "https": proxy_url}
+
+
 @kobo.after_request
 def log_kobo_request(response):
     if config.config_access_log:
@@ -103,7 +111,8 @@ def make_request_to_kobo_store(sync_token=None):
         headers=outgoing_headers,
         data=request.get_data(),
         allow_redirects=False,
-        timeout=(2, 10)
+        timeout=(2, 10),
+        proxies=_store_proxy_settings(),
     )
     log.debug("Content: " + str(store_response.content))
     log.debug("StatusCode: " + str(store_response.status_code))
