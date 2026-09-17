@@ -17,9 +17,30 @@
     var isSafari = /safari/i.test(ua) && !/chrome|chromium|crios|android/i.test(ua);
 
     if (!$.support.xhrFileUpload || !$.support.xhrFormData || isSafari) {
-        // Skip decorating form in Safari, but provide a no-op uploadprogress
-        // function so we do not break the jQuery bindings that make use of it.
-        $.fn.uploadprogress = function(){};
+        // Safari uses a normal form submit because its XHR upload path is unreliable.
+        // Show that the request is pending and guard against submitting the same file twice.
+        $.fn.uploadprogress = function(options) {
+            return this.each(function() {
+                var form = $(this);
+                $(window).on("pageshow", function(e) {
+                    if (e.originalEvent && e.originalEvent.persisted) {
+                        form.removeData("uploadPending");
+                        form.find(".btn-file").removeClass("disabled");
+                        form.find(".upload-status").remove();
+                    }
+                });
+                form.on("submit", function(e) {
+                    if (form.data("uploadPending")) {
+                        e.preventDefault();
+                        return;
+                    }
+                    form.data("uploadPending", true);
+                    form.find(".btn-file").addClass("disabled");
+                    form.append($("<span class='upload-status' role='status' aria-live='polite'></span>")
+                        .text((options && options.modalTitle) || "Uploading..."));
+                });
+            });
+        };
         return;
     }
 
